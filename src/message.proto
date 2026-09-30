@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package C4;
+
+enum MessageType {
+  Command = 0;
+  Event   = 1;
+}
+
+message EventServerConnected {
+  uint64 client_id = 1;
+}
+
+message GameStatus {
+  uint64 id         = 1;
+  bool   available  = 2;
+  uint64 player1_id = 3;
+  uint64 player2_id = 4;
+}
+
+message EventLobbyUpdated {
+  uint64              total_clients = 1;
+  uint32              total_games   = 2;
+  repeated GameStatus games         = 3;
+}
+
+message EventGameCreated {
+  uint64 game_id    = 1;
+  uint64 player1_id = 2;
+}
+
+message EventPlayerJoined {
+  uint64 game_id    = 1;
+  uint64 player2_id = 2;
+}
+
+message EventGameStarted { uint64 game_id = 1; }
+
+message EventPlayerMadeMove {
+  uint64 game_id       = 1;
+  uint64 player_id     = 2;
+  uint32 played_column = 3;
+}
+
+message EventGameVerdicted {
+  uint64 game_id      = 1;
+  uint64 game_verdict = 2;
+}
+
+message EventPlayerLeft {
+  uint64 game_id   = 1;
+  uint64 player_id = 2;
+}
+
+message EventPayload {
+  oneof payload {
+    EventServerConnected event_server_connected = 1;
+    EventLobbyUpdated    event_lobby_updated    = 2;
+    EventGameCreated     event_game_created     = 3;
+    EventPlayerJoined    event_player_joined    = 4;
+    EventGameStarted     event_game_started     = 5;
+    EventPlayerMadeMove  event_player_made_move = 6;
+    EventGameVerdicted   event_game_verdicted   = 7;
+    EventPlayerLeft      event_player_left      = 8;
+  }
+}
+
+message CommandCreateNewGame {}
+
+message CommandJoinGame {
+  uint64 game_id = 1;
+}
+
+message CommandStartGame {
+  uint64 game_id = 1;
+}
+
+message CommandPlayerMakeMove {
+  uint64 game_id       = 1;
+  uint64 player_id     = 2;
+  uint32 played_column = 3;
+}
+
+message CommandPlayerLeave {
+  uint64 game_id   = 1;
+  uint64 player_id = 2;
+}
+
+message CommandPayload {
+  oneof command_payload_type {
+    CommandCreateNewGame  commnad_create_new_game = 1;
+    CommandJoinGame       command_join_game       = 2;
+    CommandStartGame      command_start_game      = 3;
+    CommandPlayerMakeMove command_make_move       = 4;
+    CommandPlayerLeave    command_player_leave    = 5;
+  }
+}
+
+message Message {
+  uint64 id = 1;
+  oneof payload_type {
+    EventPayload   event_payload   = 2;
+    CommandPayload command_payload = 3;
+  }
+}
