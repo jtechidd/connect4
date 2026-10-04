@@ -32,12 +32,14 @@ void Client::MessageHandler::handle_event(const EventPayload *event_payload) {
 
 void Client::MessageHandler::handle_event_server_connected(
     const EventServerConnected *sc) {
+  std::lock_guard<std::mutex> lock(m_client->m_lock);
   m_client->m_client_id = sc->client_id();
   spdlog::info("Set client id: {}", m_client->m_client_id);
 }
 
 void Client::MessageHandler::handle_event_lobby_updated(
     const EventLobbyUpdated *lu) {
+  std::lock_guard<std::mutex> lock(m_client->m_lock);
   m_client->m_total_clients = lu->total_clients();
   spdlog::info("Set total clients: {}", m_client->m_total_clients);
 }

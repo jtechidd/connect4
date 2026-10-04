@@ -16,13 +16,13 @@ public:
   RingBuffer(size_t cap = DEFAULT_RING_BUFFER_CAPACITY);
   ~RingBuffer();
 
-  size_t free();
+  size_t free_space();
   int grow();
   int write(void *src, size_t len);
   size_t peek(void *dst, size_t cnt, size_t len);
   size_t consume(size_t len);
   size_t read(void *dst, size_t cnt, size_t len);
-  uint8_t* get_read_ptr();
+  uint8_t *get_read_ptr();
 };
 
 #endif

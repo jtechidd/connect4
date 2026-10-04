@@ -1,6 +1,8 @@
 {
     "clangd.fallbackFlags": [
-        "-I${workspaceFolder}/include"
+        "-I${workspaceFolder}/include",
+        "-I${workspaceFolder}/third_party/imgui",
+        "-I${workspaceFolder}/third_party/imgui/backends"
     ],
     "protobuf.protoc.path": "/usr/bin/protoc"
 }

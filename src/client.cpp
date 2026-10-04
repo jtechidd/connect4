@@ -1,45 +1,51 @@
 #include "client.hpp"
-#include "message.pb.h"
-#include <cstring>
-#include <netinet/in.h>
-#include <spdlog/spdlog.h>
 
 using namespace C4;
 
-Client::Client(uv_loop_t *loop, const char *host, int port) : m_msg_hdl(this) {
-  m_loop = loop;
+Client::Client(const char *host, int port) : m_msg_hdl(this), m_ui(this) {
+  m_loop = uv_default_loop();
   m_host = (char *)host;
   m_port = port;
-  uv_tcp_init(m_loop, &m_client);
-  m_client.data = this;
-  std::memset(&m_server_addr, 0, sizeof(struct sockaddr_in));
   m_client_id = 0;
   m_total_clients = 0;
   m_state = CLIENT_STATE_LOBBY;
+  m_is_connected = false;
 }
 
 Client::~Client() {}
 
+void Client::run_uv() {
+  uv_async_init(m_loop, &m_keep_alive, NULL);
+  uv_async_init(m_loop, &m_stop, Client::async_stop);
+  m_stop.data = this;
+  uv_timer_init(m_loop, &m_try_connect);
+  uv_timer_start(&m_try_connect, Client::on_try_connect, 1000, 1000);
+  m_try_connect.data = this;
+  uv_run(m_loop, UV_RUN_DEFAULT);
+}
+
 void Client::run() {
-  uv_ip4_addr(m_host, m_port, &m_server_addr);
-  uv_connect_t *connect = new uv_connect_t;
-  connect->data = this;
-  uv_tcp_connect(connect, &m_client, (struct sockaddr *)&m_server_addr,
-                 Client::on_connect);
+  m_thr_uv = std::thread(&Client::run_uv, this);
+  m_ui.run();
+  spdlog::info("UI stopped");
+  stop();
+  m_thr_uv.join();
 }
 
 void Client::on_connect(uv_connect_t *connect, int status) {
   Client *self = (Client *)connect->data;
-
+  std::lock_guard<std::mutex> lock(self->m_lock);
   if (status != 0) {
-    // something error
+    self->m_is_connected = false;
+    goto cleanup;
   }
 
   spdlog::info("Connected to server");
-
-  // Start read
   uv_read_start((uv_stream_t *)&self->m_client, Client::on_alloc,
                 Client::on_read);
+  self->m_is_connected = true;
+cleanup:
+  free(connect);
 }
 
 void Client::on_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {
@@ -49,43 +55,67 @@ void Client::on_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {
 
 void Client::on_read(uv_stream_t *stream, long nread, const uv_buf_t *buf) {
   Client *self = (Client *)stream->data;
+  uint32_t msg_size = 0;
+  Message msg;
+
   if (nread < 0) {
-    // Server close
     uv_close((uv_handle_t *)stream, Client::on_close);
-    free(buf->base);
-    return;
+    goto cleanup;
   }
 
   if (self->m_ring_buf.write(buf->base, nread) < 0) {
-    free(buf->base);
-    return;
+    goto cleanup;
   }
-  constexpr uint32_t MAX_MSG_SIZE = 16 * 1024 * 1024;
-  while (self->m_ring_buf.m_size >= 4) {
-    uint32_t msg_size = 0;
-    self->m_ring_buf.peek(&msg_size, sizeof(uint32_t), 4);
+
+  while (self->m_ring_buf.m_size >= MSG_SIZE_NBYTES) {
+    self->m_ring_buf.peek(&msg_size, sizeof(uint32_t), MSG_SIZE_NBYTES);
     msg_size = ntohl(msg_size);
-    spdlog::info("msg size: {}", msg_size);
-    if (msg_size > MAX_MSG_SIZE)
+    if (msg_size > MSG_MAX_SIZE)
       break;
-    if (self->m_ring_buf.m_size < 4 + msg_size)
+    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES)
       break;
-    self->m_ring_buf.consume(4);
-    Message msg;
+    self->m_ring_buf.consume(MSG_SIZE_NBYTES);
     msg.ParseFromArray(self->m_ring_buf.get_read_ptr(), msg_size);
     self->m_msg_hdl.handle_message(&msg);
     self->m_ring_buf.consume(msg_size);
   }
-
+cleanup:
   free(buf->base);
 }
 
 void Client::on_write(uv_write_t *write, int status) {
   if (status != 0) {
-    // something error
+    // TODO: handle
   }
-  delete[] write->bufs;
-  delete write;
+  free(write);
 }
 
-void Client::on_close(uv_handle_t *handle) { printf("Server closed\n"); }
+void Client::on_close(uv_handle_t *handle) {
+  Client *client = (Client *)handle->data;
+  spdlog::info("Disconnencted from server");
+  client->m_is_connected = false;
+  uv_timer_start(&client->m_try_connect, Client::on_try_connect, 1000, 1000);
+}
+
+void Client::async_stop(uv_async_t *handle) {
+  Client *client = (Client *)handle->data;
+  uv_stop(client->m_loop);
+}
+
+void Client::stop() { uv_async_send(&m_stop); }
+
+void Client::on_try_connect(uv_timer_t *timer) {
+  Client *client = (Client *)timer->data;
+  if (client->m_is_connected) {
+    uv_timer_stop(timer);
+    return;
+  }
+  spdlog::info("Connecting to server...");
+  uv_tcp_init(client->m_loop, &client->m_client);
+  client->m_client.data = client;
+  uv_ip4_addr(client->m_host, client->m_port, &client->m_server_addr);
+  uv_connect_t *connect = (uv_connect_t *)malloc(sizeof(uv_connect_t));
+  connect->data = client;
+  uv_tcp_connect(connect, &client->m_client,
+                 (struct sockaddr *)&client->m_server_addr, Client::on_connect);
+}

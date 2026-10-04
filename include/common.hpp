@@ -2,17 +2,15 @@
 #define C4_COMMON_HPP
 
 #include "message.pb.h"
-#include <cstdlib>
-#include <cstring>
-#include <map>
 #include <spdlog/spdlog.h>
-#include <string>
 #include <uv.h>
 
 extern uv_loop_t *g_loop;
 
 namespace C4 {
 extern uint64_t g_session_cid, g_game_cid;
+extern const size_t MSG_SIZE_NBYTES;
+extern const size_t MSG_MAX_SIZE;
 
 typedef uint64_t game_id_t;
 typedef uint64_t session_id_t;

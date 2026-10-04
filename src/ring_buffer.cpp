@@ -16,21 +16,21 @@ RingBuffer::RingBuffer(size_t cap) {
   m_write_pos = 0;
 }
 
-RingBuffer::~RingBuffer() { std::free(m_buf); }
+RingBuffer::~RingBuffer() { free(m_buf); }
 
-size_t RingBuffer::free() { return m_cap - m_size; }
+size_t RingBuffer::free_space() { return m_cap - m_size; }
 
 int RingBuffer::grow() {
   if (m_cap > (SIZE_MAX >> 1)) {
     return -1;
   }
   size_t new_cap = m_cap << 1;
-  uint8_t *new_buf = (uint8_t *)std::realloc(m_buf, new_cap);
+  uint8_t *new_buf = (uint8_t *)realloc(m_buf, new_cap);
   if (!new_buf) {
     return -1;
   }
   size_t first = std::min(m_cap - m_read_pos, m_size);
-  std::memmove(new_buf + new_cap - first, new_buf + m_read_pos, first);
+  memmove(new_buf + new_cap - first, new_buf + m_read_pos, first);
   m_buf = new_buf;
   m_cap = new_cap;
   m_read_pos = new_cap - first;
@@ -39,12 +39,12 @@ int RingBuffer::grow() {
 }
 
 int RingBuffer::write(void *src, size_t len) {
-  while (free() < len)
+  while (free_space() < len)
     if (grow() < 0)
       return -1;
   size_t first = std::min(m_cap - m_write_pos, len);
-  std::memcpy(m_buf + m_write_pos, src, first);
-  std::memcpy(m_buf, (uint8_t *)src + first, len - first);
+  memcpy(m_buf + m_write_pos, src, first);
+  memcpy(m_buf, (uint8_t *)src + first, len - first);
   m_write_pos = (m_write_pos + len) % m_cap;
   m_size += len;
   return 0;

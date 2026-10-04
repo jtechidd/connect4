@@ -4,8 +4,8 @@
 
 using namespace C4;
 
-Server::Server(uv_loop_t *loop, int port, int backlog) : m_msg_hdl(this) {
-  m_loop = loop;
+Server::Server(int port, int backlog) : m_msg_hdl(this) {
+  m_loop = uv_default_loop();
   m_port = port;
   m_backlog = backlog;
 
@@ -23,6 +23,7 @@ void Server::run() {
   uv_tcp_bind(&m_server, (struct sockaddr *)&m_server_addr, 0);
   uv_listen((uv_stream_t *)&m_server, m_backlog, on_connection);
   spdlog::info("Listening on port {}", m_port);
+  uv_run(m_loop, UV_RUN_DEFAULT);
 }
 
 void Server::on_connection(uv_stream_t *stream, int status) {

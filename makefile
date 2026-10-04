@@ -1,13 +1,21 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -O2 -std=c++17 -fPIC -I./include -DSPDLOG_COMPILED_LIB -Wl,-rpath,./build
-LDFLAGS = -L./build -luv -lprotobuf -lspdlog -lc4
+CXXFLAGS = -g -Wall -Wextra -Wl,--no-undefined,-rpath,./build -O2 -std=c++17 -fPIC -I./include -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -DSPDLOG_COMPILED_LIB
+LDFLAGS = -L./build -luv -lprotobuf -lspdlog -lfmt -lGL -lSDL3 -ldl
 
 PROTOS = src/message.proto
-
 COMPILED_PROTOS = \
 	$(PROTOS:src/%.proto=include/%.pb.h) \
-	$(PROTOS:.proto=.pb.cc) \
-
+	$(PROTOS:.proto=.pb.cc)
+IMGUI_DIR = ./third_party/imgui
+IMGUI_SRCS = \
+	$(IMGUI_DIR)/imgui.cpp \
+	$(IMGUI_DIR)/imgui_demo.cpp \
+	$(IMGUI_DIR)/imgui_draw.cpp \
+	$(IMGUI_DIR)/imgui_tables.cpp \
+	$(IMGUI_DIR)/imgui_widgets.cpp \
+	$(IMGUI_DIR)/backends/imgui_impl_sdl3.cpp \
+	$(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+LIB_IMGUI = build/libimgui.so
 LIB_SRCS = \
 	src/common.cpp \
 	src/server.cpp \
@@ -17,37 +25,39 @@ LIB_SRCS = \
 	src/game.cpp \
 	src/client.cpp \
 	src/client_message_handler.cpp \
+	src/client_ui.cpp \
 	$(COMPILED_PROTOS)
-
 LIB = build/libc4.so
-
-SERVER = build/server
 SERVER_SRC = src/server_main.cpp
-
-CLIENT = build/client
+SERVER = build/server
 CLIENT_SRC = src/client_main.cpp
+CLIENT = build/client
 
 $(COMPILED_PROTOS): $(PROTOS)
 	protoc --proto_path=./src --cpp_out=. $(PROTOS)
 	mv $(PROTOS:src/%.proto=%.pb.h) include
 	mv $(PROTOS:src/%.proto=%.pb.cc) src
 
-$(LIB): $(LIB_SRCS)
+$(LIB_IMGUI): $(IMGUI_SRCS)
+	$(CXX) $(CXXFLAGS) -shared $(IMGUI_SRCS) -o $(LIB_IMGUI) $(LDFLAGS)
+
+$(LIB): LDFLAGS += -limgui
+$(LIB): $(LIB_SRCS) $(LIB_IMGUI)
 	$(CXX) $(CXXFLAGS) -shared $(LIB_SRCS) -o $(LIB) $(LDFLAGS)
 
+$(SERVER): LDFLAGS += -lc4
 $(SERVER): $(LIB) $(SERVER_SRC)
-	$(CXX) $(CXXFLAGS) -o $(SERVER) ./src/server_main.cpp $(LDFLAGS)
-
+	$(CXX) $(CXXFLAGS) -o $(SERVER) $(SERVER_SRC) -L./build $(LDFLAGS)
 run_server: $(SERVER)
 	$(SERVER)
 
+$(CLIENT): LDFLAGS += -lc4
 $(CLIENT): $(LIB) $(CLIENT_SRC)
-	$(CXX) $(CXXFLAGS) -o ./build/client ./src/client_main.cpp $(LDFLAGS)
-
+	$(CXX) $(CXXFLAGS) -o $(CLIENT) $(CLIENT_SRC) $(LDFLAGS)
 run_client: $(CLIENT)
-	./build/client
+	$(CLIENT)
 
-all: $(LIB) $(SERVER) $(CLIENT)
+all: $(LIB_IMGUI) $(LIB) $(SERVER) $(CLIENT)
 
 .PHONY: clean
 clean:
@@ -57,4 +67,13 @@ clean:
 .PHONY: dependencies
 dependencies:
 	sudo apt-get update
-	sudo apt-get install -y make build-essential libspdlog-dev libuv1-dev protobuf-compiler
+	sudo apt-get install -y \
+		make \
+		build-essential \
+		libspdlog-dev \
+		libuv1-dev \
+		protobuf-compiler \
+		libsdl3-dev \
+		mesa-utils \
+		libgl1-mesa-dev \
+		libglu1-mesa-dev

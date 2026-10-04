@@ -1,4 +1,3 @@
-#include "common.hpp"
 #include "server.hpp"
 
 using namespace C4;
@@ -28,39 +27,35 @@ void Server::Session::on_alloc(uv_handle_t *handle, unsigned long size,
 void Server::Session::on_read(uv_stream_t *stream, long nread,
                               const uv_buf_t *buf) {
   Session *self = (Session *)stream->data;
+  uint32_t msg_size = 0;
+  Message msg;
+
   if (nread < 0) {
     uv_close((uv_handle_t *)stream, Server::Session::on_close);
-    delete[] buf->base;
-    return;
+    goto cleanup;
   }
 
-  constexpr uint32_t MAX_MSG_SIZE = 16 * 1024 * 1024;
-  while (self->m_ring_buf.m_size >= 4) {
-    uint32_t msg_size = 0;
-    self->m_ring_buf.peek(&msg_size, sizeof(uint32_t), 4);
+  while (self->m_ring_buf.m_size >= MSG_SIZE_NBYTES) {
+    self->m_ring_buf.peek(&msg_size, sizeof(uint32_t), MSG_SIZE_NBYTES);
     msg_size = ntohl(msg_size);
-    spdlog::info("msg size: {}", msg_size);
-    if (msg_size > MAX_MSG_SIZE)
+    if (msg_size > MSG_MAX_SIZE)
       break;
-    if (self->m_ring_buf.m_size < 4 + msg_size)
+    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size)
       break;
-    self->m_ring_buf.consume(4);
-    Message msg;
+    self->m_ring_buf.consume(MSG_SIZE_NBYTES);
     msg.ParseFromArray(self->m_ring_buf.get_read_ptr(), msg_size);
     self->m_server->m_msg_hdl.handle_message(&msg);
     self->m_ring_buf.consume(msg_size);
   }
 
-  delete[] buf->base;
+cleanup:
+  free(buf->base);
 }
 
-void Server::Session::on_write(uv_write_t *req, int status) {
+void Server::Session::on_write(uv_write_t *write, int status) {
   if (status != 0) {
-    // something error
-    printf("write error\n");
   }
-  printf("write done\n");
-  delete req;
+  free(write);
 }
 
 void Server::Session::on_close(uv_handle_t *handle) {

@@ -57,7 +57,7 @@ public:
   std::map<game_id_t, Game *> m_game_map;           // Game map
   MessageHandler m_msg_hdl;                         // Message handler
 
-  Server(uv_loop_t *loop = g_loop, int port = 8080, int backlog = 128);
+  Server(int port = 8080, int backlog = 128);
   ~Server();
 
   void run();
