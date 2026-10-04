@@ -8,19 +8,26 @@ Client::Client(const char *host, int port) : m_msg_hdl(this), m_ui(this) {
   m_port = port;
   m_client_id = 0;
   m_total_clients = 0;
-  m_state = CLIENT_STATE_LOBBY;
+  m_state = CLIENT_STATE_USERNAME;
   m_is_connected = false;
+  memset(m_username, 0, sizeof(m_username));
 }
 
 Client::~Client() {}
 
 void Client::run_uv() {
-  uv_async_init(m_loop, &m_keep_alive, NULL);
+  // async zone
+  uv_async_init(m_loop, &m_keep_alive, NULL); // keep alive hack
+  uv_async_init(m_loop, &m_enter_lobby, Client::async_enter_lobby);
+  m_enter_lobby.data = this;
   uv_async_init(m_loop, &m_stop, Client::async_stop);
   m_stop.data = this;
+
+  // timer to try connect to server
   uv_timer_init(m_loop, &m_try_connect);
   uv_timer_start(&m_try_connect, Client::on_try_connect, 1000, 1000);
   m_try_connect.data = this;
+
   uv_run(m_loop, UV_RUN_DEFAULT);
 }
 
@@ -41,7 +48,7 @@ void Client::on_connect(uv_connect_t *connect, int status) {
   }
 
   spdlog::info("Connected to server");
-  uv_read_start((uv_stream_t *)&self->m_client, Client::on_alloc,
+  uv_read_start((uv_stream_t *)&self->m_session, Client::on_alloc,
                 Client::on_read);
   self->m_is_connected = true;
 cleanup:
@@ -102,7 +109,14 @@ void Client::async_stop(uv_async_t *handle) {
   uv_stop(client->m_loop);
 }
 
+void Client::async_enter_lobby(uv_async_t *handle) {
+  Client *client = (Client *)handle->data;
+  client->m_msg_hdl.send_command_enter_lobby();
+}
+
 void Client::stop() { uv_async_send(&m_stop); }
+
+void Client::enter_lobby() { uv_async_send(&m_enter_lobby); }
 
 void Client::on_try_connect(uv_timer_t *timer) {
   Client *client = (Client *)timer->data;
@@ -111,11 +125,11 @@ void Client::on_try_connect(uv_timer_t *timer) {
     return;
   }
   spdlog::info("Connecting to server...");
-  uv_tcp_init(client->m_loop, &client->m_client);
-  client->m_client.data = client;
+  uv_tcp_init(client->m_loop, &client->m_session);
+  client->m_session.data = client;
   uv_ip4_addr(client->m_host, client->m_port, &client->m_server_addr);
   uv_connect_t *connect = (uv_connect_t *)malloc(sizeof(uv_connect_t));
   connect->data = client;
-  uv_tcp_connect(connect, &client->m_client,
+  uv_tcp_connect(connect, &client->m_session,
                  (struct sockaddr *)&client->m_server_addr, Client::on_connect);
 }

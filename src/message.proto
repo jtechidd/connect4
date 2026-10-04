@@ -65,6 +65,10 @@ message EventPayload {
   }
 }
 
+message CommandEnterLobby {
+  string username = 1;
+}
+
 message CommandCreateNewGame {}
 
 message CommandJoinGame {
@@ -87,12 +91,13 @@ message CommandPlayerLeave {
 }
 
 message CommandPayload {
-  oneof command_payload_type {
-    CommandCreateNewGame  commnad_create_new_game = 1;
-    CommandJoinGame       command_join_game       = 2;
-    CommandStartGame      command_start_game      = 3;
-    CommandPlayerMakeMove command_make_move       = 4;
-    CommandPlayerLeave    command_player_leave    = 5;
+  oneof payload {
+    CommandEnterLobby     command_enter_lobby     = 1;
+    CommandCreateNewGame  command_create_new_game = 2;
+    CommandJoinGame       command_join_game       = 3;
+    CommandStartGame      command_start_game      = 4;
+    CommandPlayerMakeMove command_make_move       = 5;
+    CommandPlayerLeave    command_player_leave    = 6;
   }
 }
 

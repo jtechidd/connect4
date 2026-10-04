@@ -1,5 +1,4 @@
 #include "client.hpp"
-#include "imgui.h"
 
 using namespace C4;
 
@@ -24,9 +23,8 @@ int Client::UI::run() {
   float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
   m_sdl_window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
                        SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-  m_sdl_window = SDL_CreateWindow("Dear ImGui SDL3+OpenGL3 example",
-                                  (int)(1280 * main_scale),
-                                  (int)(800 * main_scale), m_sdl_window_flags);
+  m_sdl_window = SDL_CreateWindow("Connect4", (int)(480 * main_scale),
+                                  (int)(240 * main_scale), m_sdl_window_flags);
   if (m_sdl_window == nullptr) {
     printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
     return -1;
@@ -85,27 +83,53 @@ int Client::UI::run() {
     ImGui::NewFrame();
 
     {
-
-      ImGui::Begin("Connect4");
+      std::lock_guard lock(m_client->m_lock);
+      ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+      int window_width, window_height;
+      SDL_GetWindowSizeInPixels(m_sdl_window, &window_width, &window_height);
+      ImGui::SetNextWindowSize(
+          ImVec2((float)window_width, (float)window_height));
+      ImGui::Begin("Connect4", nullptr,
+                   ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+                       ImGuiWindowFlags_NoResize |
+                       ImGuiWindowFlags_NoSavedSettings |
+                       ImGuiWindowFlags_NoBringToFrontOnFocus);
 
       ImGui::Text("Please enter username");
       ImGui::Text("Username:");
       ImGui::SameLine();
       ImGui::InputText("##username", m_client->m_username,
-                       sizeof(m_client->m_username));
-      if (ImGui::Button("Enter"))
-        m_counter++;
+                       sizeof(m_client->m_username) - 1);
+      if (m_client->m_is_connected) {
+        ImGui::Text("Server connected");
+      } else {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "Server disconnected");
+      }
+      ImGui::BeginDisabled(!m_client->m_is_connected);
+      if (ImGui::Button("Enter")) {
+        m_client->enter_lobby();
+      }
+      ImGui::EndDisabled();
+
+      bool show_message_box = true;
+
+      // Center the modal
+      ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+      ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+      if (ImGui::BeginPopupModal("Message Box", &show_message_box,
+                                 ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("This is an overlay message box!\n");
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0))) {
+          ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+      }
 
       ImGui::End();
     }
-
-    // if (m_show_another_window) {
-    //   ImGui::Begin("Another Window", &m_show_another_window);
-    //   ImGui::Text("Hello from another window!");
-    //   if (ImGui::Button("Close Me"))
-    //     m_show_another_window = false;
-    //   ImGui::End();
-    // }
 
     ImGui::Render();
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);

@@ -1,6 +1,7 @@
 #include "common.hpp"
-#include "server.hpp"
 #include "game.hpp"
+#include "message.pb.h"
+#include "server.hpp"
 
 using namespace C4;
 
@@ -49,6 +50,42 @@ void Server::MessageHandler::broadcast_event_lobby_updated() {
   broadcast_message(&msg);
 }
 
-void Server::MessageHandler::handle_message(Message *msg) {
-  // TODO: implement
+void Server::MessageHandler::handle_message(session_id_t session_id,
+                                            Message *msg) {
+  switch (msg->payload_type_case()) {
+  case Message::kEventPayload:
+    handle_event(session_id, &msg->event_payload());
+    break;
+  case Message::kCommandPayload:
+    handle_command(session_id, &msg->command_payload());
+  case Message::PAYLOAD_TYPE_NOT_SET:
+  default:
+    break;
+  }
+}
+
+void Server::MessageHandler::handle_event(session_id_t session_id,
+                                          const EventPayload *event_payload) {
+  switch (event_payload->payload_case()) {
+  default:
+    break;
+  }
+}
+
+void Server::MessageHandler::handle_command(
+    session_id_t session_id, const CommandPayload *command_payload) {
+  switch (command_payload->payload_case()) {
+  case CommandPayload::kCommandEnterLobby:
+    handle_command_enter_lobby(session_id,
+                               &command_payload->command_enter_lobby());
+    break;
+  default:
+    break;
+  }
+}
+
+void Server::MessageHandler::handle_command_enter_lobby(
+    session_id_t session_id, const CommandEnterLobby *el) {
+  spdlog::info("Received command enter lobby from session ID: {}, username: {}",
+               session_id, el->username());
 }

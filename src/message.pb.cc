@@ -163,6 +163,19 @@ struct EventPayloadDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EventPayloadDefaultTypeInternal _EventPayload_default_instance_;
+PROTOBUF_CONSTEXPR CommandEnterLobby::CommandEnterLobby(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.username_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct CommandEnterLobbyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CommandEnterLobbyDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CommandEnterLobbyDefaultTypeInternal() {}
+  union {
+    CommandEnterLobby _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CommandEnterLobbyDefaultTypeInternal _CommandEnterLobby_default_instance_;
 PROTOBUF_CONSTEXPR CommandCreateNewGame::CommandCreateNewGame(
     ::_pbi::ConstantInitialized) {}
 struct CommandCreateNewGameDefaultTypeInternal {
@@ -231,7 +244,7 @@ struct CommandPlayerLeaveDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CommandPlayerLeaveDefaultTypeInternal _CommandPlayerLeave_default_instance_;
 PROTOBUF_CONSTEXPR CommandPayload::CommandPayload(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.command_payload_type_)*/{}
+    /*decltype(_impl_.payload_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_._oneof_case_)*/{}} {}
 struct CommandPayloadDefaultTypeInternal {
@@ -259,7 +272,7 @@ struct MessageDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MessageDefaultTypeInternal _Message_default_instance_;
 }  // namespace C4
-static ::_pb::Metadata file_level_metadata_message_2eproto[17];
+static ::_pb::Metadata file_level_metadata_message_2eproto[18];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_message_2eproto[1];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_message_2eproto = nullptr;
 
@@ -354,6 +367,13 @@ const uint32_t TableStruct_message_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ::_pbi::kInvalidFieldOffsetTag,
   PROTOBUF_FIELD_OFFSET(::C4::EventPayload, _impl_.payload_),
   ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::C4::CommandEnterLobby, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::C4::CommandEnterLobby, _impl_.username_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::C4::CommandCreateNewGame, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -401,7 +421,8 @@ const uint32_t TableStruct_message_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::C4::CommandPayload, _impl_.command_payload_type_),
+  ::_pbi::kInvalidFieldOffsetTag,
+  PROTOBUF_FIELD_OFFSET(::C4::CommandPayload, _impl_.payload_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::C4::Message, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -424,13 +445,14 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 58, -1, -1, sizeof(::C4::EventGameVerdicted)},
   { 66, -1, -1, sizeof(::C4::EventPlayerLeft)},
   { 74, -1, -1, sizeof(::C4::EventPayload)},
-  { 89, -1, -1, sizeof(::C4::CommandCreateNewGame)},
-  { 95, -1, -1, sizeof(::C4::CommandJoinGame)},
-  { 102, -1, -1, sizeof(::C4::CommandStartGame)},
-  { 109, -1, -1, sizeof(::C4::CommandPlayerMakeMove)},
-  { 118, -1, -1, sizeof(::C4::CommandPlayerLeave)},
-  { 126, -1, -1, sizeof(::C4::CommandPayload)},
-  { 138, -1, -1, sizeof(::C4::Message)},
+  { 89, -1, -1, sizeof(::C4::CommandEnterLobby)},
+  { 96, -1, -1, sizeof(::C4::CommandCreateNewGame)},
+  { 102, -1, -1, sizeof(::C4::CommandJoinGame)},
+  { 109, -1, -1, sizeof(::C4::CommandStartGame)},
+  { 116, -1, -1, sizeof(::C4::CommandPlayerMakeMove)},
+  { 125, -1, -1, sizeof(::C4::CommandPlayerLeave)},
+  { 133, -1, -1, sizeof(::C4::CommandPayload)},
+  { 146, -1, -1, sizeof(::C4::Message)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -444,6 +466,7 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::C4::_EventGameVerdicted_default_instance_._instance,
   &::C4::_EventPlayerLeft_default_instance_._instance,
   &::C4::_EventPayload_default_instance_._instance,
+  &::C4::_CommandEnterLobby_default_instance_._instance,
   &::C4::_CommandCreateNewGame_default_instance_._instance,
   &::C4::_CommandJoinGame_default_instance_._instance,
   &::C4::_CommandStartGame_default_instance_._instance,
@@ -480,21 +503,23 @@ const char descriptor_table_protodef_message_2eproto[] PROTOBUF_SECTION_VARIABLE
   "EventPlayerMadeMoveH\000\0226\n\024event_game_verd"
   "icted\030\007 \001(\0132\026.C4.EventGameVerdictedH\000\0220\n"
   "\021event_player_left\030\010 \001(\0132\023.C4.EventPlaye"
-  "rLeftH\000B\t\n\007payload\"\026\n\024CommandCreateNewGa"
-  "me\"\"\n\017CommandJoinGame\022\017\n\007game_id\030\001 \001(\004\"#"
-  "\n\020CommandStartGame\022\017\n\007game_id\030\001 \001(\004\"R\n\025C"
-  "ommandPlayerMakeMove\022\017\n\007game_id\030\001 \001(\004\022\021\n"
-  "\tplayer_id\030\002 \001(\004\022\025\n\rplayed_column\030\003 \001(\r\""
-  "8\n\022CommandPlayerLeave\022\017\n\007game_id\030\001 \001(\004\022\021"
-  "\n\tplayer_id\030\002 \001(\004\"\273\002\n\016CommandPayload\022;\n\027"
-  "commnad_create_new_game\030\001 \001(\0132\030.C4.Comma"
-  "ndCreateNewGameH\000\0220\n\021command_join_game\030\002"
-  " \001(\0132\023.C4.CommandJoinGameH\000\0222\n\022command_s"
-  "tart_game\030\003 \001(\0132\024.C4.CommandStartGameH\000\022"
-  "6\n\021command_make_move\030\004 \001(\0132\031.C4.CommandP"
-  "layerMakeMoveH\000\0226\n\024command_player_leave\030"
-  "\005 \001(\0132\026.C4.CommandPlayerLeaveH\000B\026\n\024comma"
-  "nd_payload_type\"\177\n\007Message\022\n\n\002id\030\001 \001(\004\022)"
+  "rLeftH\000B\t\n\007payload\"%\n\021CommandEnterLobby\022"
+  "\020\n\010username\030\001 \001(\t\"\026\n\024CommandCreateNewGam"
+  "e\"\"\n\017CommandJoinGame\022\017\n\007game_id\030\001 \001(\004\"#\n"
+  "\020CommandStartGame\022\017\n\007game_id\030\001 \001(\004\"R\n\025Co"
+  "mmandPlayerMakeMove\022\017\n\007game_id\030\001 \001(\004\022\021\n\t"
+  "player_id\030\002 \001(\004\022\025\n\rplayed_column\030\003 \001(\r\"8"
+  "\n\022CommandPlayerLeave\022\017\n\007game_id\030\001 \001(\004\022\021\n"
+  "\tplayer_id\030\002 \001(\004\"\344\002\n\016CommandPayload\0224\n\023c"
+  "ommand_enter_lobby\030\001 \001(\0132\025.C4.CommandEnt"
+  "erLobbyH\000\022;\n\027command_create_new_game\030\002 \001"
+  "(\0132\030.C4.CommandCreateNewGameH\000\0220\n\021comman"
+  "d_join_game\030\003 \001(\0132\023.C4.CommandJoinGameH\000"
+  "\0222\n\022command_start_game\030\004 \001(\0132\024.C4.Comman"
+  "dStartGameH\000\0226\n\021command_make_move\030\005 \001(\0132"
+  "\031.C4.CommandPlayerMakeMoveH\000\0226\n\024command_"
+  "player_leave\030\006 \001(\0132\026.C4.CommandPlayerLea"
+  "veH\000B\t\n\007payload\"\177\n\007Message\022\n\n\002id\030\001 \001(\004\022)"
   "\n\revent_payload\030\002 \001(\0132\020.C4.EventPayloadH"
   "\000\022-\n\017command_payload\030\003 \001(\0132\022.C4.CommandP"
   "ayloadH\000B\016\n\014payload_type*%\n\013MessageType\022"
@@ -502,9 +527,9 @@ const char descriptor_table_protodef_message_2eproto[] PROTOBUF_SECTION_VARIABLE
   ;
 static ::_pbi::once_flag descriptor_table_message_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_message_2eproto = {
-    false, false, 1791, descriptor_table_protodef_message_2eproto,
+    false, false, 1871, descriptor_table_protodef_message_2eproto,
     "message.proto",
-    &descriptor_table_message_2eproto_once, nullptr, 0, 17,
+    &descriptor_table_message_2eproto_once, nullptr, 0, 18,
     schemas, file_default_instances, TableStruct_message_2eproto::offsets,
     file_level_metadata_message_2eproto, file_level_enum_descriptors_message_2eproto,
     file_level_service_descriptors_message_2eproto,
@@ -3125,6 +3150,209 @@ void EventPayload::InternalSwap(EventPayload* other) {
 
 // ===================================================================
 
+class CommandEnterLobby::_Internal {
+ public:
+};
+
+CommandEnterLobby::CommandEnterLobby(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:C4.CommandEnterLobby)
+}
+CommandEnterLobby::CommandEnterLobby(const CommandEnterLobby& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  CommandEnterLobby* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.username_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.username_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.username_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_username().empty()) {
+    _this->_impl_.username_.Set(from._internal_username(), 
+      _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:C4.CommandEnterLobby)
+}
+
+inline void CommandEnterLobby::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.username_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.username_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.username_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+CommandEnterLobby::~CommandEnterLobby() {
+  // @@protoc_insertion_point(destructor:C4.CommandEnterLobby)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void CommandEnterLobby::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.username_.Destroy();
+}
+
+void CommandEnterLobby::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void CommandEnterLobby::Clear() {
+// @@protoc_insertion_point(message_clear_start:C4.CommandEnterLobby)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.username_.ClearToEmpty();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* CommandEnterLobby::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string username = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_username();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "C4.CommandEnterLobby.username"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* CommandEnterLobby::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:C4.CommandEnterLobby)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string username = 1;
+  if (!this->_internal_username().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_username().data(), static_cast<int>(this->_internal_username().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "C4.CommandEnterLobby.username");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_username(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:C4.CommandEnterLobby)
+  return target;
+}
+
+size_t CommandEnterLobby::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:C4.CommandEnterLobby)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string username = 1;
+  if (!this->_internal_username().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_username());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData CommandEnterLobby::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    CommandEnterLobby::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CommandEnterLobby::GetClassData() const { return &_class_data_; }
+
+
+void CommandEnterLobby::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<CommandEnterLobby*>(&to_msg);
+  auto& from = static_cast<const CommandEnterLobby&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:C4.CommandEnterLobby)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_username().empty()) {
+    _this->_internal_set_username(from._internal_username());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CommandEnterLobby::CopyFrom(const CommandEnterLobby& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:C4.CommandEnterLobby)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CommandEnterLobby::IsInitialized() const {
+  return true;
+}
+
+void CommandEnterLobby::InternalSwap(CommandEnterLobby* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.username_, lhs_arena,
+      &other->_impl_.username_, rhs_arena
+  );
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata CommandEnterLobby::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
+      file_level_metadata_message_2eproto[10]);
+}
+
+// ===================================================================
+
 class CommandCreateNewGame::_Internal {
  public:
 };
@@ -3160,7 +3388,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CommandCreateNewGame::GetClass
 ::PROTOBUF_NAMESPACE_ID::Metadata CommandCreateNewGame::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[10]);
+      file_level_metadata_message_2eproto[11]);
 }
 
 // ===================================================================
@@ -3338,7 +3566,7 @@ void CommandJoinGame::InternalSwap(CommandJoinGame* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata CommandJoinGame::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[11]);
+      file_level_metadata_message_2eproto[12]);
 }
 
 // ===================================================================
@@ -3516,7 +3744,7 @@ void CommandStartGame::InternalSwap(CommandStartGame* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata CommandStartGame::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[12]);
+      file_level_metadata_message_2eproto[13]);
 }
 
 // ===================================================================
@@ -3751,7 +3979,7 @@ void CommandPlayerMakeMove::InternalSwap(CommandPlayerMakeMove* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata CommandPlayerMakeMove::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[13]);
+      file_level_metadata_message_2eproto[14]);
 }
 
 // ===================================================================
@@ -3962,58 +4190,78 @@ void CommandPlayerLeave::InternalSwap(CommandPlayerLeave* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata CommandPlayerLeave::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[14]);
+      file_level_metadata_message_2eproto[15]);
 }
 
 // ===================================================================
 
 class CommandPayload::_Internal {
  public:
-  static const ::C4::CommandCreateNewGame& commnad_create_new_game(const CommandPayload* msg);
+  static const ::C4::CommandEnterLobby& command_enter_lobby(const CommandPayload* msg);
+  static const ::C4::CommandCreateNewGame& command_create_new_game(const CommandPayload* msg);
   static const ::C4::CommandJoinGame& command_join_game(const CommandPayload* msg);
   static const ::C4::CommandStartGame& command_start_game(const CommandPayload* msg);
   static const ::C4::CommandPlayerMakeMove& command_make_move(const CommandPayload* msg);
   static const ::C4::CommandPlayerLeave& command_player_leave(const CommandPayload* msg);
 };
 
+const ::C4::CommandEnterLobby&
+CommandPayload::_Internal::command_enter_lobby(const CommandPayload* msg) {
+  return *msg->_impl_.payload_.command_enter_lobby_;
+}
 const ::C4::CommandCreateNewGame&
-CommandPayload::_Internal::commnad_create_new_game(const CommandPayload* msg) {
-  return *msg->_impl_.command_payload_type_.commnad_create_new_game_;
+CommandPayload::_Internal::command_create_new_game(const CommandPayload* msg) {
+  return *msg->_impl_.payload_.command_create_new_game_;
 }
 const ::C4::CommandJoinGame&
 CommandPayload::_Internal::command_join_game(const CommandPayload* msg) {
-  return *msg->_impl_.command_payload_type_.command_join_game_;
+  return *msg->_impl_.payload_.command_join_game_;
 }
 const ::C4::CommandStartGame&
 CommandPayload::_Internal::command_start_game(const CommandPayload* msg) {
-  return *msg->_impl_.command_payload_type_.command_start_game_;
+  return *msg->_impl_.payload_.command_start_game_;
 }
 const ::C4::CommandPlayerMakeMove&
 CommandPayload::_Internal::command_make_move(const CommandPayload* msg) {
-  return *msg->_impl_.command_payload_type_.command_make_move_;
+  return *msg->_impl_.payload_.command_make_move_;
 }
 const ::C4::CommandPlayerLeave&
 CommandPayload::_Internal::command_player_leave(const CommandPayload* msg) {
-  return *msg->_impl_.command_payload_type_.command_player_leave_;
+  return *msg->_impl_.payload_.command_player_leave_;
 }
-void CommandPayload::set_allocated_commnad_create_new_game(::C4::CommandCreateNewGame* commnad_create_new_game) {
+void CommandPayload::set_allocated_command_enter_lobby(::C4::CommandEnterLobby* command_enter_lobby) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_command_payload_type();
-  if (commnad_create_new_game) {
+  clear_payload();
+  if (command_enter_lobby) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-      ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(commnad_create_new_game);
+      ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(command_enter_lobby);
     if (message_arena != submessage_arena) {
-      commnad_create_new_game = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, commnad_create_new_game, submessage_arena);
+      command_enter_lobby = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, command_enter_lobby, submessage_arena);
     }
-    set_has_commnad_create_new_game();
-    _impl_.command_payload_type_.commnad_create_new_game_ = commnad_create_new_game;
+    set_has_command_enter_lobby();
+    _impl_.payload_.command_enter_lobby_ = command_enter_lobby;
   }
-  // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.commnad_create_new_game)
+  // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.command_enter_lobby)
+}
+void CommandPayload::set_allocated_command_create_new_game(::C4::CommandCreateNewGame* command_create_new_game) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  clear_payload();
+  if (command_create_new_game) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(command_create_new_game);
+    if (message_arena != submessage_arena) {
+      command_create_new_game = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, command_create_new_game, submessage_arena);
+    }
+    set_has_command_create_new_game();
+    _impl_.payload_.command_create_new_game_ = command_create_new_game;
+  }
+  // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.command_create_new_game)
 }
 void CommandPayload::set_allocated_command_join_game(::C4::CommandJoinGame* command_join_game) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_command_payload_type();
+  clear_payload();
   if (command_join_game) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(command_join_game);
@@ -4022,13 +4270,13 @@ void CommandPayload::set_allocated_command_join_game(::C4::CommandJoinGame* comm
           message_arena, command_join_game, submessage_arena);
     }
     set_has_command_join_game();
-    _impl_.command_payload_type_.command_join_game_ = command_join_game;
+    _impl_.payload_.command_join_game_ = command_join_game;
   }
   // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.command_join_game)
 }
 void CommandPayload::set_allocated_command_start_game(::C4::CommandStartGame* command_start_game) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_command_payload_type();
+  clear_payload();
   if (command_start_game) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(command_start_game);
@@ -4037,13 +4285,13 @@ void CommandPayload::set_allocated_command_start_game(::C4::CommandStartGame* co
           message_arena, command_start_game, submessage_arena);
     }
     set_has_command_start_game();
-    _impl_.command_payload_type_.command_start_game_ = command_start_game;
+    _impl_.payload_.command_start_game_ = command_start_game;
   }
   // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.command_start_game)
 }
 void CommandPayload::set_allocated_command_make_move(::C4::CommandPlayerMakeMove* command_make_move) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_command_payload_type();
+  clear_payload();
   if (command_make_move) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(command_make_move);
@@ -4052,13 +4300,13 @@ void CommandPayload::set_allocated_command_make_move(::C4::CommandPlayerMakeMove
           message_arena, command_make_move, submessage_arena);
     }
     set_has_command_make_move();
-    _impl_.command_payload_type_.command_make_move_ = command_make_move;
+    _impl_.payload_.command_make_move_ = command_make_move;
   }
   // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.command_make_move)
 }
 void CommandPayload::set_allocated_command_player_leave(::C4::CommandPlayerLeave* command_player_leave) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_command_payload_type();
+  clear_payload();
   if (command_player_leave) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(command_player_leave);
@@ -4067,7 +4315,7 @@ void CommandPayload::set_allocated_command_player_leave(::C4::CommandPlayerLeave
           message_arena, command_player_leave, submessage_arena);
     }
     set_has_command_player_leave();
-    _impl_.command_payload_type_.command_player_leave_ = command_player_leave;
+    _impl_.payload_.command_player_leave_ = command_player_leave;
   }
   // @@protoc_insertion_point(field_set_allocated:C4.CommandPayload.command_player_leave)
 }
@@ -4081,16 +4329,21 @@ CommandPayload::CommandPayload(const CommandPayload& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   CommandPayload* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.command_payload_type_){}
+      decltype(_impl_.payload_){}
     , /*decltype(_impl_._cached_size_)*/{}
     , /*decltype(_impl_._oneof_case_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  clear_has_command_payload_type();
-  switch (from.command_payload_type_case()) {
-    case kCommnadCreateNewGame: {
-      _this->_internal_mutable_commnad_create_new_game()->::C4::CommandCreateNewGame::MergeFrom(
-          from._internal_commnad_create_new_game());
+  clear_has_payload();
+  switch (from.payload_case()) {
+    case kCommandEnterLobby: {
+      _this->_internal_mutable_command_enter_lobby()->::C4::CommandEnterLobby::MergeFrom(
+          from._internal_command_enter_lobby());
+      break;
+    }
+    case kCommandCreateNewGame: {
+      _this->_internal_mutable_command_create_new_game()->::C4::CommandCreateNewGame::MergeFrom(
+          from._internal_command_create_new_game());
       break;
     }
     case kCommandJoinGame: {
@@ -4113,7 +4366,7 @@ CommandPayload::CommandPayload(const CommandPayload& from)
           from._internal_command_player_leave());
       break;
     }
-    case COMMAND_PAYLOAD_TYPE_NOT_SET: {
+    case PAYLOAD_NOT_SET: {
       break;
     }
   }
@@ -4125,11 +4378,11 @@ inline void CommandPayload::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.command_payload_type_){}
+      decltype(_impl_.payload_){}
     , /*decltype(_impl_._cached_size_)*/{}
     , /*decltype(_impl_._oneof_case_)*/{}
   };
-  clear_has_command_payload_type();
+  clear_has_payload();
 }
 
 CommandPayload::~CommandPayload() {
@@ -4143,8 +4396,8 @@ CommandPayload::~CommandPayload() {
 
 inline void CommandPayload::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (has_command_payload_type()) {
-    clear_command_payload_type();
+  if (has_payload()) {
+    clear_payload();
   }
 }
 
@@ -4152,44 +4405,50 @@ void CommandPayload::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void CommandPayload::clear_command_payload_type() {
+void CommandPayload::clear_payload() {
 // @@protoc_insertion_point(one_of_clear_start:C4.CommandPayload)
-  switch (command_payload_type_case()) {
-    case kCommnadCreateNewGame: {
+  switch (payload_case()) {
+    case kCommandEnterLobby: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.command_payload_type_.commnad_create_new_game_;
+        delete _impl_.payload_.command_enter_lobby_;
+      }
+      break;
+    }
+    case kCommandCreateNewGame: {
+      if (GetArenaForAllocation() == nullptr) {
+        delete _impl_.payload_.command_create_new_game_;
       }
       break;
     }
     case kCommandJoinGame: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.command_payload_type_.command_join_game_;
+        delete _impl_.payload_.command_join_game_;
       }
       break;
     }
     case kCommandStartGame: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.command_payload_type_.command_start_game_;
+        delete _impl_.payload_.command_start_game_;
       }
       break;
     }
     case kCommandMakeMove: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.command_payload_type_.command_make_move_;
+        delete _impl_.payload_.command_make_move_;
       }
       break;
     }
     case kCommandPlayerLeave: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.command_payload_type_.command_player_leave_;
+        delete _impl_.payload_.command_player_leave_;
       }
       break;
     }
-    case COMMAND_PAYLOAD_TYPE_NOT_SET: {
+    case PAYLOAD_NOT_SET: {
       break;
     }
   }
-  _impl_._oneof_case_[0] = COMMAND_PAYLOAD_TYPE_NOT_SET;
+  _impl_._oneof_case_[0] = PAYLOAD_NOT_SET;
 }
 
 
@@ -4199,7 +4458,7 @@ void CommandPayload::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  clear_command_payload_type();
+  clear_payload();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -4209,41 +4468,49 @@ const char* CommandPayload::_InternalParse(const char* ptr, ::_pbi::ParseContext
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // .C4.CommandCreateNewGame commnad_create_new_game = 1;
+      // .C4.CommandEnterLobby command_enter_lobby = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          ptr = ctx->ParseMessage(_internal_mutable_commnad_create_new_game(), ptr);
+          ptr = ctx->ParseMessage(_internal_mutable_command_enter_lobby(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // .C4.CommandJoinGame command_join_game = 2;
+      // .C4.CommandCreateNewGame command_create_new_game = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_command_create_new_game(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // .C4.CommandJoinGame command_join_game = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
           ptr = ctx->ParseMessage(_internal_mutable_command_join_game(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // .C4.CommandStartGame command_start_game = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+      // .C4.CommandStartGame command_start_game = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_command_start_game(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // .C4.CommandPlayerMakeMove command_make_move = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+      // .C4.CommandPlayerMakeMove command_make_move = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_command_make_move(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // .C4.CommandPlayerLeave command_player_leave = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+      // .C4.CommandPlayerLeave command_player_leave = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
           ptr = ctx->ParseMessage(_internal_mutable_command_player_leave(), ptr);
           CHK_(ptr);
         } else
@@ -4278,38 +4545,45 @@ uint8_t* CommandPayload::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .C4.CommandCreateNewGame commnad_create_new_game = 1;
-  if (_internal_has_commnad_create_new_game()) {
+  // .C4.CommandEnterLobby command_enter_lobby = 1;
+  if (_internal_has_command_enter_lobby()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(1, _Internal::commnad_create_new_game(this),
-        _Internal::commnad_create_new_game(this).GetCachedSize(), target, stream);
+      InternalWriteMessage(1, _Internal::command_enter_lobby(this),
+        _Internal::command_enter_lobby(this).GetCachedSize(), target, stream);
   }
 
-  // .C4.CommandJoinGame command_join_game = 2;
+  // .C4.CommandCreateNewGame command_create_new_game = 2;
+  if (_internal_has_command_create_new_game()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::command_create_new_game(this),
+        _Internal::command_create_new_game(this).GetCachedSize(), target, stream);
+  }
+
+  // .C4.CommandJoinGame command_join_game = 3;
   if (_internal_has_command_join_game()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(2, _Internal::command_join_game(this),
+      InternalWriteMessage(3, _Internal::command_join_game(this),
         _Internal::command_join_game(this).GetCachedSize(), target, stream);
   }
 
-  // .C4.CommandStartGame command_start_game = 3;
+  // .C4.CommandStartGame command_start_game = 4;
   if (_internal_has_command_start_game()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(3, _Internal::command_start_game(this),
+      InternalWriteMessage(4, _Internal::command_start_game(this),
         _Internal::command_start_game(this).GetCachedSize(), target, stream);
   }
 
-  // .C4.CommandPlayerMakeMove command_make_move = 4;
+  // .C4.CommandPlayerMakeMove command_make_move = 5;
   if (_internal_has_command_make_move()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(4, _Internal::command_make_move(this),
+      InternalWriteMessage(5, _Internal::command_make_move(this),
         _Internal::command_make_move(this).GetCachedSize(), target, stream);
   }
 
-  // .C4.CommandPlayerLeave command_player_leave = 5;
+  // .C4.CommandPlayerLeave command_player_leave = 6;
   if (_internal_has_command_player_leave()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(5, _Internal::command_player_leave(this),
+      InternalWriteMessage(6, _Internal::command_player_leave(this),
         _Internal::command_player_leave(this).GetCachedSize(), target, stream);
   }
 
@@ -4329,43 +4603,50 @@ size_t CommandPayload::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  switch (command_payload_type_case()) {
-    // .C4.CommandCreateNewGame commnad_create_new_game = 1;
-    case kCommnadCreateNewGame: {
+  switch (payload_case()) {
+    // .C4.CommandEnterLobby command_enter_lobby = 1;
+    case kCommandEnterLobby: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.command_payload_type_.commnad_create_new_game_);
+          *_impl_.payload_.command_enter_lobby_);
       break;
     }
-    // .C4.CommandJoinGame command_join_game = 2;
+    // .C4.CommandCreateNewGame command_create_new_game = 2;
+    case kCommandCreateNewGame: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.payload_.command_create_new_game_);
+      break;
+    }
+    // .C4.CommandJoinGame command_join_game = 3;
     case kCommandJoinGame: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.command_payload_type_.command_join_game_);
+          *_impl_.payload_.command_join_game_);
       break;
     }
-    // .C4.CommandStartGame command_start_game = 3;
+    // .C4.CommandStartGame command_start_game = 4;
     case kCommandStartGame: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.command_payload_type_.command_start_game_);
+          *_impl_.payload_.command_start_game_);
       break;
     }
-    // .C4.CommandPlayerMakeMove command_make_move = 4;
+    // .C4.CommandPlayerMakeMove command_make_move = 5;
     case kCommandMakeMove: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.command_payload_type_.command_make_move_);
+          *_impl_.payload_.command_make_move_);
       break;
     }
-    // .C4.CommandPlayerLeave command_player_leave = 5;
+    // .C4.CommandPlayerLeave command_player_leave = 6;
     case kCommandPlayerLeave: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.command_payload_type_.command_player_leave_);
+          *_impl_.payload_.command_player_leave_);
       break;
     }
-    case COMMAND_PAYLOAD_TYPE_NOT_SET: {
+    case PAYLOAD_NOT_SET: {
       break;
     }
   }
@@ -4387,10 +4668,15 @@ void CommandPayload::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  switch (from.command_payload_type_case()) {
-    case kCommnadCreateNewGame: {
-      _this->_internal_mutable_commnad_create_new_game()->::C4::CommandCreateNewGame::MergeFrom(
-          from._internal_commnad_create_new_game());
+  switch (from.payload_case()) {
+    case kCommandEnterLobby: {
+      _this->_internal_mutable_command_enter_lobby()->::C4::CommandEnterLobby::MergeFrom(
+          from._internal_command_enter_lobby());
+      break;
+    }
+    case kCommandCreateNewGame: {
+      _this->_internal_mutable_command_create_new_game()->::C4::CommandCreateNewGame::MergeFrom(
+          from._internal_command_create_new_game());
       break;
     }
     case kCommandJoinGame: {
@@ -4413,7 +4699,7 @@ void CommandPayload::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
           from._internal_command_player_leave());
       break;
     }
-    case COMMAND_PAYLOAD_TYPE_NOT_SET: {
+    case PAYLOAD_NOT_SET: {
       break;
     }
   }
@@ -4434,14 +4720,14 @@ bool CommandPayload::IsInitialized() const {
 void CommandPayload::InternalSwap(CommandPayload* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.command_payload_type_, other->_impl_.command_payload_type_);
+  swap(_impl_.payload_, other->_impl_.payload_);
   swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata CommandPayload::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[15]);
+      file_level_metadata_message_2eproto[16]);
 }
 
 // ===================================================================
@@ -4773,7 +5059,7 @@ void Message::InternalSwap(Message* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Message::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_message_2eproto_getter, &descriptor_table_message_2eproto_once,
-      file_level_metadata_message_2eproto[16]);
+      file_level_metadata_message_2eproto[17]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -4818,6 +5104,10 @@ Arena::CreateMaybeMessage< ::C4::EventPlayerLeft >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::C4::EventPayload*
 Arena::CreateMaybeMessage< ::C4::EventPayload >(Arena* arena) {
   return Arena::CreateMessageInternal< ::C4::EventPayload >(arena);
+}
+template<> PROTOBUF_NOINLINE ::C4::CommandEnterLobby*
+Arena::CreateMaybeMessage< ::C4::CommandEnterLobby >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::C4::CommandEnterLobby >(arena);
 }
 template<> PROTOBUF_NOINLINE ::C4::CommandCreateNewGame*
 Arena::CreateMaybeMessage< ::C4::CommandCreateNewGame >(Arena* arena) {

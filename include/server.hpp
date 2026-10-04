@@ -2,6 +2,7 @@
 #define C4_SERVER_HPP
 
 #include "common.hpp"
+#include "message.pb.h"
 #include "ring_buffer.hpp"
 
 namespace C4 {
@@ -13,6 +14,7 @@ public:
     Server *m_server;
     session_id_t m_id;
     uv_tcp_t m_session;
+    char m_username[65];
     RingBuffer m_ring_buf;
     game_id_t m_curr_game_id;
 
@@ -39,7 +41,14 @@ public:
     MessageHandler(Server *server);
     ~MessageHandler();
 
-    void handle_message(Message *msg);
+    void handle_message(session_id_t session_id, Message *msg);
+    void handle_event(session_id_t session_id,
+                      const EventPayload *event_payload);
+    void handle_command(session_id_t session_id,
+                        const CommandPayload *command_payload);
+    void handle_command_enter_lobby(session_id_t session_id,
+                                    const CommandEnterLobby *el);
+
     void send_message(session_id_t session_id, Message *msg);
     void broadcast_message(Message *msg);
     void emit_event_server_connected(session_id_t session_id);

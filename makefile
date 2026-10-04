@@ -41,19 +41,16 @@ $(COMPILED_PROTOS): $(PROTOS)
 $(LIB_IMGUI): $(IMGUI_SRCS)
 	$(CXX) $(CXXFLAGS) -shared $(IMGUI_SRCS) -o $(LIB_IMGUI) $(LDFLAGS)
 
-$(LIB): LDFLAGS += -limgui
 $(LIB): $(LIB_SRCS) $(LIB_IMGUI)
-	$(CXX) $(CXXFLAGS) -shared $(LIB_SRCS) -o $(LIB) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -shared $(LIB_SRCS) -o $(LIB) $(LDFLAGS) -limgui
 
-$(SERVER): LDFLAGS += -lc4
 $(SERVER): $(LIB) $(SERVER_SRC)
-	$(CXX) $(CXXFLAGS) -o $(SERVER) $(SERVER_SRC) -L./build $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(SERVER_SRC) -o $(SERVER) $(LDFLAGS) -lc4
 run_server: $(SERVER)
 	$(SERVER)
 
-$(CLIENT): LDFLAGS += -lc4
 $(CLIENT): $(LIB) $(CLIENT_SRC)
-	$(CXX) $(CXXFLAGS) -o $(CLIENT) $(CLIENT_SRC) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(CLIENT_SRC) -o $(CLIENT) $(LDFLAGS) -lc4
 run_client: $(CLIENT)
 	$(CLIENT)
 

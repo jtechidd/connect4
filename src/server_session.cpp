@@ -9,6 +9,7 @@ Server::Session::Session(uv_loop_t *loop, Server *server, session_id_t id) {
   m_curr_game_id = 0;
   uv_tcp_init(m_loop, &m_session);
   m_session.data = this;
+  memset(m_username, 0, sizeof(m_username));
 }
 
 Server::Session::~Session() {}
@@ -35,16 +36,22 @@ void Server::Session::on_read(uv_stream_t *stream, long nread,
     goto cleanup;
   }
 
+  if (self->m_ring_buf.write(buf->base, nread) < 0) {
+    goto cleanup;
+  }
+
   while (self->m_ring_buf.m_size >= MSG_SIZE_NBYTES) {
     self->m_ring_buf.peek(&msg_size, sizeof(uint32_t), MSG_SIZE_NBYTES);
     msg_size = ntohl(msg_size);
-    if (msg_size > MSG_MAX_SIZE)
+    if (msg_size > MSG_MAX_SIZE) {
       break;
-    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size)
+    }
+    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size) {
       break;
+    }
     self->m_ring_buf.consume(MSG_SIZE_NBYTES);
     msg.ParseFromArray(self->m_ring_buf.get_read_ptr(), msg_size);
-    self->m_server->m_msg_hdl.handle_message(&msg);
+    self->m_server->m_msg_hdl.handle_message(self->m_id, &msg);
     self->m_ring_buf.consume(msg_size);
   }
 

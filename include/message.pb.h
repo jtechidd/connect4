@@ -50,6 +50,9 @@ namespace C4 {
 class CommandCreateNewGame;
 struct CommandCreateNewGameDefaultTypeInternal;
 extern CommandCreateNewGameDefaultTypeInternal _CommandCreateNewGame_default_instance_;
+class CommandEnterLobby;
+struct CommandEnterLobbyDefaultTypeInternal;
+extern CommandEnterLobbyDefaultTypeInternal _CommandEnterLobby_default_instance_;
 class CommandJoinGame;
 struct CommandJoinGameDefaultTypeInternal;
 extern CommandJoinGameDefaultTypeInternal _CommandJoinGame_default_instance_;
@@ -101,6 +104,7 @@ extern MessageDefaultTypeInternal _Message_default_instance_;
 }  // namespace C4
 PROTOBUF_NAMESPACE_OPEN
 template<> ::C4::CommandCreateNewGame* Arena::CreateMaybeMessage<::C4::CommandCreateNewGame>(Arena*);
+template<> ::C4::CommandEnterLobby* Arena::CreateMaybeMessage<::C4::CommandEnterLobby>(Arena*);
 template<> ::C4::CommandJoinGame* Arena::CreateMaybeMessage<::C4::CommandJoinGame>(Arena*);
 template<> ::C4::CommandPayload* Arena::CreateMaybeMessage<::C4::CommandPayload>(Arena*);
 template<> ::C4::CommandPlayerLeave* Arena::CreateMaybeMessage<::C4::CommandPlayerLeave>(Arena*);
@@ -1937,6 +1941,159 @@ class EventPayload final :
 };
 // -------------------------------------------------------------------
 
+class CommandEnterLobby final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.CommandEnterLobby) */ {
+ public:
+  inline CommandEnterLobby() : CommandEnterLobby(nullptr) {}
+  ~CommandEnterLobby() override;
+  explicit PROTOBUF_CONSTEXPR CommandEnterLobby(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  CommandEnterLobby(const CommandEnterLobby& from);
+  CommandEnterLobby(CommandEnterLobby&& from) noexcept
+    : CommandEnterLobby() {
+    *this = ::std::move(from);
+  }
+
+  inline CommandEnterLobby& operator=(const CommandEnterLobby& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CommandEnterLobby& operator=(CommandEnterLobby&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CommandEnterLobby& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CommandEnterLobby* internal_default_instance() {
+    return reinterpret_cast<const CommandEnterLobby*>(
+               &_CommandEnterLobby_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    10;
+
+  friend void swap(CommandEnterLobby& a, CommandEnterLobby& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(CommandEnterLobby* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CommandEnterLobby* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CommandEnterLobby* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CommandEnterLobby>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const CommandEnterLobby& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const CommandEnterLobby& from) {
+    CommandEnterLobby::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CommandEnterLobby* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "C4.CommandEnterLobby";
+  }
+  protected:
+  explicit CommandEnterLobby(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kUsernameFieldNumber = 1,
+  };
+  // string username = 1;
+  void clear_username();
+  const std::string& username() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_username(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_username();
+  PROTOBUF_NODISCARD std::string* release_username();
+  void set_allocated_username(std::string* username);
+  private:
+  const std::string& _internal_username() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_username(const std::string& value);
+  std::string* _internal_mutable_username();
+  public:
+
+  // @@protoc_insertion_point(class_scope:C4.CommandEnterLobby)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr username_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_message_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CommandCreateNewGame final :
     public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:C4.CommandCreateNewGame) */ {
  public:
@@ -1984,7 +2141,7 @@ class CommandCreateNewGame final :
                &_CommandCreateNewGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   friend void swap(CommandCreateNewGame& a, CommandCreateNewGame& b) {
     a.Swap(&b);
@@ -2103,7 +2260,7 @@ class CommandJoinGame final :
                &_CommandJoinGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    12;
 
   friend void swap(CommandJoinGame& a, CommandJoinGame& b) {
     a.Swap(&b);
@@ -2251,7 +2408,7 @@ class CommandStartGame final :
                &_CommandStartGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    13;
 
   friend void swap(CommandStartGame& a, CommandStartGame& b) {
     a.Swap(&b);
@@ -2399,7 +2556,7 @@ class CommandPlayerMakeMove final :
                &_CommandPlayerMakeMove_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    14;
 
   friend void swap(CommandPlayerMakeMove& a, CommandPlayerMakeMove& b) {
     a.Swap(&b);
@@ -2569,7 +2726,7 @@ class CommandPlayerLeave final :
                &_CommandPlayerLeave_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    15;
 
   friend void swap(CommandPlayerLeave& a, CommandPlayerLeave& b) {
     a.Swap(&b);
@@ -2723,13 +2880,14 @@ class CommandPayload final :
   static const CommandPayload& default_instance() {
     return *internal_default_instance();
   }
-  enum CommandPayloadTypeCase {
-    kCommnadCreateNewGame = 1,
-    kCommandJoinGame = 2,
-    kCommandStartGame = 3,
-    kCommandMakeMove = 4,
-    kCommandPlayerLeave = 5,
-    COMMAND_PAYLOAD_TYPE_NOT_SET = 0,
+  enum PayloadCase {
+    kCommandEnterLobby = 1,
+    kCommandCreateNewGame = 2,
+    kCommandJoinGame = 3,
+    kCommandStartGame = 4,
+    kCommandMakeMove = 5,
+    kCommandPlayerLeave = 6,
+    PAYLOAD_NOT_SET = 0,
   };
 
   static inline const CommandPayload* internal_default_instance() {
@@ -2737,7 +2895,7 @@ class CommandPayload final :
                &_CommandPayload_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    16;
 
   friend void swap(CommandPayload& a, CommandPayload& b) {
     a.Swap(&b);
@@ -2810,31 +2968,50 @@ class CommandPayload final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kCommnadCreateNewGameFieldNumber = 1,
-    kCommandJoinGameFieldNumber = 2,
-    kCommandStartGameFieldNumber = 3,
-    kCommandMakeMoveFieldNumber = 4,
-    kCommandPlayerLeaveFieldNumber = 5,
+    kCommandEnterLobbyFieldNumber = 1,
+    kCommandCreateNewGameFieldNumber = 2,
+    kCommandJoinGameFieldNumber = 3,
+    kCommandStartGameFieldNumber = 4,
+    kCommandMakeMoveFieldNumber = 5,
+    kCommandPlayerLeaveFieldNumber = 6,
   };
-  // .C4.CommandCreateNewGame commnad_create_new_game = 1;
-  bool has_commnad_create_new_game() const;
+  // .C4.CommandEnterLobby command_enter_lobby = 1;
+  bool has_command_enter_lobby() const;
   private:
-  bool _internal_has_commnad_create_new_game() const;
+  bool _internal_has_command_enter_lobby() const;
   public:
-  void clear_commnad_create_new_game();
-  const ::C4::CommandCreateNewGame& commnad_create_new_game() const;
-  PROTOBUF_NODISCARD ::C4::CommandCreateNewGame* release_commnad_create_new_game();
-  ::C4::CommandCreateNewGame* mutable_commnad_create_new_game();
-  void set_allocated_commnad_create_new_game(::C4::CommandCreateNewGame* commnad_create_new_game);
+  void clear_command_enter_lobby();
+  const ::C4::CommandEnterLobby& command_enter_lobby() const;
+  PROTOBUF_NODISCARD ::C4::CommandEnterLobby* release_command_enter_lobby();
+  ::C4::CommandEnterLobby* mutable_command_enter_lobby();
+  void set_allocated_command_enter_lobby(::C4::CommandEnterLobby* command_enter_lobby);
   private:
-  const ::C4::CommandCreateNewGame& _internal_commnad_create_new_game() const;
-  ::C4::CommandCreateNewGame* _internal_mutable_commnad_create_new_game();
+  const ::C4::CommandEnterLobby& _internal_command_enter_lobby() const;
+  ::C4::CommandEnterLobby* _internal_mutable_command_enter_lobby();
   public:
-  void unsafe_arena_set_allocated_commnad_create_new_game(
-      ::C4::CommandCreateNewGame* commnad_create_new_game);
-  ::C4::CommandCreateNewGame* unsafe_arena_release_commnad_create_new_game();
+  void unsafe_arena_set_allocated_command_enter_lobby(
+      ::C4::CommandEnterLobby* command_enter_lobby);
+  ::C4::CommandEnterLobby* unsafe_arena_release_command_enter_lobby();
 
-  // .C4.CommandJoinGame command_join_game = 2;
+  // .C4.CommandCreateNewGame command_create_new_game = 2;
+  bool has_command_create_new_game() const;
+  private:
+  bool _internal_has_command_create_new_game() const;
+  public:
+  void clear_command_create_new_game();
+  const ::C4::CommandCreateNewGame& command_create_new_game() const;
+  PROTOBUF_NODISCARD ::C4::CommandCreateNewGame* release_command_create_new_game();
+  ::C4::CommandCreateNewGame* mutable_command_create_new_game();
+  void set_allocated_command_create_new_game(::C4::CommandCreateNewGame* command_create_new_game);
+  private:
+  const ::C4::CommandCreateNewGame& _internal_command_create_new_game() const;
+  ::C4::CommandCreateNewGame* _internal_mutable_command_create_new_game();
+  public:
+  void unsafe_arena_set_allocated_command_create_new_game(
+      ::C4::CommandCreateNewGame* command_create_new_game);
+  ::C4::CommandCreateNewGame* unsafe_arena_release_command_create_new_game();
+
+  // .C4.CommandJoinGame command_join_game = 3;
   bool has_command_join_game() const;
   private:
   bool _internal_has_command_join_game() const;
@@ -2852,7 +3029,7 @@ class CommandPayload final :
       ::C4::CommandJoinGame* command_join_game);
   ::C4::CommandJoinGame* unsafe_arena_release_command_join_game();
 
-  // .C4.CommandStartGame command_start_game = 3;
+  // .C4.CommandStartGame command_start_game = 4;
   bool has_command_start_game() const;
   private:
   bool _internal_has_command_start_game() const;
@@ -2870,7 +3047,7 @@ class CommandPayload final :
       ::C4::CommandStartGame* command_start_game);
   ::C4::CommandStartGame* unsafe_arena_release_command_start_game();
 
-  // .C4.CommandPlayerMakeMove command_make_move = 4;
+  // .C4.CommandPlayerMakeMove command_make_move = 5;
   bool has_command_make_move() const;
   private:
   bool _internal_has_command_make_move() const;
@@ -2888,7 +3065,7 @@ class CommandPayload final :
       ::C4::CommandPlayerMakeMove* command_make_move);
   ::C4::CommandPlayerMakeMove* unsafe_arena_release_command_make_move();
 
-  // .C4.CommandPlayerLeave command_player_leave = 5;
+  // .C4.CommandPlayerLeave command_player_leave = 6;
   bool has_command_player_leave() const;
   private:
   bool _internal_has_command_player_leave() const;
@@ -2906,33 +3083,35 @@ class CommandPayload final :
       ::C4::CommandPlayerLeave* command_player_leave);
   ::C4::CommandPlayerLeave* unsafe_arena_release_command_player_leave();
 
-  void clear_command_payload_type();
-  CommandPayloadTypeCase command_payload_type_case() const;
+  void clear_payload();
+  PayloadCase payload_case() const;
   // @@protoc_insertion_point(class_scope:C4.CommandPayload)
  private:
   class _Internal;
-  void set_has_commnad_create_new_game();
+  void set_has_command_enter_lobby();
+  void set_has_command_create_new_game();
   void set_has_command_join_game();
   void set_has_command_start_game();
   void set_has_command_make_move();
   void set_has_command_player_leave();
 
-  inline bool has_command_payload_type() const;
-  inline void clear_has_command_payload_type();
+  inline bool has_payload() const;
+  inline void clear_has_payload();
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    union CommandPayloadTypeUnion {
-      constexpr CommandPayloadTypeUnion() : _constinit_{} {}
+    union PayloadUnion {
+      constexpr PayloadUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
-      ::C4::CommandCreateNewGame* commnad_create_new_game_;
+      ::C4::CommandEnterLobby* command_enter_lobby_;
+      ::C4::CommandCreateNewGame* command_create_new_game_;
       ::C4::CommandJoinGame* command_join_game_;
       ::C4::CommandStartGame* command_start_game_;
       ::C4::CommandPlayerMakeMove* command_make_move_;
       ::C4::CommandPlayerLeave* command_player_leave_;
-    } command_payload_type_;
+    } payload_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     uint32_t _oneof_case_[1];
 
@@ -2996,7 +3175,7 @@ class Message final :
                &_Message_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    17;
 
   friend void swap(Message& a, Message& b) {
     a.Swap(&b);
@@ -4217,6 +4396,60 @@ inline EventPayload::PayloadCase EventPayload::payload_case() const {
 }
 // -------------------------------------------------------------------
 
+// CommandEnterLobby
+
+// string username = 1;
+inline void CommandEnterLobby::clear_username() {
+  _impl_.username_.ClearToEmpty();
+}
+inline const std::string& CommandEnterLobby::username() const {
+  // @@protoc_insertion_point(field_get:C4.CommandEnterLobby.username)
+  return _internal_username();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void CommandEnterLobby::set_username(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.username_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:C4.CommandEnterLobby.username)
+}
+inline std::string* CommandEnterLobby::mutable_username() {
+  std::string* _s = _internal_mutable_username();
+  // @@protoc_insertion_point(field_mutable:C4.CommandEnterLobby.username)
+  return _s;
+}
+inline const std::string& CommandEnterLobby::_internal_username() const {
+  return _impl_.username_.Get();
+}
+inline void CommandEnterLobby::_internal_set_username(const std::string& value) {
+  
+  _impl_.username_.Set(value, GetArenaForAllocation());
+}
+inline std::string* CommandEnterLobby::_internal_mutable_username() {
+  
+  return _impl_.username_.Mutable(GetArenaForAllocation());
+}
+inline std::string* CommandEnterLobby::release_username() {
+  // @@protoc_insertion_point(field_release:C4.CommandEnterLobby.username)
+  return _impl_.username_.Release();
+}
+inline void CommandEnterLobby::set_allocated_username(std::string* username) {
+  if (username != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.username_.SetAllocated(username, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.username_.IsDefault()) {
+    _impl_.username_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:C4.CommandEnterLobby.username)
+}
+
+// -------------------------------------------------------------------
+
 // CommandCreateNewGame
 
 // -------------------------------------------------------------------
@@ -4379,83 +4612,157 @@ inline void CommandPlayerLeave::set_player_id(uint64_t value) {
 
 // CommandPayload
 
-// .C4.CommandCreateNewGame commnad_create_new_game = 1;
-inline bool CommandPayload::_internal_has_commnad_create_new_game() const {
-  return command_payload_type_case() == kCommnadCreateNewGame;
+// .C4.CommandEnterLobby command_enter_lobby = 1;
+inline bool CommandPayload::_internal_has_command_enter_lobby() const {
+  return payload_case() == kCommandEnterLobby;
 }
-inline bool CommandPayload::has_commnad_create_new_game() const {
-  return _internal_has_commnad_create_new_game();
+inline bool CommandPayload::has_command_enter_lobby() const {
+  return _internal_has_command_enter_lobby();
 }
-inline void CommandPayload::set_has_commnad_create_new_game() {
-  _impl_._oneof_case_[0] = kCommnadCreateNewGame;
+inline void CommandPayload::set_has_command_enter_lobby() {
+  _impl_._oneof_case_[0] = kCommandEnterLobby;
 }
-inline void CommandPayload::clear_commnad_create_new_game() {
-  if (_internal_has_commnad_create_new_game()) {
+inline void CommandPayload::clear_command_enter_lobby() {
+  if (_internal_has_command_enter_lobby()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.command_payload_type_.commnad_create_new_game_;
+      delete _impl_.payload_.command_enter_lobby_;
     }
-    clear_has_command_payload_type();
+    clear_has_payload();
   }
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::release_commnad_create_new_game() {
-  // @@protoc_insertion_point(field_release:C4.CommandPayload.commnad_create_new_game)
-  if (_internal_has_commnad_create_new_game()) {
-    clear_has_command_payload_type();
-    ::C4::CommandCreateNewGame* temp = _impl_.command_payload_type_.commnad_create_new_game_;
+inline ::C4::CommandEnterLobby* CommandPayload::release_command_enter_lobby() {
+  // @@protoc_insertion_point(field_release:C4.CommandPayload.command_enter_lobby)
+  if (_internal_has_command_enter_lobby()) {
+    clear_has_payload();
+    ::C4::CommandEnterLobby* temp = _impl_.payload_.command_enter_lobby_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.command_payload_type_.commnad_create_new_game_ = nullptr;
+    _impl_.payload_.command_enter_lobby_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline const ::C4::CommandCreateNewGame& CommandPayload::_internal_commnad_create_new_game() const {
-  return _internal_has_commnad_create_new_game()
-      ? *_impl_.command_payload_type_.commnad_create_new_game_
-      : reinterpret_cast< ::C4::CommandCreateNewGame&>(::C4::_CommandCreateNewGame_default_instance_);
+inline const ::C4::CommandEnterLobby& CommandPayload::_internal_command_enter_lobby() const {
+  return _internal_has_command_enter_lobby()
+      ? *_impl_.payload_.command_enter_lobby_
+      : reinterpret_cast< ::C4::CommandEnterLobby&>(::C4::_CommandEnterLobby_default_instance_);
 }
-inline const ::C4::CommandCreateNewGame& CommandPayload::commnad_create_new_game() const {
-  // @@protoc_insertion_point(field_get:C4.CommandPayload.commnad_create_new_game)
-  return _internal_commnad_create_new_game();
+inline const ::C4::CommandEnterLobby& CommandPayload::command_enter_lobby() const {
+  // @@protoc_insertion_point(field_get:C4.CommandPayload.command_enter_lobby)
+  return _internal_command_enter_lobby();
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::unsafe_arena_release_commnad_create_new_game() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.commnad_create_new_game)
-  if (_internal_has_commnad_create_new_game()) {
-    clear_has_command_payload_type();
-    ::C4::CommandCreateNewGame* temp = _impl_.command_payload_type_.commnad_create_new_game_;
-    _impl_.command_payload_type_.commnad_create_new_game_ = nullptr;
+inline ::C4::CommandEnterLobby* CommandPayload::unsafe_arena_release_command_enter_lobby() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_enter_lobby)
+  if (_internal_has_command_enter_lobby()) {
+    clear_has_payload();
+    ::C4::CommandEnterLobby* temp = _impl_.payload_.command_enter_lobby_;
+    _impl_.payload_.command_enter_lobby_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline void CommandPayload::unsafe_arena_set_allocated_commnad_create_new_game(::C4::CommandCreateNewGame* commnad_create_new_game) {
-  clear_command_payload_type();
-  if (commnad_create_new_game) {
-    set_has_commnad_create_new_game();
-    _impl_.command_payload_type_.commnad_create_new_game_ = commnad_create_new_game;
+inline void CommandPayload::unsafe_arena_set_allocated_command_enter_lobby(::C4::CommandEnterLobby* command_enter_lobby) {
+  clear_payload();
+  if (command_enter_lobby) {
+    set_has_command_enter_lobby();
+    _impl_.payload_.command_enter_lobby_ = command_enter_lobby;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.commnad_create_new_game)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_enter_lobby)
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::_internal_mutable_commnad_create_new_game() {
-  if (!_internal_has_commnad_create_new_game()) {
-    clear_command_payload_type();
-    set_has_commnad_create_new_game();
-    _impl_.command_payload_type_.commnad_create_new_game_ = CreateMaybeMessage< ::C4::CommandCreateNewGame >(GetArenaForAllocation());
+inline ::C4::CommandEnterLobby* CommandPayload::_internal_mutable_command_enter_lobby() {
+  if (!_internal_has_command_enter_lobby()) {
+    clear_payload();
+    set_has_command_enter_lobby();
+    _impl_.payload_.command_enter_lobby_ = CreateMaybeMessage< ::C4::CommandEnterLobby >(GetArenaForAllocation());
   }
-  return _impl_.command_payload_type_.commnad_create_new_game_;
+  return _impl_.payload_.command_enter_lobby_;
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::mutable_commnad_create_new_game() {
-  ::C4::CommandCreateNewGame* _msg = _internal_mutable_commnad_create_new_game();
-  // @@protoc_insertion_point(field_mutable:C4.CommandPayload.commnad_create_new_game)
+inline ::C4::CommandEnterLobby* CommandPayload::mutable_command_enter_lobby() {
+  ::C4::CommandEnterLobby* _msg = _internal_mutable_command_enter_lobby();
+  // @@protoc_insertion_point(field_mutable:C4.CommandPayload.command_enter_lobby)
   return _msg;
 }
 
-// .C4.CommandJoinGame command_join_game = 2;
+// .C4.CommandCreateNewGame command_create_new_game = 2;
+inline bool CommandPayload::_internal_has_command_create_new_game() const {
+  return payload_case() == kCommandCreateNewGame;
+}
+inline bool CommandPayload::has_command_create_new_game() const {
+  return _internal_has_command_create_new_game();
+}
+inline void CommandPayload::set_has_command_create_new_game() {
+  _impl_._oneof_case_[0] = kCommandCreateNewGame;
+}
+inline void CommandPayload::clear_command_create_new_game() {
+  if (_internal_has_command_create_new_game()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete _impl_.payload_.command_create_new_game_;
+    }
+    clear_has_payload();
+  }
+}
+inline ::C4::CommandCreateNewGame* CommandPayload::release_command_create_new_game() {
+  // @@protoc_insertion_point(field_release:C4.CommandPayload.command_create_new_game)
+  if (_internal_has_command_create_new_game()) {
+    clear_has_payload();
+    ::C4::CommandCreateNewGame* temp = _impl_.payload_.command_create_new_game_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.command_create_new_game_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::C4::CommandCreateNewGame& CommandPayload::_internal_command_create_new_game() const {
+  return _internal_has_command_create_new_game()
+      ? *_impl_.payload_.command_create_new_game_
+      : reinterpret_cast< ::C4::CommandCreateNewGame&>(::C4::_CommandCreateNewGame_default_instance_);
+}
+inline const ::C4::CommandCreateNewGame& CommandPayload::command_create_new_game() const {
+  // @@protoc_insertion_point(field_get:C4.CommandPayload.command_create_new_game)
+  return _internal_command_create_new_game();
+}
+inline ::C4::CommandCreateNewGame* CommandPayload::unsafe_arena_release_command_create_new_game() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_create_new_game)
+  if (_internal_has_command_create_new_game()) {
+    clear_has_payload();
+    ::C4::CommandCreateNewGame* temp = _impl_.payload_.command_create_new_game_;
+    _impl_.payload_.command_create_new_game_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void CommandPayload::unsafe_arena_set_allocated_command_create_new_game(::C4::CommandCreateNewGame* command_create_new_game) {
+  clear_payload();
+  if (command_create_new_game) {
+    set_has_command_create_new_game();
+    _impl_.payload_.command_create_new_game_ = command_create_new_game;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_create_new_game)
+}
+inline ::C4::CommandCreateNewGame* CommandPayload::_internal_mutable_command_create_new_game() {
+  if (!_internal_has_command_create_new_game()) {
+    clear_payload();
+    set_has_command_create_new_game();
+    _impl_.payload_.command_create_new_game_ = CreateMaybeMessage< ::C4::CommandCreateNewGame >(GetArenaForAllocation());
+  }
+  return _impl_.payload_.command_create_new_game_;
+}
+inline ::C4::CommandCreateNewGame* CommandPayload::mutable_command_create_new_game() {
+  ::C4::CommandCreateNewGame* _msg = _internal_mutable_command_create_new_game();
+  // @@protoc_insertion_point(field_mutable:C4.CommandPayload.command_create_new_game)
+  return _msg;
+}
+
+// .C4.CommandJoinGame command_join_game = 3;
 inline bool CommandPayload::_internal_has_command_join_game() const {
-  return command_payload_type_case() == kCommandJoinGame;
+  return payload_case() == kCommandJoinGame;
 }
 inline bool CommandPayload::has_command_join_game() const {
   return _internal_has_command_join_game();
@@ -4466,20 +4773,20 @@ inline void CommandPayload::set_has_command_join_game() {
 inline void CommandPayload::clear_command_join_game() {
   if (_internal_has_command_join_game()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.command_payload_type_.command_join_game_;
+      delete _impl_.payload_.command_join_game_;
     }
-    clear_has_command_payload_type();
+    clear_has_payload();
   }
 }
 inline ::C4::CommandJoinGame* CommandPayload::release_command_join_game() {
   // @@protoc_insertion_point(field_release:C4.CommandPayload.command_join_game)
   if (_internal_has_command_join_game()) {
-    clear_has_command_payload_type();
-    ::C4::CommandJoinGame* temp = _impl_.command_payload_type_.command_join_game_;
+    clear_has_payload();
+    ::C4::CommandJoinGame* temp = _impl_.payload_.command_join_game_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.command_payload_type_.command_join_game_ = nullptr;
+    _impl_.payload_.command_join_game_ = nullptr;
     return temp;
   } else {
     return nullptr;
@@ -4487,7 +4794,7 @@ inline ::C4::CommandJoinGame* CommandPayload::release_command_join_game() {
 }
 inline const ::C4::CommandJoinGame& CommandPayload::_internal_command_join_game() const {
   return _internal_has_command_join_game()
-      ? *_impl_.command_payload_type_.command_join_game_
+      ? *_impl_.payload_.command_join_game_
       : reinterpret_cast< ::C4::CommandJoinGame&>(::C4::_CommandJoinGame_default_instance_);
 }
 inline const ::C4::CommandJoinGame& CommandPayload::command_join_game() const {
@@ -4497,29 +4804,29 @@ inline const ::C4::CommandJoinGame& CommandPayload::command_join_game() const {
 inline ::C4::CommandJoinGame* CommandPayload::unsafe_arena_release_command_join_game() {
   // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_join_game)
   if (_internal_has_command_join_game()) {
-    clear_has_command_payload_type();
-    ::C4::CommandJoinGame* temp = _impl_.command_payload_type_.command_join_game_;
-    _impl_.command_payload_type_.command_join_game_ = nullptr;
+    clear_has_payload();
+    ::C4::CommandJoinGame* temp = _impl_.payload_.command_join_game_;
+    _impl_.payload_.command_join_game_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
 inline void CommandPayload::unsafe_arena_set_allocated_command_join_game(::C4::CommandJoinGame* command_join_game) {
-  clear_command_payload_type();
+  clear_payload();
   if (command_join_game) {
     set_has_command_join_game();
-    _impl_.command_payload_type_.command_join_game_ = command_join_game;
+    _impl_.payload_.command_join_game_ = command_join_game;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_join_game)
 }
 inline ::C4::CommandJoinGame* CommandPayload::_internal_mutable_command_join_game() {
   if (!_internal_has_command_join_game()) {
-    clear_command_payload_type();
+    clear_payload();
     set_has_command_join_game();
-    _impl_.command_payload_type_.command_join_game_ = CreateMaybeMessage< ::C4::CommandJoinGame >(GetArenaForAllocation());
+    _impl_.payload_.command_join_game_ = CreateMaybeMessage< ::C4::CommandJoinGame >(GetArenaForAllocation());
   }
-  return _impl_.command_payload_type_.command_join_game_;
+  return _impl_.payload_.command_join_game_;
 }
 inline ::C4::CommandJoinGame* CommandPayload::mutable_command_join_game() {
   ::C4::CommandJoinGame* _msg = _internal_mutable_command_join_game();
@@ -4527,9 +4834,9 @@ inline ::C4::CommandJoinGame* CommandPayload::mutable_command_join_game() {
   return _msg;
 }
 
-// .C4.CommandStartGame command_start_game = 3;
+// .C4.CommandStartGame command_start_game = 4;
 inline bool CommandPayload::_internal_has_command_start_game() const {
-  return command_payload_type_case() == kCommandStartGame;
+  return payload_case() == kCommandStartGame;
 }
 inline bool CommandPayload::has_command_start_game() const {
   return _internal_has_command_start_game();
@@ -4540,20 +4847,20 @@ inline void CommandPayload::set_has_command_start_game() {
 inline void CommandPayload::clear_command_start_game() {
   if (_internal_has_command_start_game()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.command_payload_type_.command_start_game_;
+      delete _impl_.payload_.command_start_game_;
     }
-    clear_has_command_payload_type();
+    clear_has_payload();
   }
 }
 inline ::C4::CommandStartGame* CommandPayload::release_command_start_game() {
   // @@protoc_insertion_point(field_release:C4.CommandPayload.command_start_game)
   if (_internal_has_command_start_game()) {
-    clear_has_command_payload_type();
-    ::C4::CommandStartGame* temp = _impl_.command_payload_type_.command_start_game_;
+    clear_has_payload();
+    ::C4::CommandStartGame* temp = _impl_.payload_.command_start_game_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.command_payload_type_.command_start_game_ = nullptr;
+    _impl_.payload_.command_start_game_ = nullptr;
     return temp;
   } else {
     return nullptr;
@@ -4561,7 +4868,7 @@ inline ::C4::CommandStartGame* CommandPayload::release_command_start_game() {
 }
 inline const ::C4::CommandStartGame& CommandPayload::_internal_command_start_game() const {
   return _internal_has_command_start_game()
-      ? *_impl_.command_payload_type_.command_start_game_
+      ? *_impl_.payload_.command_start_game_
       : reinterpret_cast< ::C4::CommandStartGame&>(::C4::_CommandStartGame_default_instance_);
 }
 inline const ::C4::CommandStartGame& CommandPayload::command_start_game() const {
@@ -4571,29 +4878,29 @@ inline const ::C4::CommandStartGame& CommandPayload::command_start_game() const 
 inline ::C4::CommandStartGame* CommandPayload::unsafe_arena_release_command_start_game() {
   // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_start_game)
   if (_internal_has_command_start_game()) {
-    clear_has_command_payload_type();
-    ::C4::CommandStartGame* temp = _impl_.command_payload_type_.command_start_game_;
-    _impl_.command_payload_type_.command_start_game_ = nullptr;
+    clear_has_payload();
+    ::C4::CommandStartGame* temp = _impl_.payload_.command_start_game_;
+    _impl_.payload_.command_start_game_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
 inline void CommandPayload::unsafe_arena_set_allocated_command_start_game(::C4::CommandStartGame* command_start_game) {
-  clear_command_payload_type();
+  clear_payload();
   if (command_start_game) {
     set_has_command_start_game();
-    _impl_.command_payload_type_.command_start_game_ = command_start_game;
+    _impl_.payload_.command_start_game_ = command_start_game;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_start_game)
 }
 inline ::C4::CommandStartGame* CommandPayload::_internal_mutable_command_start_game() {
   if (!_internal_has_command_start_game()) {
-    clear_command_payload_type();
+    clear_payload();
     set_has_command_start_game();
-    _impl_.command_payload_type_.command_start_game_ = CreateMaybeMessage< ::C4::CommandStartGame >(GetArenaForAllocation());
+    _impl_.payload_.command_start_game_ = CreateMaybeMessage< ::C4::CommandStartGame >(GetArenaForAllocation());
   }
-  return _impl_.command_payload_type_.command_start_game_;
+  return _impl_.payload_.command_start_game_;
 }
 inline ::C4::CommandStartGame* CommandPayload::mutable_command_start_game() {
   ::C4::CommandStartGame* _msg = _internal_mutable_command_start_game();
@@ -4601,9 +4908,9 @@ inline ::C4::CommandStartGame* CommandPayload::mutable_command_start_game() {
   return _msg;
 }
 
-// .C4.CommandPlayerMakeMove command_make_move = 4;
+// .C4.CommandPlayerMakeMove command_make_move = 5;
 inline bool CommandPayload::_internal_has_command_make_move() const {
-  return command_payload_type_case() == kCommandMakeMove;
+  return payload_case() == kCommandMakeMove;
 }
 inline bool CommandPayload::has_command_make_move() const {
   return _internal_has_command_make_move();
@@ -4614,20 +4921,20 @@ inline void CommandPayload::set_has_command_make_move() {
 inline void CommandPayload::clear_command_make_move() {
   if (_internal_has_command_make_move()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.command_payload_type_.command_make_move_;
+      delete _impl_.payload_.command_make_move_;
     }
-    clear_has_command_payload_type();
+    clear_has_payload();
   }
 }
 inline ::C4::CommandPlayerMakeMove* CommandPayload::release_command_make_move() {
   // @@protoc_insertion_point(field_release:C4.CommandPayload.command_make_move)
   if (_internal_has_command_make_move()) {
-    clear_has_command_payload_type();
-    ::C4::CommandPlayerMakeMove* temp = _impl_.command_payload_type_.command_make_move_;
+    clear_has_payload();
+    ::C4::CommandPlayerMakeMove* temp = _impl_.payload_.command_make_move_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.command_payload_type_.command_make_move_ = nullptr;
+    _impl_.payload_.command_make_move_ = nullptr;
     return temp;
   } else {
     return nullptr;
@@ -4635,7 +4942,7 @@ inline ::C4::CommandPlayerMakeMove* CommandPayload::release_command_make_move() 
 }
 inline const ::C4::CommandPlayerMakeMove& CommandPayload::_internal_command_make_move() const {
   return _internal_has_command_make_move()
-      ? *_impl_.command_payload_type_.command_make_move_
+      ? *_impl_.payload_.command_make_move_
       : reinterpret_cast< ::C4::CommandPlayerMakeMove&>(::C4::_CommandPlayerMakeMove_default_instance_);
 }
 inline const ::C4::CommandPlayerMakeMove& CommandPayload::command_make_move() const {
@@ -4645,29 +4952,29 @@ inline const ::C4::CommandPlayerMakeMove& CommandPayload::command_make_move() co
 inline ::C4::CommandPlayerMakeMove* CommandPayload::unsafe_arena_release_command_make_move() {
   // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_make_move)
   if (_internal_has_command_make_move()) {
-    clear_has_command_payload_type();
-    ::C4::CommandPlayerMakeMove* temp = _impl_.command_payload_type_.command_make_move_;
-    _impl_.command_payload_type_.command_make_move_ = nullptr;
+    clear_has_payload();
+    ::C4::CommandPlayerMakeMove* temp = _impl_.payload_.command_make_move_;
+    _impl_.payload_.command_make_move_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
 inline void CommandPayload::unsafe_arena_set_allocated_command_make_move(::C4::CommandPlayerMakeMove* command_make_move) {
-  clear_command_payload_type();
+  clear_payload();
   if (command_make_move) {
     set_has_command_make_move();
-    _impl_.command_payload_type_.command_make_move_ = command_make_move;
+    _impl_.payload_.command_make_move_ = command_make_move;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_make_move)
 }
 inline ::C4::CommandPlayerMakeMove* CommandPayload::_internal_mutable_command_make_move() {
   if (!_internal_has_command_make_move()) {
-    clear_command_payload_type();
+    clear_payload();
     set_has_command_make_move();
-    _impl_.command_payload_type_.command_make_move_ = CreateMaybeMessage< ::C4::CommandPlayerMakeMove >(GetArenaForAllocation());
+    _impl_.payload_.command_make_move_ = CreateMaybeMessage< ::C4::CommandPlayerMakeMove >(GetArenaForAllocation());
   }
-  return _impl_.command_payload_type_.command_make_move_;
+  return _impl_.payload_.command_make_move_;
 }
 inline ::C4::CommandPlayerMakeMove* CommandPayload::mutable_command_make_move() {
   ::C4::CommandPlayerMakeMove* _msg = _internal_mutable_command_make_move();
@@ -4675,9 +4982,9 @@ inline ::C4::CommandPlayerMakeMove* CommandPayload::mutable_command_make_move() 
   return _msg;
 }
 
-// .C4.CommandPlayerLeave command_player_leave = 5;
+// .C4.CommandPlayerLeave command_player_leave = 6;
 inline bool CommandPayload::_internal_has_command_player_leave() const {
-  return command_payload_type_case() == kCommandPlayerLeave;
+  return payload_case() == kCommandPlayerLeave;
 }
 inline bool CommandPayload::has_command_player_leave() const {
   return _internal_has_command_player_leave();
@@ -4688,20 +4995,20 @@ inline void CommandPayload::set_has_command_player_leave() {
 inline void CommandPayload::clear_command_player_leave() {
   if (_internal_has_command_player_leave()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.command_payload_type_.command_player_leave_;
+      delete _impl_.payload_.command_player_leave_;
     }
-    clear_has_command_payload_type();
+    clear_has_payload();
   }
 }
 inline ::C4::CommandPlayerLeave* CommandPayload::release_command_player_leave() {
   // @@protoc_insertion_point(field_release:C4.CommandPayload.command_player_leave)
   if (_internal_has_command_player_leave()) {
-    clear_has_command_payload_type();
-    ::C4::CommandPlayerLeave* temp = _impl_.command_payload_type_.command_player_leave_;
+    clear_has_payload();
+    ::C4::CommandPlayerLeave* temp = _impl_.payload_.command_player_leave_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.command_payload_type_.command_player_leave_ = nullptr;
+    _impl_.payload_.command_player_leave_ = nullptr;
     return temp;
   } else {
     return nullptr;
@@ -4709,7 +5016,7 @@ inline ::C4::CommandPlayerLeave* CommandPayload::release_command_player_leave() 
 }
 inline const ::C4::CommandPlayerLeave& CommandPayload::_internal_command_player_leave() const {
   return _internal_has_command_player_leave()
-      ? *_impl_.command_payload_type_.command_player_leave_
+      ? *_impl_.payload_.command_player_leave_
       : reinterpret_cast< ::C4::CommandPlayerLeave&>(::C4::_CommandPlayerLeave_default_instance_);
 }
 inline const ::C4::CommandPlayerLeave& CommandPayload::command_player_leave() const {
@@ -4719,29 +5026,29 @@ inline const ::C4::CommandPlayerLeave& CommandPayload::command_player_leave() co
 inline ::C4::CommandPlayerLeave* CommandPayload::unsafe_arena_release_command_player_leave() {
   // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_player_leave)
   if (_internal_has_command_player_leave()) {
-    clear_has_command_payload_type();
-    ::C4::CommandPlayerLeave* temp = _impl_.command_payload_type_.command_player_leave_;
-    _impl_.command_payload_type_.command_player_leave_ = nullptr;
+    clear_has_payload();
+    ::C4::CommandPlayerLeave* temp = _impl_.payload_.command_player_leave_;
+    _impl_.payload_.command_player_leave_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
 inline void CommandPayload::unsafe_arena_set_allocated_command_player_leave(::C4::CommandPlayerLeave* command_player_leave) {
-  clear_command_payload_type();
+  clear_payload();
   if (command_player_leave) {
     set_has_command_player_leave();
-    _impl_.command_payload_type_.command_player_leave_ = command_player_leave;
+    _impl_.payload_.command_player_leave_ = command_player_leave;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_player_leave)
 }
 inline ::C4::CommandPlayerLeave* CommandPayload::_internal_mutable_command_player_leave() {
   if (!_internal_has_command_player_leave()) {
-    clear_command_payload_type();
+    clear_payload();
     set_has_command_player_leave();
-    _impl_.command_payload_type_.command_player_leave_ = CreateMaybeMessage< ::C4::CommandPlayerLeave >(GetArenaForAllocation());
+    _impl_.payload_.command_player_leave_ = CreateMaybeMessage< ::C4::CommandPlayerLeave >(GetArenaForAllocation());
   }
-  return _impl_.command_payload_type_.command_player_leave_;
+  return _impl_.payload_.command_player_leave_;
 }
 inline ::C4::CommandPlayerLeave* CommandPayload::mutable_command_player_leave() {
   ::C4::CommandPlayerLeave* _msg = _internal_mutable_command_player_leave();
@@ -4749,14 +5056,14 @@ inline ::C4::CommandPlayerLeave* CommandPayload::mutable_command_player_leave() 
   return _msg;
 }
 
-inline bool CommandPayload::has_command_payload_type() const {
-  return command_payload_type_case() != COMMAND_PAYLOAD_TYPE_NOT_SET;
+inline bool CommandPayload::has_payload() const {
+  return payload_case() != PAYLOAD_NOT_SET;
 }
-inline void CommandPayload::clear_has_command_payload_type() {
-  _impl_._oneof_case_[0] = COMMAND_PAYLOAD_TYPE_NOT_SET;
+inline void CommandPayload::clear_has_payload() {
+  _impl_._oneof_case_[0] = PAYLOAD_NOT_SET;
 }
-inline CommandPayload::CommandPayloadTypeCase CommandPayload::command_payload_type_case() const {
-  return CommandPayload::CommandPayloadTypeCase(_impl_._oneof_case_[0]);
+inline CommandPayload::PayloadCase CommandPayload::payload_case() const {
+  return CommandPayload::PayloadCase(_impl_._oneof_case_[0]);
 }
 // -------------------------------------------------------------------
 
@@ -4942,6 +5249,8 @@ inline Message::PayloadTypeCase Message::payload_type_case() const {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
