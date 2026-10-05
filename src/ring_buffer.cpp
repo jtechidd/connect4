@@ -1,13 +1,15 @@
 #include "ring_buffer.hpp"
 
-using namespace C4;
+namespace C4 {
+
+const size_t DEFAULT_RING_BUFFER_CAPACITY = 8;
 
 RingBuffer::RingBuffer(size_t cap) {
   if (cap == 0) {
     throw std::invalid_argument{
         "Ring buffer capacity must be greater than zero"};
   }
-  m_buf = (uint8_t *)std::malloc(cap);
+  m_buf = (uint8_t *)malloc(cap);
   if (!m_buf)
     throw std::bad_alloc{};
   m_size = 0;
@@ -71,3 +73,4 @@ size_t RingBuffer::read(void *dst, size_t cnt, size_t len) {
 }
 
 uint8_t *RingBuffer::get_read_ptr() { return m_buf + m_read_pos; }
+}; // namespace C4

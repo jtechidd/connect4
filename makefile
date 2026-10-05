@@ -26,6 +26,7 @@ LIB_SRCS = \
 	src/client.cpp \
 	src/client_message_handler.cpp \
 	src/client_ui.cpp \
+	src/client_ui_boilerplate.cpp \
 	$(COMPILED_PROTOS)
 LIB = build/libc4.so
 SERVER_SRC = src/server_main.cpp

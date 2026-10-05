@@ -3,8 +3,8 @@
 
 #include "common.hpp"
 
-#define DEFAULT_RING_BUFFER_CAPACITY 4096
-
+namespace C4 {
+extern const size_t DEFAULT_RING_BUFFER_CAPACITY;
 class RingBuffer {
 public:
   uint8_t *m_buf;
@@ -24,5 +24,6 @@ public:
   size_t read(void *dst, size_t cnt, size_t len);
   uint8_t *get_read_ptr();
 };
+}; // namespace C4
 
 #endif

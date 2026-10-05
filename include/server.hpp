@@ -14,11 +14,11 @@ public:
     Server *m_server;
     session_id_t m_id;
     uv_tcp_t m_session;
-    char m_username[65];
+    char m_username[USERNAME_MAX_SIZE + 1];
     RingBuffer m_ring_buf;
     game_id_t m_curr_game_id;
 
-    Session(uv_loop_t *loop = g_loop, Server *server = nullptr,
+    Session(uv_loop_t *loop, Server *server = nullptr,
             session_id_t id = ++g_session_cid);
     ~Session();
 
@@ -31,7 +31,7 @@ public:
                          uv_buf_t *buf);
     static void on_read(uv_stream_t *stream, long nread, const uv_buf_t *buf);
     static void on_close(uv_handle_t *handle);
-    static void on_write(uv_write_t *req, int status);
+    static void on_write(uv_write_t *write, int status);
   };
 
   class MessageHandler {
@@ -53,6 +53,8 @@ public:
     void broadcast_message(Message *msg);
     void emit_event_server_connected(session_id_t session_id);
     void broadcast_event_lobby_updated();
+    void emit_event_username_check_failed(session_id_t session_id);
+    void emit_event_lobby_entered(session_id_t session_id);
   };
 
   uv_loop_t *m_loop;                                // Main UV loop

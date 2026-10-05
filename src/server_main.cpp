@@ -1,8 +1,7 @@
 #include "server.hpp"
 
-using namespace C4;
-
 int main(int argc, char *argv[]) {
-  Server server(8080, 128);
+  spdlog::set_level(spdlog::level::debug);
+  C4::Server server(8080, 128);
   server.run();
 }

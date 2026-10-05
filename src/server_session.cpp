@@ -1,6 +1,6 @@
 #include "server.hpp"
 
-using namespace C4;
+namespace C4 {
 
 Server::Session::Session(uv_loop_t *loop, Server *server, session_id_t id) {
   m_loop = loop;
@@ -43,16 +43,16 @@ void Server::Session::on_read(uv_stream_t *stream, long nread,
   while (self->m_ring_buf.m_size >= MSG_SIZE_NBYTES) {
     self->m_ring_buf.peek(&msg_size, sizeof(uint32_t), MSG_SIZE_NBYTES);
     msg_size = ntohl(msg_size);
-    if (msg_size > MSG_MAX_SIZE) {
+    if (msg_size > MSG_MAX_SIZE)
       break;
-    }
-    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size) {
+    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size)
       break;
-    }
     self->m_ring_buf.consume(MSG_SIZE_NBYTES);
-    msg.ParseFromArray(self->m_ring_buf.get_read_ptr(), msg_size);
+    uint8_t *raw_msg = (uint8_t *)malloc(msg_size);
+    self->m_ring_buf.read(raw_msg, msg_size, msg_size);
+    msg.ParseFromArray(raw_msg, msg_size);
+    free(raw_msg);
     self->m_server->m_msg_hdl.handle_message(self->m_id, &msg);
-    self->m_ring_buf.consume(msg_size);
   }
 
 cleanup:
@@ -69,3 +69,5 @@ void Server::Session::on_close(uv_handle_t *handle) {
   Session *self = (Session *)handle->data;
   self->m_server->disconnect(self->m_id);
 }
+
+}; // namespace C4

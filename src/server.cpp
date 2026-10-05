@@ -2,18 +2,16 @@
 #include "common.hpp"
 #include "game.hpp"
 
-using namespace C4;
+namespace C4 {
 
 Server::Server(int port, int backlog) : m_msg_hdl(this) {
-  m_loop = uv_default_loop();
+  m_loop = g_loop;
   m_port = port;
   m_backlog = backlog;
-
-  uv_tcp_init(m_loop, &m_server);
-  m_server.data = this;
-
   m_session_cid = 0;
   m_game_cid = 0;
+  uv_tcp_init(m_loop, &m_server);
+  m_server.data = this;
 }
 
 Server::~Server() {}
@@ -36,7 +34,7 @@ void Server::on_connection(uv_stream_t *stream, int status) {
   if (uv_accept((uv_stream_t *)&self->m_server,
                 (uv_stream_t *)&session->m_session) != 0) {
     spdlog::error("Client accept error");
-    delete session;
+    free(session);
     return;
   }
   spdlog::info("New client connection with ID: {}", self->m_session_cid);
@@ -57,9 +55,9 @@ void Server::disconnect(session_id_t session_id) {
     if (m_game_map.erase(game->m_id) != 1) {
       return;
     }
-    delete game;
+    free(game);
   }
-  delete session;
+  free(session);
   m_msg_hdl.broadcast_event_lobby_updated();
 }
 
@@ -83,3 +81,5 @@ void Server::join_game(session_id_t session_id, game_id_t game_id) {
   game->m_p2_id = session_id;
   game->start();
 }
+
+}; // namespace C4

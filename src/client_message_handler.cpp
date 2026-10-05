@@ -1,6 +1,7 @@
 #include "client.hpp"
+#include "message.pb.h"
 
-using namespace C4;
+namespace C4 {
 
 Client::MessageHandler::MessageHandler(Client *client) { m_client = client; }
 Client::MessageHandler::~MessageHandler() {}
@@ -22,6 +23,13 @@ void Client::MessageHandler::handle_event(const EventPayload *event_payload) {
   case EventPayload::kEventServerConnected:
     handle_event_server_connected(&event_payload->event_server_connected());
     break;
+  case EventPayload::kEventLobbyEntered:
+    handle_event_lobby_entered(&event_payload->event_lobby_entered());
+    break;
+  case EventPayload::kEventUsernameCheckFailed:
+    handle_event_username_check_failed(
+        &event_payload->event_username_check_failed());
+    break;
   case EventPayload::kEventLobbyUpdated:
     handle_event_lobby_updated(&event_payload->event_lobby_updated());
     break;
@@ -32,21 +40,32 @@ void Client::MessageHandler::handle_event(const EventPayload *event_payload) {
 
 void Client::MessageHandler::handle_event_server_connected(
     const EventServerConnected *sc) {
-  std::lock_guard lock(m_client->m_lock);
   m_client->m_client_id = sc->client_id();
-  spdlog::info("Set client id: {}", m_client->m_client_id);
+  spdlog::info("Set client ID to {}", m_client->m_client_id);
+}
+
+void Client::MessageHandler::handle_event_lobby_entered(
+    const EventLobbyEntered *le) {
+  m_client->m_state = CLIENT_STATE_LOBBY;
+  spdlog::info("Entered lobby");
+}
+
+void Client::MessageHandler::handle_event_username_check_failed(
+    const EventUsernameCheckFailed *ucf) {
+  m_client->m_ui.m_show_msgbox_username_check_failed = true;
+  spdlog::info("Username check failed");
 }
 
 void Client::MessageHandler::handle_event_lobby_updated(
     const EventLobbyUpdated *lu) {
-  std::lock_guard lock(m_client->m_lock);
   m_client->m_total_clients = lu->total_clients();
-  spdlog::info("Set total clients: {}", m_client->m_total_clients);
+  spdlog::info("Set total clients to {}", m_client->m_total_clients);
 }
 
 void Client::MessageHandler::send_message(Message *msg) {
   WriteRequest *wr = new WriteRequest(msg);
   wr->req.data = this;
+  spdlog::debug("Sending message with {} bytes", wr->buf.len);
   uv_write((uv_write_t *)wr, (uv_stream_t *)&m_client->m_session, &wr->buf, 1,
            Client::on_write);
 }
@@ -59,3 +78,5 @@ void Client::MessageHandler::send_command_enter_lobby() {
   spdlog::info("Entering lobby with username: {}", m_client->m_username);
   send_message(&msg);
 }
+
+}; // namespace C4

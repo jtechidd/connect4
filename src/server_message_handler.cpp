@@ -2,8 +2,9 @@
 #include "game.hpp"
 #include "message.pb.h"
 #include "server.hpp"
+#include <cstring>
 
-using namespace C4;
+namespace C4 {
 
 Server::MessageHandler::MessageHandler(Server *server) { m_server = server; }
 Server::MessageHandler::~MessageHandler() {}
@@ -50,6 +51,21 @@ void Server::MessageHandler::broadcast_event_lobby_updated() {
   broadcast_message(&msg);
 }
 
+void Server::MessageHandler::emit_event_lobby_entered(session_id_t session_id) {
+  Message msg;
+  EventPayload *ep = msg.mutable_event_payload();
+  EventLobbyEntered *el = ep->mutable_event_lobby_entered();
+  send_message(session_id, &msg);
+}
+
+void Server::MessageHandler::emit_event_username_check_failed(
+    session_id_t session_id) {
+  Message msg;
+  EventPayload *ep = msg.mutable_event_payload();
+  EventUsernameCheckFailed *ucf = ep->mutable_event_username_check_failed();
+  send_message(session_id, &msg);
+}
+
 void Server::MessageHandler::handle_message(session_id_t session_id,
                                             Message *msg) {
   switch (msg->payload_type_case()) {
@@ -86,6 +102,17 @@ void Server::MessageHandler::handle_command(
 
 void Server::MessageHandler::handle_command_enter_lobby(
     session_id_t session_id, const CommandEnterLobby *el) {
-  spdlog::info("Received command enter lobby from session ID: {}, username: {}",
-               session_id, el->username());
+  for (auto [_, s] : m_server->m_sessions_map) {
+    if (!strcmp(s->m_username, el->username().c_str())) {
+      emit_event_username_check_failed(session_id);
+      return;
+    }
+  }
+  auto s = m_server->m_sessions_map[session_id];
+  assert(s != NULL);
+  assert(el->username().length() <= USERNAME_MAX_SIZE);
+  strncpy(s->m_username, el->username().c_str(), el->username().length());
+  emit_event_lobby_entered(session_id);
 }
+
+}; // namespace C4

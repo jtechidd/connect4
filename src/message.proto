@@ -11,6 +11,8 @@ message EventServerConnected {
   uint64 client_id = 1;
 }
 
+message EventUsernameCheckFailed {}
+
 message GameStatus {
   uint64 id         = 1;
   bool   available  = 2;
@@ -23,6 +25,8 @@ message EventLobbyUpdated {
   uint32              total_games   = 2;
   repeated GameStatus games         = 3;
 }
+
+message EventLobbyEntered {}
 
 message EventGameCreated {
   uint64 game_id    = 1;
@@ -54,14 +58,16 @@ message EventPlayerLeft {
 
 message EventPayload {
   oneof payload {
-    EventServerConnected event_server_connected = 1;
-    EventLobbyUpdated    event_lobby_updated    = 2;
-    EventGameCreated     event_game_created     = 3;
-    EventPlayerJoined    event_player_joined    = 4;
-    EventGameStarted     event_game_started     = 5;
-    EventPlayerMadeMove  event_player_made_move = 6;
-    EventGameVerdicted   event_game_verdicted   = 7;
-    EventPlayerLeft      event_player_left      = 8;
+    EventServerConnected     event_server_connected      = 1;
+    EventUsernameCheckFailed event_username_check_failed = 2;
+    EventLobbyUpdated        event_lobby_updated         = 3;
+    EventLobbyEntered        event_lobby_entered         = 4;
+    EventGameCreated         event_game_created          = 5;
+    EventPlayerJoined        event_player_joined         = 6;
+    EventGameStarted         event_game_started          = 7;
+    EventPlayerMadeMove      event_player_made_move      = 8;
+    EventGameVerdicted       event_game_verdicted        = 9;
+    EventPlayerLeft          event_player_left           = 10;
   }
 }
 

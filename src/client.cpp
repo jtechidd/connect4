@@ -1,33 +1,39 @@
 #include "client.hpp"
+#include "common.hpp"
 
-using namespace C4;
+namespace C4 {
+
+const char *CLIENT_DEFAULT_HOST = "localhost";
+const int CLIENT_DEFAULT_PORT = 8080;
 
 Client::Client(const char *host, int port) : m_msg_hdl(this), m_ui(this) {
-  m_loop = uv_default_loop();
+  m_loop = g_loop;
   m_host = (char *)host;
   m_port = port;
   m_client_id = 0;
   m_total_clients = 0;
   m_state = CLIENT_STATE_USERNAME;
   m_is_connected = false;
-  memset(m_username, 0, sizeof(m_username));
-}
 
-Client::~Client() {}
-
-void Client::run_uv() {
+  // uv handle initialization
+  uv_tcp_init(m_loop, &m_session);
+  m_session.data = this;
   // async zone
   uv_async_init(m_loop, &m_keep_alive, NULL); // keep alive hack
   uv_async_init(m_loop, &m_enter_lobby, Client::async_enter_lobby);
   m_enter_lobby.data = this;
   uv_async_init(m_loop, &m_stop, Client::async_stop);
   m_stop.data = this;
-
-  // timer to try connect to server
   uv_timer_init(m_loop, &m_try_connect);
-  uv_timer_start(&m_try_connect, Client::on_try_connect, 1000, 1000);
   m_try_connect.data = this;
 
+  memset(m_username, 0, sizeof(m_username));
+}
+
+Client::~Client() {}
+
+void Client::run_uv() {
+  uv_timer_start(&m_try_connect, Client::on_try_connect, 1000, 1000);
   uv_run(m_loop, UV_RUN_DEFAULT);
 }
 
@@ -41,7 +47,6 @@ void Client::run() {
 
 void Client::on_connect(uv_connect_t *connect, int status) {
   Client *self = (Client *)connect->data;
-  std::lock_guard<std::mutex> lock(self->m_lock);
   if (status != 0) {
     self->m_is_connected = false;
     goto cleanup;
@@ -79,12 +84,14 @@ void Client::on_read(uv_stream_t *stream, long nread, const uv_buf_t *buf) {
     msg_size = ntohl(msg_size);
     if (msg_size > MSG_MAX_SIZE)
       break;
-    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES)
+    if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size)
       break;
     self->m_ring_buf.consume(MSG_SIZE_NBYTES);
-    msg.ParseFromArray(self->m_ring_buf.get_read_ptr(), msg_size);
+    uint8_t *raw_msg = (uint8_t *)malloc(msg_size);
+    self->m_ring_buf.read(raw_msg, msg_size, msg_size);
+    msg.ParseFromArray(raw_msg, msg_size);
+    free(raw_msg);
     self->m_msg_hdl.handle_message(&msg);
-    self->m_ring_buf.consume(msg_size);
   }
 cleanup:
   free(buf->base);
@@ -101,6 +108,7 @@ void Client::on_close(uv_handle_t *handle) {
   Client *client = (Client *)handle->data;
   spdlog::info("Disconnencted from server");
   client->m_is_connected = false;
+  client->m_state = CLIENT_STATE_USERNAME;
   uv_timer_start(&client->m_try_connect, Client::on_try_connect, 1000, 1000);
 }
 
@@ -133,3 +141,5 @@ void Client::on_try_connect(uv_timer_t *timer) {
   uv_tcp_connect(connect, &client->m_session,
                  (struct sockaddr *)&client->m_server_addr, Client::on_connect);
 }
+
+}; // namespace C4

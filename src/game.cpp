@@ -1,6 +1,6 @@
 #include "game.hpp"
 
-using namespace C4;
+namespace C4 {
 
 Game::Game() {
   m_id = 0;
@@ -93,3 +93,5 @@ int Game::is_connect(uint8_t i, uint8_t j) {
   }
   return 0;
 }
+
+}; // namespace C4

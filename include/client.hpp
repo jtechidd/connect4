@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "game.hpp"
+#include "message.pb.h"
 #include "ring_buffer.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
@@ -12,11 +13,15 @@
 #include <imgui_impl_sdl3.h>
 
 namespace C4 {
+
 typedef enum {
   CLIENT_STATE_USERNAME,
   CLIENT_STATE_LOBBY,
   CLIENT_STATE_IN_GAME,
 } client_state_t;
+
+extern const char *CLIENT_DEFAULT_HOST;
+extern const int CLIENT_DEFAULT_PORT;
 
 class Client {
 public:
@@ -30,6 +35,9 @@ public:
     void handle_message(Message *msg);
     void handle_event(const EventPayload *event);
     void handle_event_server_connected(const EventServerConnected *sc);
+    void
+    handle_event_username_check_failed(const EventUsernameCheckFailed *ucf);
+    void handle_event_lobby_entered(const EventLobbyEntered *le);
     void handle_event_lobby_updated(const EventLobbyUpdated *lu);
 
     void send_message(Message *msg);
@@ -43,8 +51,7 @@ public:
     SDL_WindowFlags m_sdl_window_flags;
     SDL_Window *m_sdl_window;
     SDL_GLContext m_sdl_gl_context;
-    bool m_show_demo_window;
-    bool m_show_another_window;
+    bool m_show_msgbox_username_check_failed;
     bool m_done;
     SDL_Event m_sdl_event;
     float m_f = 0.0f;
@@ -54,31 +61,40 @@ public:
     ~UI();
 
     int run();
+    void imgui();
+    void imgui_username();
+    void imgui_lobby();
   };
 
-  uv_loop_t *m_loop;
   char *m_host;
   int m_port;
+
+  uv_loop_t *m_loop;
+  std::thread m_thr_uv;
+
+  uv_timer_t m_try_connect;
   uv_tcp_t m_session;
   struct sockaddr_in m_server_addr;
   RingBuffer m_ring_buf;
+  MessageHandler m_msg_hdl;
+
+  bool m_is_connected;
   client_id_t m_client_id;
   uint64_t m_total_clients;
   client_state_t m_state;
-  char m_username[65];
+  char m_username[USERNAME_MAX_SIZE + 1];
   Game m_game;
-  MessageHandler m_msg_hdl;
+
   UI m_ui;
-  std::thread m_thr_uv;
-  std::mutex m_lock;
+
+  // UV async handles
   uv_async_t m_keep_alive;
-  bool m_is_connected;
-  uv_timer_t m_try_connect;
-  // From main thread (aka UI)
+  // From main thread (UI)
   uv_async_t m_stop;
   uv_async_t m_enter_lobby;
 
-  Client(const char *host = "localhost", int port = 8080);
+  Client(const char *host = CLIENT_DEFAULT_HOST,
+         int port = CLIENT_DEFAULT_PORT);
   ~Client();
 
   void run_uv();
