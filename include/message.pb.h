@@ -47,6 +47,9 @@ struct TableStruct_message_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_message_2eproto;
 namespace C4 {
+class ClientInfo;
+struct ClientInfoDefaultTypeInternal;
+extern ClientInfoDefaultTypeInternal _ClientInfo_default_instance_;
 class CommandCreateNewGame;
 struct CommandCreateNewGameDefaultTypeInternal;
 extern CommandCreateNewGameDefaultTypeInternal _CommandCreateNewGame_default_instance_;
@@ -101,14 +104,15 @@ extern EventServerConnectedDefaultTypeInternal _EventServerConnected_default_ins
 class EventUsernameCheckFailed;
 struct EventUsernameCheckFailedDefaultTypeInternal;
 extern EventUsernameCheckFailedDefaultTypeInternal _EventUsernameCheckFailed_default_instance_;
-class GameStatus;
-struct GameStatusDefaultTypeInternal;
-extern GameStatusDefaultTypeInternal _GameStatus_default_instance_;
+class GameInfo;
+struct GameInfoDefaultTypeInternal;
+extern GameInfoDefaultTypeInternal _GameInfo_default_instance_;
 class Message;
 struct MessageDefaultTypeInternal;
 extern MessageDefaultTypeInternal _Message_default_instance_;
 }  // namespace C4
 PROTOBUF_NAMESPACE_OPEN
+template<> ::C4::ClientInfo* Arena::CreateMaybeMessage<::C4::ClientInfo>(Arena*);
 template<> ::C4::CommandCreateNewGame* Arena::CreateMaybeMessage<::C4::CommandCreateNewGame>(Arena*);
 template<> ::C4::CommandEnterLobby* Arena::CreateMaybeMessage<::C4::CommandEnterLobby>(Arena*);
 template<> ::C4::CommandJoinGame* Arena::CreateMaybeMessage<::C4::CommandJoinGame>(Arena*);
@@ -127,7 +131,7 @@ template<> ::C4::EventPlayerLeft* Arena::CreateMaybeMessage<::C4::EventPlayerLef
 template<> ::C4::EventPlayerMadeMove* Arena::CreateMaybeMessage<::C4::EventPlayerMadeMove>(Arena*);
 template<> ::C4::EventServerConnected* Arena::CreateMaybeMessage<::C4::EventServerConnected>(Arena*);
 template<> ::C4::EventUsernameCheckFailed* Arena::CreateMaybeMessage<::C4::EventUsernameCheckFailed>(Arena*);
-template<> ::C4::GameStatus* Arena::CreateMaybeMessage<::C4::GameStatus>(Arena*);
+template<> ::C4::GameInfo* Arena::CreateMaybeMessage<::C4::GameInfo>(Arena*);
 template<> ::C4::Message* Arena::CreateMaybeMessage<::C4::Message>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace C4 {
@@ -156,6 +160,58 @@ inline bool MessageType_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MessageType* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MessageType>(
     MessageType_descriptor(), name, value);
+}
+enum GameState : int {
+  GAME_STATE_WAITING = 0,
+  GAME_STATE_IN_GAME = 1,
+  GAME_STATE_VERDICT = 2,
+  GameState_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  GameState_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool GameState_IsValid(int value);
+constexpr GameState GameState_MIN = GAME_STATE_WAITING;
+constexpr GameState GameState_MAX = GAME_STATE_VERDICT;
+constexpr int GameState_ARRAYSIZE = GameState_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* GameState_descriptor();
+template<typename T>
+inline const std::string& GameState_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, GameState>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function GameState_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    GameState_descriptor(), enum_t_value);
+}
+inline bool GameState_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, GameState* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<GameState>(
+    GameState_descriptor(), name, value);
+}
+enum ClientState : int {
+  CLIENT_STATE_USERNAME = 0,
+  CLIENT_STATE_LOBBY = 1,
+  CLIENT_STATE_IN_GAME = 2,
+  ClientState_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  ClientState_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool ClientState_IsValid(int value);
+constexpr ClientState ClientState_MIN = CLIENT_STATE_USERNAME;
+constexpr ClientState ClientState_MAX = CLIENT_STATE_IN_GAME;
+constexpr int ClientState_ARRAYSIZE = ClientState_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ClientState_descriptor();
+template<typename T>
+inline const std::string& ClientState_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, ClientState>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function ClientState_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    ClientState_descriptor(), enum_t_value);
+}
+inline bool ClientState_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ClientState* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ClientState>(
+    ClientState_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -282,13 +338,13 @@ class EventServerConnected final :
   enum : int {
     kClientIdFieldNumber = 1,
   };
-  // uint64 client_id = 1;
+  // uint32 client_id = 1;
   void clear_client_id();
-  uint64_t client_id() const;
-  void set_client_id(uint64_t value);
+  uint32_t client_id() const;
+  void set_client_id(uint32_t value);
   private:
-  uint64_t _internal_client_id() const;
-  void _internal_set_client_id(uint64_t value);
+  uint32_t _internal_client_id() const;
+  void _internal_set_client_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.EventServerConnected)
@@ -299,7 +355,7 @@ class EventServerConnected final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t client_id_;
+    uint32_t client_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -425,24 +481,24 @@ class EventUsernameCheckFailed final :
 };
 // -------------------------------------------------------------------
 
-class GameStatus final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.GameStatus) */ {
+class GameInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.GameInfo) */ {
  public:
-  inline GameStatus() : GameStatus(nullptr) {}
-  ~GameStatus() override;
-  explicit PROTOBUF_CONSTEXPR GameStatus(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline GameInfo() : GameInfo(nullptr) {}
+  ~GameInfo() override;
+  explicit PROTOBUF_CONSTEXPR GameInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  GameStatus(const GameStatus& from);
-  GameStatus(GameStatus&& from) noexcept
-    : GameStatus() {
+  GameInfo(const GameInfo& from);
+  GameInfo(GameInfo&& from) noexcept
+    : GameInfo() {
     *this = ::std::move(from);
   }
 
-  inline GameStatus& operator=(const GameStatus& from) {
+  inline GameInfo& operator=(const GameInfo& from) {
     CopyFrom(from);
     return *this;
   }
-  inline GameStatus& operator=(GameStatus&& from) noexcept {
+  inline GameInfo& operator=(GameInfo&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -465,20 +521,20 @@ class GameStatus final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const GameStatus& default_instance() {
+  static const GameInfo& default_instance() {
     return *internal_default_instance();
   }
-  static inline const GameStatus* internal_default_instance() {
-    return reinterpret_cast<const GameStatus*>(
-               &_GameStatus_default_instance_);
+  static inline const GameInfo* internal_default_instance() {
+    return reinterpret_cast<const GameInfo*>(
+               &_GameInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     2;
 
-  friend void swap(GameStatus& a, GameStatus& b) {
+  friend void swap(GameInfo& a, GameInfo& b) {
     a.Swap(&b);
   }
-  inline void Swap(GameStatus* other) {
+  inline void Swap(GameInfo* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -491,7 +547,7 @@ class GameStatus final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(GameStatus* other) {
+  void UnsafeArenaSwap(GameInfo* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -499,14 +555,14 @@ class GameStatus final :
 
   // implements Message ----------------------------------------------
 
-  GameStatus* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<GameStatus>(arena);
+  GameInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<GameInfo>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const GameStatus& from);
+  void CopyFrom(const GameInfo& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const GameStatus& from) {
-    GameStatus::MergeImpl(*this, from);
+  void MergeFrom( const GameInfo& from) {
+    GameInfo::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -524,15 +580,15 @@ class GameStatus final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(GameStatus* other);
+  void InternalSwap(GameInfo* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "C4.GameStatus";
+    return "C4.GameInfo";
   }
   protected:
-  explicit GameStatus(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit GameInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -547,47 +603,47 @@ class GameStatus final :
 
   enum : int {
     kIdFieldNumber = 1,
-    kPlayer1IdFieldNumber = 3,
-    kPlayer2IdFieldNumber = 4,
-    kAvailableFieldNumber = 2,
+    kPlayer1IdFieldNumber = 2,
+    kPlayer2IdFieldNumber = 3,
+    kStateFieldNumber = 4,
   };
-  // uint64 id = 1;
+  // uint32 id = 1;
   void clear_id();
-  uint64_t id() const;
-  void set_id(uint64_t value);
+  uint32_t id() const;
+  void set_id(uint32_t value);
   private:
-  uint64_t _internal_id() const;
-  void _internal_set_id(uint64_t value);
+  uint32_t _internal_id() const;
+  void _internal_set_id(uint32_t value);
   public:
 
-  // uint64 player1_id = 3;
+  // uint32 player1_id = 2;
   void clear_player1_id();
-  uint64_t player1_id() const;
-  void set_player1_id(uint64_t value);
+  uint32_t player1_id() const;
+  void set_player1_id(uint32_t value);
   private:
-  uint64_t _internal_player1_id() const;
-  void _internal_set_player1_id(uint64_t value);
+  uint32_t _internal_player1_id() const;
+  void _internal_set_player1_id(uint32_t value);
   public:
 
-  // uint64 player2_id = 4;
+  // uint32 player2_id = 3;
   void clear_player2_id();
-  uint64_t player2_id() const;
-  void set_player2_id(uint64_t value);
+  uint32_t player2_id() const;
+  void set_player2_id(uint32_t value);
   private:
-  uint64_t _internal_player2_id() const;
-  void _internal_set_player2_id(uint64_t value);
+  uint32_t _internal_player2_id() const;
+  void _internal_set_player2_id(uint32_t value);
   public:
 
-  // bool available = 2;
-  void clear_available();
-  bool available() const;
-  void set_available(bool value);
+  // .C4.GameState state = 4;
+  void clear_state();
+  ::C4::GameState state() const;
+  void set_state(::C4::GameState value);
   private:
-  bool _internal_available() const;
-  void _internal_set_available(bool value);
+  ::C4::GameState _internal_state() const;
+  void _internal_set_state(::C4::GameState value);
   public:
 
-  // @@protoc_insertion_point(class_scope:C4.GameStatus)
+  // @@protoc_insertion_point(class_scope:C4.GameInfo)
  private:
   class _Internal;
 
@@ -595,10 +651,185 @@ class GameStatus final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t id_;
-    uint64_t player1_id_;
-    uint64_t player2_id_;
-    bool available_;
+    uint32_t id_;
+    uint32_t player1_id_;
+    uint32_t player2_id_;
+    int state_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_message_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ClientInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.ClientInfo) */ {
+ public:
+  inline ClientInfo() : ClientInfo(nullptr) {}
+  ~ClientInfo() override;
+  explicit PROTOBUF_CONSTEXPR ClientInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ClientInfo(const ClientInfo& from);
+  ClientInfo(ClientInfo&& from) noexcept
+    : ClientInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ClientInfo& operator=(const ClientInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClientInfo& operator=(ClientInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ClientInfo& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ClientInfo* internal_default_instance() {
+    return reinterpret_cast<const ClientInfo*>(
+               &_ClientInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(ClientInfo& a, ClientInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ClientInfo* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ClientInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ClientInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ClientInfo>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ClientInfo& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ClientInfo& from) {
+    ClientInfo::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ClientInfo* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "C4.ClientInfo";
+  }
+  protected:
+  explicit ClientInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kUsernameFieldNumber = 2,
+    kIdFieldNumber = 1,
+    kStateFieldNumber = 3,
+  };
+  // string username = 2;
+  void clear_username();
+  const std::string& username() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_username(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_username();
+  PROTOBUF_NODISCARD std::string* release_username();
+  void set_allocated_username(std::string* username);
+  private:
+  const std::string& _internal_username() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_username(const std::string& value);
+  std::string* _internal_mutable_username();
+  public:
+
+  // uint32 id = 1;
+  void clear_id();
+  uint32_t id() const;
+  void set_id(uint32_t value);
+  private:
+  uint32_t _internal_id() const;
+  void _internal_set_id(uint32_t value);
+  public:
+
+  // .C4.ClientState state = 3;
+  void clear_state();
+  ::C4::ClientState state() const;
+  void set_state(::C4::ClientState value);
+  private:
+  ::C4::ClientState _internal_state() const;
+  void _internal_set_state(::C4::ClientState value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:C4.ClientInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr username_;
+    uint32_t id_;
+    int state_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -654,7 +885,7 @@ class EventLobbyUpdated final :
                &_EventLobbyUpdated_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(EventLobbyUpdated& a, EventLobbyUpdated& b) {
     a.Swap(&b);
@@ -727,38 +958,57 @@ class EventLobbyUpdated final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kGamesFieldNumber = 3,
+    kClientsFieldNumber = 2,
+    kGamesFieldNumber = 4,
     kTotalClientsFieldNumber = 1,
-    kTotalGamesFieldNumber = 2,
+    kTotalGamesFieldNumber = 3,
   };
-  // repeated .C4.GameStatus games = 3;
+  // repeated .C4.ClientInfo clients = 2;
+  int clients_size() const;
+  private:
+  int _internal_clients_size() const;
+  public:
+  void clear_clients();
+  ::C4::ClientInfo* mutable_clients(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::ClientInfo >*
+      mutable_clients();
+  private:
+  const ::C4::ClientInfo& _internal_clients(int index) const;
+  ::C4::ClientInfo* _internal_add_clients();
+  public:
+  const ::C4::ClientInfo& clients(int index) const;
+  ::C4::ClientInfo* add_clients();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::ClientInfo >&
+      clients() const;
+
+  // repeated .C4.GameInfo games = 4;
   int games_size() const;
   private:
   int _internal_games_size() const;
   public:
   void clear_games();
-  ::C4::GameStatus* mutable_games(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameStatus >*
+  ::C4::GameInfo* mutable_games(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameInfo >*
       mutable_games();
   private:
-  const ::C4::GameStatus& _internal_games(int index) const;
-  ::C4::GameStatus* _internal_add_games();
+  const ::C4::GameInfo& _internal_games(int index) const;
+  ::C4::GameInfo* _internal_add_games();
   public:
-  const ::C4::GameStatus& games(int index) const;
-  ::C4::GameStatus* add_games();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameStatus >&
+  const ::C4::GameInfo& games(int index) const;
+  ::C4::GameInfo* add_games();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameInfo >&
       games() const;
 
-  // uint64 total_clients = 1;
+  // uint32 total_clients = 1;
   void clear_total_clients();
-  uint64_t total_clients() const;
-  void set_total_clients(uint64_t value);
+  uint32_t total_clients() const;
+  void set_total_clients(uint32_t value);
   private:
-  uint64_t _internal_total_clients() const;
-  void _internal_set_total_clients(uint64_t value);
+  uint32_t _internal_total_clients() const;
+  void _internal_set_total_clients(uint32_t value);
   public:
 
-  // uint32 total_games = 2;
+  // uint32 total_games = 3;
   void clear_total_games();
   uint32_t total_games() const;
   void set_total_games(uint32_t value);
@@ -775,8 +1025,9 @@ class EventLobbyUpdated final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameStatus > games_;
-    uint64_t total_clients_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::ClientInfo > clients_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameInfo > games_;
+    uint32_t total_clients_;
     uint32_t total_games_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -832,7 +1083,7 @@ class EventLobbyEntered final :
                &_EventLobbyEntered_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
   friend void swap(EventLobbyEntered& a, EventLobbyEntered& b) {
     a.Swap(&b);
@@ -951,7 +1202,7 @@ class EventGameCreated final :
                &_EventGameCreated_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(EventGameCreated& a, EventGameCreated& b) {
     a.Swap(&b);
@@ -1027,22 +1278,22 @@ class EventGameCreated final :
     kGameIdFieldNumber = 1,
     kPlayer1IdFieldNumber = 2,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 player1_id = 2;
+  // uint32 player1_id = 2;
   void clear_player1_id();
-  uint64_t player1_id() const;
-  void set_player1_id(uint64_t value);
+  uint32_t player1_id() const;
+  void set_player1_id(uint32_t value);
   private:
-  uint64_t _internal_player1_id() const;
-  void _internal_set_player1_id(uint64_t value);
+  uint32_t _internal_player1_id() const;
+  void _internal_set_player1_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.EventGameCreated)
@@ -1053,8 +1304,8 @@ class EventGameCreated final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t player1_id_;
+    uint32_t game_id_;
+    uint32_t player1_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1110,7 +1361,7 @@ class EventPlayerJoined final :
                &_EventPlayerJoined_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(EventPlayerJoined& a, EventPlayerJoined& b) {
     a.Swap(&b);
@@ -1186,22 +1437,22 @@ class EventPlayerJoined final :
     kGameIdFieldNumber = 1,
     kPlayer2IdFieldNumber = 2,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 player2_id = 2;
+  // uint32 player2_id = 2;
   void clear_player2_id();
-  uint64_t player2_id() const;
-  void set_player2_id(uint64_t value);
+  uint32_t player2_id() const;
+  void set_player2_id(uint32_t value);
   private:
-  uint64_t _internal_player2_id() const;
-  void _internal_set_player2_id(uint64_t value);
+  uint32_t _internal_player2_id() const;
+  void _internal_set_player2_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.EventPlayerJoined)
@@ -1212,8 +1463,8 @@ class EventPlayerJoined final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t player2_id_;
+    uint32_t game_id_;
+    uint32_t player2_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1269,7 +1520,7 @@ class EventGameStarted final :
                &_EventGameStarted_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(EventGameStarted& a, EventGameStarted& b) {
     a.Swap(&b);
@@ -1344,13 +1595,13 @@ class EventGameStarted final :
   enum : int {
     kGameIdFieldNumber = 1,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.EventGameStarted)
@@ -1361,7 +1612,7 @@ class EventGameStarted final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
+    uint32_t game_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1417,7 +1668,7 @@ class EventPlayerMadeMove final :
                &_EventPlayerMadeMove_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(EventPlayerMadeMove& a, EventPlayerMadeMove& b) {
     a.Swap(&b);
@@ -1494,22 +1745,22 @@ class EventPlayerMadeMove final :
     kPlayerIdFieldNumber = 2,
     kPlayedColumnFieldNumber = 3,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 player_id = 2;
+  // uint32 player_id = 2;
   void clear_player_id();
-  uint64_t player_id() const;
-  void set_player_id(uint64_t value);
+  uint32_t player_id() const;
+  void set_player_id(uint32_t value);
   private:
-  uint64_t _internal_player_id() const;
-  void _internal_set_player_id(uint64_t value);
+  uint32_t _internal_player_id() const;
+  void _internal_set_player_id(uint32_t value);
   public:
 
   // uint32 played_column = 3;
@@ -1529,8 +1780,8 @@ class EventPlayerMadeMove final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t player_id_;
+    uint32_t game_id_;
+    uint32_t player_id_;
     uint32_t played_column_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -1587,7 +1838,7 @@ class EventGameVerdicted final :
                &_EventGameVerdicted_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(EventGameVerdicted& a, EventGameVerdicted& b) {
     a.Swap(&b);
@@ -1663,22 +1914,22 @@ class EventGameVerdicted final :
     kGameIdFieldNumber = 1,
     kGameVerdictFieldNumber = 2,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 game_verdict = 2;
+  // uint32 game_verdict = 2;
   void clear_game_verdict();
-  uint64_t game_verdict() const;
-  void set_game_verdict(uint64_t value);
+  uint32_t game_verdict() const;
+  void set_game_verdict(uint32_t value);
   private:
-  uint64_t _internal_game_verdict() const;
-  void _internal_set_game_verdict(uint64_t value);
+  uint32_t _internal_game_verdict() const;
+  void _internal_set_game_verdict(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.EventGameVerdicted)
@@ -1689,8 +1940,8 @@ class EventGameVerdicted final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t game_verdict_;
+    uint32_t game_id_;
+    uint32_t game_verdict_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1746,7 +1997,7 @@ class EventPlayerLeft final :
                &_EventPlayerLeft_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   friend void swap(EventPlayerLeft& a, EventPlayerLeft& b) {
     a.Swap(&b);
@@ -1822,22 +2073,22 @@ class EventPlayerLeft final :
     kGameIdFieldNumber = 1,
     kPlayerIdFieldNumber = 2,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 player_id = 2;
+  // uint32 player_id = 2;
   void clear_player_id();
-  uint64_t player_id() const;
-  void set_player_id(uint64_t value);
+  uint32_t player_id() const;
+  void set_player_id(uint32_t value);
   private:
-  uint64_t _internal_player_id() const;
-  void _internal_set_player_id(uint64_t value);
+  uint32_t _internal_player_id() const;
+  void _internal_set_player_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.EventPlayerLeft)
@@ -1848,8 +2099,8 @@ class EventPlayerLeft final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t player_id_;
+    uint32_t game_id_;
+    uint32_t player_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1919,7 +2170,7 @@ class EventPayload final :
                &_EventPayload_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    12;
 
   friend void swap(EventPayload& a, EventPayload& b) {
     a.Swap(&b);
@@ -2277,7 +2528,7 @@ class CommandEnterLobby final :
                &_CommandEnterLobby_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    13;
 
   friend void swap(CommandEnterLobby& a, CommandEnterLobby& b) {
     a.Swap(&b);
@@ -2429,7 +2680,7 @@ class CommandCreateNewGame final :
                &_CommandCreateNewGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    14;
 
   friend void swap(CommandCreateNewGame& a, CommandCreateNewGame& b) {
     a.Swap(&b);
@@ -2548,7 +2799,7 @@ class CommandJoinGame final :
                &_CommandJoinGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    15;
 
   friend void swap(CommandJoinGame& a, CommandJoinGame& b) {
     a.Swap(&b);
@@ -2623,13 +2874,13 @@ class CommandJoinGame final :
   enum : int {
     kGameIdFieldNumber = 1,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.CommandJoinGame)
@@ -2640,7 +2891,7 @@ class CommandJoinGame final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
+    uint32_t game_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2696,7 +2947,7 @@ class CommandStartGame final :
                &_CommandStartGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    16;
 
   friend void swap(CommandStartGame& a, CommandStartGame& b) {
     a.Swap(&b);
@@ -2771,13 +3022,13 @@ class CommandStartGame final :
   enum : int {
     kGameIdFieldNumber = 1,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.CommandStartGame)
@@ -2788,7 +3039,7 @@ class CommandStartGame final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
+    uint32_t game_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2844,7 +3095,7 @@ class CommandPlayerMakeMove final :
                &_CommandPlayerMakeMove_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    17;
 
   friend void swap(CommandPlayerMakeMove& a, CommandPlayerMakeMove& b) {
     a.Swap(&b);
@@ -2921,22 +3172,22 @@ class CommandPlayerMakeMove final :
     kPlayerIdFieldNumber = 2,
     kPlayedColumnFieldNumber = 3,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 player_id = 2;
+  // uint32 player_id = 2;
   void clear_player_id();
-  uint64_t player_id() const;
-  void set_player_id(uint64_t value);
+  uint32_t player_id() const;
+  void set_player_id(uint32_t value);
   private:
-  uint64_t _internal_player_id() const;
-  void _internal_set_player_id(uint64_t value);
+  uint32_t _internal_player_id() const;
+  void _internal_set_player_id(uint32_t value);
   public:
 
   // uint32 played_column = 3;
@@ -2956,8 +3207,8 @@ class CommandPlayerMakeMove final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t player_id_;
+    uint32_t game_id_;
+    uint32_t player_id_;
     uint32_t played_column_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -3014,7 +3265,7 @@ class CommandPlayerLeave final :
                &_CommandPlayerLeave_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    18;
 
   friend void swap(CommandPlayerLeave& a, CommandPlayerLeave& b) {
     a.Swap(&b);
@@ -3090,22 +3341,22 @@ class CommandPlayerLeave final :
     kGameIdFieldNumber = 1,
     kPlayerIdFieldNumber = 2,
   };
-  // uint64 game_id = 1;
+  // uint32 game_id = 1;
   void clear_game_id();
-  uint64_t game_id() const;
-  void set_game_id(uint64_t value);
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
   private:
-  uint64_t _internal_game_id() const;
-  void _internal_set_game_id(uint64_t value);
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
   public:
 
-  // uint64 player_id = 2;
+  // uint32 player_id = 2;
   void clear_player_id();
-  uint64_t player_id() const;
-  void set_player_id(uint64_t value);
+  uint32_t player_id() const;
+  void set_player_id(uint32_t value);
   private:
-  uint64_t _internal_player_id() const;
-  void _internal_set_player_id(uint64_t value);
+  uint32_t _internal_player_id() const;
+  void _internal_set_player_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:C4.CommandPlayerLeave)
@@ -3116,8 +3367,8 @@ class CommandPlayerLeave final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t game_id_;
-    uint64_t player_id_;
+    uint32_t game_id_;
+    uint32_t player_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -3183,7 +3434,7 @@ class CommandPayload final :
                &_CommandPayload_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    19;
 
   friend void swap(CommandPayload& a, CommandPayload& b) {
     a.Swap(&b);
@@ -3463,7 +3714,7 @@ class Message final :
                &_Message_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    20;
 
   friend void swap(Message& a, Message& b) {
     a.Swap(&b);
@@ -3540,13 +3791,13 @@ class Message final :
     kEventPayloadFieldNumber = 2,
     kCommandPayloadFieldNumber = 3,
   };
-  // uint64 id = 1;
+  // uint32 id = 1;
   void clear_id();
-  uint64_t id() const;
-  void set_id(uint64_t value);
+  uint32_t id() const;
+  void set_id(uint32_t value);
   private:
-  uint64_t _internal_id() const;
-  void _internal_set_id(uint64_t value);
+  uint32_t _internal_id() const;
+  void _internal_set_id(uint32_t value);
   public:
 
   // .C4.EventPayload event_payload = 2;
@@ -3600,7 +3851,7 @@ class Message final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    uint64_t id_;
+    uint32_t id_;
     union PayloadTypeUnion {
       constexpr PayloadTypeUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
@@ -3625,22 +3876,22 @@ class Message final :
 #endif  // __GNUC__
 // EventServerConnected
 
-// uint64 client_id = 1;
+// uint32 client_id = 1;
 inline void EventServerConnected::clear_client_id() {
-  _impl_.client_id_ = uint64_t{0u};
+  _impl_.client_id_ = 0u;
 }
-inline uint64_t EventServerConnected::_internal_client_id() const {
+inline uint32_t EventServerConnected::_internal_client_id() const {
   return _impl_.client_id_;
 }
-inline uint64_t EventServerConnected::client_id() const {
+inline uint32_t EventServerConnected::client_id() const {
   // @@protoc_insertion_point(field_get:C4.EventServerConnected.client_id)
   return _internal_client_id();
 }
-inline void EventServerConnected::_internal_set_client_id(uint64_t value) {
+inline void EventServerConnected::_internal_set_client_id(uint32_t value) {
   
   _impl_.client_id_ = value;
 }
-inline void EventServerConnected::set_client_id(uint64_t value) {
+inline void EventServerConnected::set_client_id(uint32_t value) {
   _internal_set_client_id(value);
   // @@protoc_insertion_point(field_set:C4.EventServerConnected.client_id)
 }
@@ -3651,113 +3902,247 @@ inline void EventServerConnected::set_client_id(uint64_t value) {
 
 // -------------------------------------------------------------------
 
-// GameStatus
+// GameInfo
 
-// uint64 id = 1;
-inline void GameStatus::clear_id() {
-  _impl_.id_ = uint64_t{0u};
+// uint32 id = 1;
+inline void GameInfo::clear_id() {
+  _impl_.id_ = 0u;
 }
-inline uint64_t GameStatus::_internal_id() const {
+inline uint32_t GameInfo::_internal_id() const {
   return _impl_.id_;
 }
-inline uint64_t GameStatus::id() const {
-  // @@protoc_insertion_point(field_get:C4.GameStatus.id)
+inline uint32_t GameInfo::id() const {
+  // @@protoc_insertion_point(field_get:C4.GameInfo.id)
   return _internal_id();
 }
-inline void GameStatus::_internal_set_id(uint64_t value) {
+inline void GameInfo::_internal_set_id(uint32_t value) {
   
   _impl_.id_ = value;
 }
-inline void GameStatus::set_id(uint64_t value) {
+inline void GameInfo::set_id(uint32_t value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:C4.GameStatus.id)
+  // @@protoc_insertion_point(field_set:C4.GameInfo.id)
 }
 
-// bool available = 2;
-inline void GameStatus::clear_available() {
-  _impl_.available_ = false;
+// uint32 player1_id = 2;
+inline void GameInfo::clear_player1_id() {
+  _impl_.player1_id_ = 0u;
 }
-inline bool GameStatus::_internal_available() const {
-  return _impl_.available_;
-}
-inline bool GameStatus::available() const {
-  // @@protoc_insertion_point(field_get:C4.GameStatus.available)
-  return _internal_available();
-}
-inline void GameStatus::_internal_set_available(bool value) {
-  
-  _impl_.available_ = value;
-}
-inline void GameStatus::set_available(bool value) {
-  _internal_set_available(value);
-  // @@protoc_insertion_point(field_set:C4.GameStatus.available)
-}
-
-// uint64 player1_id = 3;
-inline void GameStatus::clear_player1_id() {
-  _impl_.player1_id_ = uint64_t{0u};
-}
-inline uint64_t GameStatus::_internal_player1_id() const {
+inline uint32_t GameInfo::_internal_player1_id() const {
   return _impl_.player1_id_;
 }
-inline uint64_t GameStatus::player1_id() const {
-  // @@protoc_insertion_point(field_get:C4.GameStatus.player1_id)
+inline uint32_t GameInfo::player1_id() const {
+  // @@protoc_insertion_point(field_get:C4.GameInfo.player1_id)
   return _internal_player1_id();
 }
-inline void GameStatus::_internal_set_player1_id(uint64_t value) {
+inline void GameInfo::_internal_set_player1_id(uint32_t value) {
   
   _impl_.player1_id_ = value;
 }
-inline void GameStatus::set_player1_id(uint64_t value) {
+inline void GameInfo::set_player1_id(uint32_t value) {
   _internal_set_player1_id(value);
-  // @@protoc_insertion_point(field_set:C4.GameStatus.player1_id)
+  // @@protoc_insertion_point(field_set:C4.GameInfo.player1_id)
 }
 
-// uint64 player2_id = 4;
-inline void GameStatus::clear_player2_id() {
-  _impl_.player2_id_ = uint64_t{0u};
+// uint32 player2_id = 3;
+inline void GameInfo::clear_player2_id() {
+  _impl_.player2_id_ = 0u;
 }
-inline uint64_t GameStatus::_internal_player2_id() const {
+inline uint32_t GameInfo::_internal_player2_id() const {
   return _impl_.player2_id_;
 }
-inline uint64_t GameStatus::player2_id() const {
-  // @@protoc_insertion_point(field_get:C4.GameStatus.player2_id)
+inline uint32_t GameInfo::player2_id() const {
+  // @@protoc_insertion_point(field_get:C4.GameInfo.player2_id)
   return _internal_player2_id();
 }
-inline void GameStatus::_internal_set_player2_id(uint64_t value) {
+inline void GameInfo::_internal_set_player2_id(uint32_t value) {
   
   _impl_.player2_id_ = value;
 }
-inline void GameStatus::set_player2_id(uint64_t value) {
+inline void GameInfo::set_player2_id(uint32_t value) {
   _internal_set_player2_id(value);
-  // @@protoc_insertion_point(field_set:C4.GameStatus.player2_id)
+  // @@protoc_insertion_point(field_set:C4.GameInfo.player2_id)
+}
+
+// .C4.GameState state = 4;
+inline void GameInfo::clear_state() {
+  _impl_.state_ = 0;
+}
+inline ::C4::GameState GameInfo::_internal_state() const {
+  return static_cast< ::C4::GameState >(_impl_.state_);
+}
+inline ::C4::GameState GameInfo::state() const {
+  // @@protoc_insertion_point(field_get:C4.GameInfo.state)
+  return _internal_state();
+}
+inline void GameInfo::_internal_set_state(::C4::GameState value) {
+  
+  _impl_.state_ = value;
+}
+inline void GameInfo::set_state(::C4::GameState value) {
+  _internal_set_state(value);
+  // @@protoc_insertion_point(field_set:C4.GameInfo.state)
+}
+
+// -------------------------------------------------------------------
+
+// ClientInfo
+
+// uint32 id = 1;
+inline void ClientInfo::clear_id() {
+  _impl_.id_ = 0u;
+}
+inline uint32_t ClientInfo::_internal_id() const {
+  return _impl_.id_;
+}
+inline uint32_t ClientInfo::id() const {
+  // @@protoc_insertion_point(field_get:C4.ClientInfo.id)
+  return _internal_id();
+}
+inline void ClientInfo::_internal_set_id(uint32_t value) {
+  
+  _impl_.id_ = value;
+}
+inline void ClientInfo::set_id(uint32_t value) {
+  _internal_set_id(value);
+  // @@protoc_insertion_point(field_set:C4.ClientInfo.id)
+}
+
+// string username = 2;
+inline void ClientInfo::clear_username() {
+  _impl_.username_.ClearToEmpty();
+}
+inline const std::string& ClientInfo::username() const {
+  // @@protoc_insertion_point(field_get:C4.ClientInfo.username)
+  return _internal_username();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ClientInfo::set_username(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.username_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:C4.ClientInfo.username)
+}
+inline std::string* ClientInfo::mutable_username() {
+  std::string* _s = _internal_mutable_username();
+  // @@protoc_insertion_point(field_mutable:C4.ClientInfo.username)
+  return _s;
+}
+inline const std::string& ClientInfo::_internal_username() const {
+  return _impl_.username_.Get();
+}
+inline void ClientInfo::_internal_set_username(const std::string& value) {
+  
+  _impl_.username_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ClientInfo::_internal_mutable_username() {
+  
+  return _impl_.username_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ClientInfo::release_username() {
+  // @@protoc_insertion_point(field_release:C4.ClientInfo.username)
+  return _impl_.username_.Release();
+}
+inline void ClientInfo::set_allocated_username(std::string* username) {
+  if (username != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.username_.SetAllocated(username, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.username_.IsDefault()) {
+    _impl_.username_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:C4.ClientInfo.username)
+}
+
+// .C4.ClientState state = 3;
+inline void ClientInfo::clear_state() {
+  _impl_.state_ = 0;
+}
+inline ::C4::ClientState ClientInfo::_internal_state() const {
+  return static_cast< ::C4::ClientState >(_impl_.state_);
+}
+inline ::C4::ClientState ClientInfo::state() const {
+  // @@protoc_insertion_point(field_get:C4.ClientInfo.state)
+  return _internal_state();
+}
+inline void ClientInfo::_internal_set_state(::C4::ClientState value) {
+  
+  _impl_.state_ = value;
+}
+inline void ClientInfo::set_state(::C4::ClientState value) {
+  _internal_set_state(value);
+  // @@protoc_insertion_point(field_set:C4.ClientInfo.state)
 }
 
 // -------------------------------------------------------------------
 
 // EventLobbyUpdated
 
-// uint64 total_clients = 1;
+// uint32 total_clients = 1;
 inline void EventLobbyUpdated::clear_total_clients() {
-  _impl_.total_clients_ = uint64_t{0u};
+  _impl_.total_clients_ = 0u;
 }
-inline uint64_t EventLobbyUpdated::_internal_total_clients() const {
+inline uint32_t EventLobbyUpdated::_internal_total_clients() const {
   return _impl_.total_clients_;
 }
-inline uint64_t EventLobbyUpdated::total_clients() const {
+inline uint32_t EventLobbyUpdated::total_clients() const {
   // @@protoc_insertion_point(field_get:C4.EventLobbyUpdated.total_clients)
   return _internal_total_clients();
 }
-inline void EventLobbyUpdated::_internal_set_total_clients(uint64_t value) {
+inline void EventLobbyUpdated::_internal_set_total_clients(uint32_t value) {
   
   _impl_.total_clients_ = value;
 }
-inline void EventLobbyUpdated::set_total_clients(uint64_t value) {
+inline void EventLobbyUpdated::set_total_clients(uint32_t value) {
   _internal_set_total_clients(value);
   // @@protoc_insertion_point(field_set:C4.EventLobbyUpdated.total_clients)
 }
 
-// uint32 total_games = 2;
+// repeated .C4.ClientInfo clients = 2;
+inline int EventLobbyUpdated::_internal_clients_size() const {
+  return _impl_.clients_.size();
+}
+inline int EventLobbyUpdated::clients_size() const {
+  return _internal_clients_size();
+}
+inline void EventLobbyUpdated::clear_clients() {
+  _impl_.clients_.Clear();
+}
+inline ::C4::ClientInfo* EventLobbyUpdated::mutable_clients(int index) {
+  // @@protoc_insertion_point(field_mutable:C4.EventLobbyUpdated.clients)
+  return _impl_.clients_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::ClientInfo >*
+EventLobbyUpdated::mutable_clients() {
+  // @@protoc_insertion_point(field_mutable_list:C4.EventLobbyUpdated.clients)
+  return &_impl_.clients_;
+}
+inline const ::C4::ClientInfo& EventLobbyUpdated::_internal_clients(int index) const {
+  return _impl_.clients_.Get(index);
+}
+inline const ::C4::ClientInfo& EventLobbyUpdated::clients(int index) const {
+  // @@protoc_insertion_point(field_get:C4.EventLobbyUpdated.clients)
+  return _internal_clients(index);
+}
+inline ::C4::ClientInfo* EventLobbyUpdated::_internal_add_clients() {
+  return _impl_.clients_.Add();
+}
+inline ::C4::ClientInfo* EventLobbyUpdated::add_clients() {
+  ::C4::ClientInfo* _add = _internal_add_clients();
+  // @@protoc_insertion_point(field_add:C4.EventLobbyUpdated.clients)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::ClientInfo >&
+EventLobbyUpdated::clients() const {
+  // @@protoc_insertion_point(field_list:C4.EventLobbyUpdated.clients)
+  return _impl_.clients_;
+}
+
+// uint32 total_games = 3;
 inline void EventLobbyUpdated::clear_total_games() {
   _impl_.total_games_ = 0u;
 }
@@ -3777,7 +4162,7 @@ inline void EventLobbyUpdated::set_total_games(uint32_t value) {
   // @@protoc_insertion_point(field_set:C4.EventLobbyUpdated.total_games)
 }
 
-// repeated .C4.GameStatus games = 3;
+// repeated .C4.GameInfo games = 4;
 inline int EventLobbyUpdated::_internal_games_size() const {
   return _impl_.games_.size();
 }
@@ -3787,31 +4172,31 @@ inline int EventLobbyUpdated::games_size() const {
 inline void EventLobbyUpdated::clear_games() {
   _impl_.games_.Clear();
 }
-inline ::C4::GameStatus* EventLobbyUpdated::mutable_games(int index) {
+inline ::C4::GameInfo* EventLobbyUpdated::mutable_games(int index) {
   // @@protoc_insertion_point(field_mutable:C4.EventLobbyUpdated.games)
   return _impl_.games_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameStatus >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameInfo >*
 EventLobbyUpdated::mutable_games() {
   // @@protoc_insertion_point(field_mutable_list:C4.EventLobbyUpdated.games)
   return &_impl_.games_;
 }
-inline const ::C4::GameStatus& EventLobbyUpdated::_internal_games(int index) const {
+inline const ::C4::GameInfo& EventLobbyUpdated::_internal_games(int index) const {
   return _impl_.games_.Get(index);
 }
-inline const ::C4::GameStatus& EventLobbyUpdated::games(int index) const {
+inline const ::C4::GameInfo& EventLobbyUpdated::games(int index) const {
   // @@protoc_insertion_point(field_get:C4.EventLobbyUpdated.games)
   return _internal_games(index);
 }
-inline ::C4::GameStatus* EventLobbyUpdated::_internal_add_games() {
+inline ::C4::GameInfo* EventLobbyUpdated::_internal_add_games() {
   return _impl_.games_.Add();
 }
-inline ::C4::GameStatus* EventLobbyUpdated::add_games() {
-  ::C4::GameStatus* _add = _internal_add_games();
+inline ::C4::GameInfo* EventLobbyUpdated::add_games() {
+  ::C4::GameInfo* _add = _internal_add_games();
   // @@protoc_insertion_point(field_add:C4.EventLobbyUpdated.games)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameStatus >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::C4::GameInfo >&
 EventLobbyUpdated::games() const {
   // @@protoc_insertion_point(field_list:C4.EventLobbyUpdated.games)
   return _impl_.games_;
@@ -3825,42 +4210,42 @@ EventLobbyUpdated::games() const {
 
 // EventGameCreated
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void EventGameCreated::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t EventGameCreated::_internal_game_id() const {
+inline uint32_t EventGameCreated::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t EventGameCreated::game_id() const {
+inline uint32_t EventGameCreated::game_id() const {
   // @@protoc_insertion_point(field_get:C4.EventGameCreated.game_id)
   return _internal_game_id();
 }
-inline void EventGameCreated::_internal_set_game_id(uint64_t value) {
+inline void EventGameCreated::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void EventGameCreated::set_game_id(uint64_t value) {
+inline void EventGameCreated::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.EventGameCreated.game_id)
 }
 
-// uint64 player1_id = 2;
+// uint32 player1_id = 2;
 inline void EventGameCreated::clear_player1_id() {
-  _impl_.player1_id_ = uint64_t{0u};
+  _impl_.player1_id_ = 0u;
 }
-inline uint64_t EventGameCreated::_internal_player1_id() const {
+inline uint32_t EventGameCreated::_internal_player1_id() const {
   return _impl_.player1_id_;
 }
-inline uint64_t EventGameCreated::player1_id() const {
+inline uint32_t EventGameCreated::player1_id() const {
   // @@protoc_insertion_point(field_get:C4.EventGameCreated.player1_id)
   return _internal_player1_id();
 }
-inline void EventGameCreated::_internal_set_player1_id(uint64_t value) {
+inline void EventGameCreated::_internal_set_player1_id(uint32_t value) {
   
   _impl_.player1_id_ = value;
 }
-inline void EventGameCreated::set_player1_id(uint64_t value) {
+inline void EventGameCreated::set_player1_id(uint32_t value) {
   _internal_set_player1_id(value);
   // @@protoc_insertion_point(field_set:C4.EventGameCreated.player1_id)
 }
@@ -3869,42 +4254,42 @@ inline void EventGameCreated::set_player1_id(uint64_t value) {
 
 // EventPlayerJoined
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void EventPlayerJoined::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t EventPlayerJoined::_internal_game_id() const {
+inline uint32_t EventPlayerJoined::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t EventPlayerJoined::game_id() const {
+inline uint32_t EventPlayerJoined::game_id() const {
   // @@protoc_insertion_point(field_get:C4.EventPlayerJoined.game_id)
   return _internal_game_id();
 }
-inline void EventPlayerJoined::_internal_set_game_id(uint64_t value) {
+inline void EventPlayerJoined::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void EventPlayerJoined::set_game_id(uint64_t value) {
+inline void EventPlayerJoined::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.EventPlayerJoined.game_id)
 }
 
-// uint64 player2_id = 2;
+// uint32 player2_id = 2;
 inline void EventPlayerJoined::clear_player2_id() {
-  _impl_.player2_id_ = uint64_t{0u};
+  _impl_.player2_id_ = 0u;
 }
-inline uint64_t EventPlayerJoined::_internal_player2_id() const {
+inline uint32_t EventPlayerJoined::_internal_player2_id() const {
   return _impl_.player2_id_;
 }
-inline uint64_t EventPlayerJoined::player2_id() const {
+inline uint32_t EventPlayerJoined::player2_id() const {
   // @@protoc_insertion_point(field_get:C4.EventPlayerJoined.player2_id)
   return _internal_player2_id();
 }
-inline void EventPlayerJoined::_internal_set_player2_id(uint64_t value) {
+inline void EventPlayerJoined::_internal_set_player2_id(uint32_t value) {
   
   _impl_.player2_id_ = value;
 }
-inline void EventPlayerJoined::set_player2_id(uint64_t value) {
+inline void EventPlayerJoined::set_player2_id(uint32_t value) {
   _internal_set_player2_id(value);
   // @@protoc_insertion_point(field_set:C4.EventPlayerJoined.player2_id)
 }
@@ -3913,22 +4298,22 @@ inline void EventPlayerJoined::set_player2_id(uint64_t value) {
 
 // EventGameStarted
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void EventGameStarted::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t EventGameStarted::_internal_game_id() const {
+inline uint32_t EventGameStarted::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t EventGameStarted::game_id() const {
+inline uint32_t EventGameStarted::game_id() const {
   // @@protoc_insertion_point(field_get:C4.EventGameStarted.game_id)
   return _internal_game_id();
 }
-inline void EventGameStarted::_internal_set_game_id(uint64_t value) {
+inline void EventGameStarted::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void EventGameStarted::set_game_id(uint64_t value) {
+inline void EventGameStarted::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.EventGameStarted.game_id)
 }
@@ -3937,42 +4322,42 @@ inline void EventGameStarted::set_game_id(uint64_t value) {
 
 // EventPlayerMadeMove
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void EventPlayerMadeMove::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t EventPlayerMadeMove::_internal_game_id() const {
+inline uint32_t EventPlayerMadeMove::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t EventPlayerMadeMove::game_id() const {
+inline uint32_t EventPlayerMadeMove::game_id() const {
   // @@protoc_insertion_point(field_get:C4.EventPlayerMadeMove.game_id)
   return _internal_game_id();
 }
-inline void EventPlayerMadeMove::_internal_set_game_id(uint64_t value) {
+inline void EventPlayerMadeMove::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void EventPlayerMadeMove::set_game_id(uint64_t value) {
+inline void EventPlayerMadeMove::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.EventPlayerMadeMove.game_id)
 }
 
-// uint64 player_id = 2;
+// uint32 player_id = 2;
 inline void EventPlayerMadeMove::clear_player_id() {
-  _impl_.player_id_ = uint64_t{0u};
+  _impl_.player_id_ = 0u;
 }
-inline uint64_t EventPlayerMadeMove::_internal_player_id() const {
+inline uint32_t EventPlayerMadeMove::_internal_player_id() const {
   return _impl_.player_id_;
 }
-inline uint64_t EventPlayerMadeMove::player_id() const {
+inline uint32_t EventPlayerMadeMove::player_id() const {
   // @@protoc_insertion_point(field_get:C4.EventPlayerMadeMove.player_id)
   return _internal_player_id();
 }
-inline void EventPlayerMadeMove::_internal_set_player_id(uint64_t value) {
+inline void EventPlayerMadeMove::_internal_set_player_id(uint32_t value) {
   
   _impl_.player_id_ = value;
 }
-inline void EventPlayerMadeMove::set_player_id(uint64_t value) {
+inline void EventPlayerMadeMove::set_player_id(uint32_t value) {
   _internal_set_player_id(value);
   // @@protoc_insertion_point(field_set:C4.EventPlayerMadeMove.player_id)
 }
@@ -4001,42 +4386,42 @@ inline void EventPlayerMadeMove::set_played_column(uint32_t value) {
 
 // EventGameVerdicted
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void EventGameVerdicted::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t EventGameVerdicted::_internal_game_id() const {
+inline uint32_t EventGameVerdicted::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t EventGameVerdicted::game_id() const {
+inline uint32_t EventGameVerdicted::game_id() const {
   // @@protoc_insertion_point(field_get:C4.EventGameVerdicted.game_id)
   return _internal_game_id();
 }
-inline void EventGameVerdicted::_internal_set_game_id(uint64_t value) {
+inline void EventGameVerdicted::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void EventGameVerdicted::set_game_id(uint64_t value) {
+inline void EventGameVerdicted::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.EventGameVerdicted.game_id)
 }
 
-// uint64 game_verdict = 2;
+// uint32 game_verdict = 2;
 inline void EventGameVerdicted::clear_game_verdict() {
-  _impl_.game_verdict_ = uint64_t{0u};
+  _impl_.game_verdict_ = 0u;
 }
-inline uint64_t EventGameVerdicted::_internal_game_verdict() const {
+inline uint32_t EventGameVerdicted::_internal_game_verdict() const {
   return _impl_.game_verdict_;
 }
-inline uint64_t EventGameVerdicted::game_verdict() const {
+inline uint32_t EventGameVerdicted::game_verdict() const {
   // @@protoc_insertion_point(field_get:C4.EventGameVerdicted.game_verdict)
   return _internal_game_verdict();
 }
-inline void EventGameVerdicted::_internal_set_game_verdict(uint64_t value) {
+inline void EventGameVerdicted::_internal_set_game_verdict(uint32_t value) {
   
   _impl_.game_verdict_ = value;
 }
-inline void EventGameVerdicted::set_game_verdict(uint64_t value) {
+inline void EventGameVerdicted::set_game_verdict(uint32_t value) {
   _internal_set_game_verdict(value);
   // @@protoc_insertion_point(field_set:C4.EventGameVerdicted.game_verdict)
 }
@@ -4045,42 +4430,42 @@ inline void EventGameVerdicted::set_game_verdict(uint64_t value) {
 
 // EventPlayerLeft
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void EventPlayerLeft::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t EventPlayerLeft::_internal_game_id() const {
+inline uint32_t EventPlayerLeft::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t EventPlayerLeft::game_id() const {
+inline uint32_t EventPlayerLeft::game_id() const {
   // @@protoc_insertion_point(field_get:C4.EventPlayerLeft.game_id)
   return _internal_game_id();
 }
-inline void EventPlayerLeft::_internal_set_game_id(uint64_t value) {
+inline void EventPlayerLeft::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void EventPlayerLeft::set_game_id(uint64_t value) {
+inline void EventPlayerLeft::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.EventPlayerLeft.game_id)
 }
 
-// uint64 player_id = 2;
+// uint32 player_id = 2;
 inline void EventPlayerLeft::clear_player_id() {
-  _impl_.player_id_ = uint64_t{0u};
+  _impl_.player_id_ = 0u;
 }
-inline uint64_t EventPlayerLeft::_internal_player_id() const {
+inline uint32_t EventPlayerLeft::_internal_player_id() const {
   return _impl_.player_id_;
 }
-inline uint64_t EventPlayerLeft::player_id() const {
+inline uint32_t EventPlayerLeft::player_id() const {
   // @@protoc_insertion_point(field_get:C4.EventPlayerLeft.player_id)
   return _internal_player_id();
 }
-inline void EventPlayerLeft::_internal_set_player_id(uint64_t value) {
+inline void EventPlayerLeft::_internal_set_player_id(uint32_t value) {
   
   _impl_.player_id_ = value;
 }
-inline void EventPlayerLeft::set_player_id(uint64_t value) {
+inline void EventPlayerLeft::set_player_id(uint32_t value) {
   _internal_set_player_id(value);
   // @@protoc_insertion_point(field_set:C4.EventPlayerLeft.player_id)
 }
@@ -4900,22 +5285,22 @@ inline void CommandEnterLobby::set_allocated_username(std::string* username) {
 
 // CommandJoinGame
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void CommandJoinGame::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t CommandJoinGame::_internal_game_id() const {
+inline uint32_t CommandJoinGame::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t CommandJoinGame::game_id() const {
+inline uint32_t CommandJoinGame::game_id() const {
   // @@protoc_insertion_point(field_get:C4.CommandJoinGame.game_id)
   return _internal_game_id();
 }
-inline void CommandJoinGame::_internal_set_game_id(uint64_t value) {
+inline void CommandJoinGame::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void CommandJoinGame::set_game_id(uint64_t value) {
+inline void CommandJoinGame::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.CommandJoinGame.game_id)
 }
@@ -4924,22 +5309,22 @@ inline void CommandJoinGame::set_game_id(uint64_t value) {
 
 // CommandStartGame
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void CommandStartGame::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t CommandStartGame::_internal_game_id() const {
+inline uint32_t CommandStartGame::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t CommandStartGame::game_id() const {
+inline uint32_t CommandStartGame::game_id() const {
   // @@protoc_insertion_point(field_get:C4.CommandStartGame.game_id)
   return _internal_game_id();
 }
-inline void CommandStartGame::_internal_set_game_id(uint64_t value) {
+inline void CommandStartGame::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void CommandStartGame::set_game_id(uint64_t value) {
+inline void CommandStartGame::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.CommandStartGame.game_id)
 }
@@ -4948,42 +5333,42 @@ inline void CommandStartGame::set_game_id(uint64_t value) {
 
 // CommandPlayerMakeMove
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void CommandPlayerMakeMove::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t CommandPlayerMakeMove::_internal_game_id() const {
+inline uint32_t CommandPlayerMakeMove::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t CommandPlayerMakeMove::game_id() const {
+inline uint32_t CommandPlayerMakeMove::game_id() const {
   // @@protoc_insertion_point(field_get:C4.CommandPlayerMakeMove.game_id)
   return _internal_game_id();
 }
-inline void CommandPlayerMakeMove::_internal_set_game_id(uint64_t value) {
+inline void CommandPlayerMakeMove::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void CommandPlayerMakeMove::set_game_id(uint64_t value) {
+inline void CommandPlayerMakeMove::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.CommandPlayerMakeMove.game_id)
 }
 
-// uint64 player_id = 2;
+// uint32 player_id = 2;
 inline void CommandPlayerMakeMove::clear_player_id() {
-  _impl_.player_id_ = uint64_t{0u};
+  _impl_.player_id_ = 0u;
 }
-inline uint64_t CommandPlayerMakeMove::_internal_player_id() const {
+inline uint32_t CommandPlayerMakeMove::_internal_player_id() const {
   return _impl_.player_id_;
 }
-inline uint64_t CommandPlayerMakeMove::player_id() const {
+inline uint32_t CommandPlayerMakeMove::player_id() const {
   // @@protoc_insertion_point(field_get:C4.CommandPlayerMakeMove.player_id)
   return _internal_player_id();
 }
-inline void CommandPlayerMakeMove::_internal_set_player_id(uint64_t value) {
+inline void CommandPlayerMakeMove::_internal_set_player_id(uint32_t value) {
   
   _impl_.player_id_ = value;
 }
-inline void CommandPlayerMakeMove::set_player_id(uint64_t value) {
+inline void CommandPlayerMakeMove::set_player_id(uint32_t value) {
   _internal_set_player_id(value);
   // @@protoc_insertion_point(field_set:C4.CommandPlayerMakeMove.player_id)
 }
@@ -5012,42 +5397,42 @@ inline void CommandPlayerMakeMove::set_played_column(uint32_t value) {
 
 // CommandPlayerLeave
 
-// uint64 game_id = 1;
+// uint32 game_id = 1;
 inline void CommandPlayerLeave::clear_game_id() {
-  _impl_.game_id_ = uint64_t{0u};
+  _impl_.game_id_ = 0u;
 }
-inline uint64_t CommandPlayerLeave::_internal_game_id() const {
+inline uint32_t CommandPlayerLeave::_internal_game_id() const {
   return _impl_.game_id_;
 }
-inline uint64_t CommandPlayerLeave::game_id() const {
+inline uint32_t CommandPlayerLeave::game_id() const {
   // @@protoc_insertion_point(field_get:C4.CommandPlayerLeave.game_id)
   return _internal_game_id();
 }
-inline void CommandPlayerLeave::_internal_set_game_id(uint64_t value) {
+inline void CommandPlayerLeave::_internal_set_game_id(uint32_t value) {
   
   _impl_.game_id_ = value;
 }
-inline void CommandPlayerLeave::set_game_id(uint64_t value) {
+inline void CommandPlayerLeave::set_game_id(uint32_t value) {
   _internal_set_game_id(value);
   // @@protoc_insertion_point(field_set:C4.CommandPlayerLeave.game_id)
 }
 
-// uint64 player_id = 2;
+// uint32 player_id = 2;
 inline void CommandPlayerLeave::clear_player_id() {
-  _impl_.player_id_ = uint64_t{0u};
+  _impl_.player_id_ = 0u;
 }
-inline uint64_t CommandPlayerLeave::_internal_player_id() const {
+inline uint32_t CommandPlayerLeave::_internal_player_id() const {
   return _impl_.player_id_;
 }
-inline uint64_t CommandPlayerLeave::player_id() const {
+inline uint32_t CommandPlayerLeave::player_id() const {
   // @@protoc_insertion_point(field_get:C4.CommandPlayerLeave.player_id)
   return _internal_player_id();
 }
-inline void CommandPlayerLeave::_internal_set_player_id(uint64_t value) {
+inline void CommandPlayerLeave::_internal_set_player_id(uint32_t value) {
   
   _impl_.player_id_ = value;
 }
-inline void CommandPlayerLeave::set_player_id(uint64_t value) {
+inline void CommandPlayerLeave::set_player_id(uint32_t value) {
   _internal_set_player_id(value);
   // @@protoc_insertion_point(field_set:C4.CommandPlayerLeave.player_id)
 }
@@ -5513,22 +5898,22 @@ inline CommandPayload::PayloadCase CommandPayload::payload_case() const {
 
 // Message
 
-// uint64 id = 1;
+// uint32 id = 1;
 inline void Message::clear_id() {
-  _impl_.id_ = uint64_t{0u};
+  _impl_.id_ = 0u;
 }
-inline uint64_t Message::_internal_id() const {
+inline uint32_t Message::_internal_id() const {
   return _impl_.id_;
 }
-inline uint64_t Message::id() const {
+inline uint32_t Message::id() const {
   // @@protoc_insertion_point(field_get:C4.Message.id)
   return _internal_id();
 }
-inline void Message::_internal_set_id(uint64_t value) {
+inline void Message::_internal_set_id(uint32_t value) {
   
   _impl_.id_ = value;
 }
-inline void Message::set_id(uint64_t value) {
+inline void Message::set_id(uint32_t value) {
   _internal_set_id(value);
   // @@protoc_insertion_point(field_set:C4.Message.id)
 }
@@ -5731,6 +6116,8 @@ inline Message::PayloadTypeCase Message::payload_type_case() const {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -5742,6 +6129,16 @@ template <> struct is_proto_enum< ::C4::MessageType> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::C4::MessageType>() {
   return ::C4::MessageType_descriptor();
+}
+template <> struct is_proto_enum< ::C4::GameState> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::C4::GameState>() {
+  return ::C4::GameState_descriptor();
+}
+template <> struct is_proto_enum< ::C4::ClientState> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::C4::ClientState>() {
+  return ::C4::ClientState_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

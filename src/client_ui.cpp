@@ -1,6 +1,7 @@
 #include "client.hpp"
-#include "qboxlayout.h"
-#include "qobjectdefs.h"
+#include "message.pb.h"
+#include "qlistwidget.h"
+#include "qnamespace.h"
 
 namespace C4 {
 Client::QUI::QUI(Client *client, QWidget *parent) : QWidget(parent) {
@@ -24,6 +25,7 @@ Client::QUI::QUI(Client *client, QWidget *parent) : QWidget(parent) {
   QHBoxLayout *hbl_btn = new QHBoxLayout;
   hbl_btn->setContentsMargins(0, 0, 0, 0);
   m_btn_enter_lobby = new QPushButton(tr("Enter lobby"));
+  m_btn_enter_lobby->setEnabled(false);
   hbl_btn->addWidget(m_btn_enter_lobby);
   hbl_btn->addStretch(1);
   vbl_username->addLayout(hbl_btn);
@@ -76,6 +78,29 @@ void Client::QUI::lobby_entered() {
   QMetaObject::invokeMethod(this, [this]() { m_sw_pages->setCurrentIndex(1); });
 }
 
+void Client::QUI::lobby_updated(const EventLobbyUpdated *lu) {
+  m_client->m_total_clients = lu->total_clients();
+  QMetaObject::invokeMethod(this, [this, lu = *lu]() {
+    m_lw_online_players->setUpdatesEnabled(false);
+    client_id_t selected_id = 0;
+    if (m_lw_online_players->selectedItems().size() > 0) {
+      selected_id =
+          m_lw_online_players->selectedItems()[0]->data(Qt::UserRole).toUInt();
+      spdlog::debug("Previous selected id: {}", selected_id);
+    }
+    m_lw_online_players->clear();
+    for (auto &ci : lu.clients()) {
+      QListWidgetItem *item = new QListWidgetItem(ci.username().c_str());
+      item->setData(Qt::UserRole, ci.id());
+      m_lw_online_players->addItem(item);
+      if (ci.id() == selected_id) {
+        m_lw_online_players->setCurrentItem(item);
+      }
+    }
+    m_lw_online_players->setUpdatesEnabled(true);
+  });
+}
+
 void Client::QUI::username_check_failed() {
   QMetaObject::invokeMethod(this, [this]() {
     QMessageBox::information(
@@ -85,7 +110,7 @@ void Client::QUI::username_check_failed() {
 }
 
 void Client::QUI::on_btn_enter_lobby_clicked() {
-  m_client->enter_lobby_async();
+  m_client->async_enter_lobby();
 }
 
 void Client::QUI::on_le_username_text_changed(const QString &text) {

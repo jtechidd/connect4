@@ -6,12 +6,6 @@
 namespace C4 {
 
 typedef enum {
-  GAME_STATE_WAITING = 1,
-  GAME_STATE_IN_GAME,
-  GAME_STATE_VERDICT,
-} game_state_t;
-
-typedef enum {
   GAME_PLAYER_1 = 1,
   GAME_PLAYER_2,
 } game_player_t;
@@ -30,7 +24,7 @@ public:
   client_id_t m_p2_id;
 
   uint8_t m_round;
-  game_state_t m_state;
+  GameState m_state;
   game_player_t m_turn;
   game_verdict_t m_verdict;
   game_player_t m_board[6][7];

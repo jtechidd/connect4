@@ -3,17 +3,10 @@
 
 #include "common.hpp"
 #include "game.hpp"
-#include "message.pb.h"
 #include "ring_buffer.hpp"
 #include <QtWidgets>
 
 namespace C4 {
-
-typedef enum {
-  CLIENT_STATE_USERNAME,
-  CLIENT_STATE_LOBBY,
-  CLIENT_STATE_IN_GAME,
-} client_state_t;
 
 extern const char *CLIENT_DEFAULT_HOST;
 extern const int CLIENT_DEFAULT_PORT;
@@ -56,6 +49,7 @@ public:
     void update_server_connection(bool is_connected);
     void username_check_failed();
     void lobby_entered();
+    void lobby_updated(const EventLobbyUpdated *lu);
 
     void on_btn_enter_lobby_clicked();
     void on_le_username_text_changed(const QString &text);
@@ -64,50 +58,52 @@ public:
   char *m_host;
   int m_port;
 
-  uv_loop_t *m_loop;
-  std::thread m_thread_uv;
+  uv_loop_t *m_uv_loop;
+  std::thread m_thread_uv_loop;
 
-  uv_timer_t m_try_connect;
-  uv_tcp_t m_connection;
-  struct sockaddr_in m_server_addr;
-  RingBuffer m_ring_buf;
-  MessageHandler m_msg_hdl;
+  uv_timer_t m_uv_timer_try_connect;
+  uv_tcp_t m_uv_tcp_connection;
+  struct sockaddr_in m_server_address;
+  RingBuffer m_ring_buffer;
+  MessageHandler m_message_handler;
 
   bool m_is_connected;
   client_id_t m_client_id;
   uint64_t m_total_clients;
-  client_state_t m_state;
+  ClientState m_state;
   char m_username[USERNAME_MAX_SIZE + 1];
   Game m_game;
 
-  QApplication m_qapp;
-  QUI m_qui;
+  QApplication m_qt_app;
+  QUI m_qt_ui;
 
   // UV async handles
-  uv_async_t m_keep_alive;
+  uv_async_t m_uv_async_keep_alive;
   // From main thread (UI)
-  uv_async_t m_stop;
-  uv_async_t m_enter_lobby;
+  uv_async_t m_uv_async_stop_loop;
+  uv_async_t m_uv_async_enter_lobby;
 
   Client(int argc, char **argv, const char *host = CLIENT_DEFAULT_HOST,
          int port = CLIENT_DEFAULT_PORT);
   ~Client();
 
   void run();
-  int run_ui();
-  void run_uv();
-  void stop_async();
-  void enter_lobby_async();
+  int run_qt_ui();
+  void run_uv_loop();
+  void async_stop_uv_loop();
+  void async_enter_lobby();
 
-  static void on_try_connect(uv_timer_t *timer);
-  static void on_connect(uv_connect_t *connect, int status);
-  static void on_read(uv_stream_t *stream, long nread, const uv_buf_t *buf);
-  static void on_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf);
-  static void on_write(uv_write_t *write, int status);
-  static void on_close(uv_handle_t *handle);
+  static void on_uv_timer_try_connect_timeout(uv_timer_t *timer);
+  static void on_uv_tcp_server_connect(uv_connect_t *connect, int status);
+  static void on_uv_tcp_connection_read(uv_stream_t *stream, long nread,
+                                        const uv_buf_t *buf);
+  static void on_uv_tcp_connection_alloc(uv_handle_t *handle,
+                                         unsigned long size, uv_buf_t *buf);
+  static void on_uv_tcp_connection_write(uv_write_t *write, int status);
+  static void on_uv_tcp_connection_close(uv_handle_t *handle);
 
-  static void enter_lobby_async_cb(uv_async_t *handle);
-  static void stop_async_cb(uv_async_t *handle);
+  static void on_uv_async_enter_lobby_awake(uv_async_t *handle);
+  static void on_uv_async_stop_uv_loop_awake(uv_async_t *handle);
 };
 
 }; // namespace C4

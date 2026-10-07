@@ -10,13 +10,14 @@ class Server {
 public:
   class ClientConnection {
   public:
-    uv_loop_t *m_loop;
+    uv_loop_t *m_uv_loop;
     Server *m_server;
     client_id_t m_id;
-    uv_tcp_t m_connection;
+    uv_tcp_t m_uv_tcp_connection;
     char m_username[USERNAME_MAX_SIZE + 1];
-    RingBuffer m_ring_buf;
-    game_id_t m_curr_game_id;
+    ClientState m_state;
+    RingBuffer m_ring_buffer;
+    game_id_t m_current_game_id;
 
     ClientConnection(uv_loop_t *loop, Server *server = nullptr,
                      client_id_t id = ++g_client_cid);
@@ -27,11 +28,12 @@ public:
     void emit_event_server_connected();
 
     // UV callbacks
-    static void on_alloc(uv_handle_t *handle, unsigned long size,
-                         uv_buf_t *buf);
-    static void on_read(uv_stream_t *stream, long nread, const uv_buf_t *buf);
-    static void on_close(uv_handle_t *handle);
-    static void on_write(uv_write_t *write, int status);
+    static void on_uv_tcp_connection_alloc(uv_handle_t *handle,
+                                           unsigned long size, uv_buf_t *buf);
+    static void on_uv_tcp_connection_read(uv_stream_t *stream, long nread,
+                                          const uv_buf_t *buf);
+    static void on_uv_tcp_connection_close(uv_handle_t *handle);
+    static void on_uv_tcp_connection_write(uv_write_t *write, int status);
   };
 
   class MessageHandler {
@@ -51,21 +53,24 @@ public:
     void send_message(client_id_t client_id, Message *msg);
     void broadcast_message(Message *msg);
     void emit_event_server_connected(client_id_t client_id);
+    void init_event_lobby_updated(Message *msg);
+    void emit_event_lobby_updated(client_id_t client_id);
     void broadcast_event_lobby_updated();
     void emit_event_username_check_failed(client_id_t client_id);
     void emit_event_lobby_entered(client_id_t client_id);
   };
 
-  uv_loop_t *m_loop;
+  uv_loop_t *m_uv_loop;
   int m_port;
   int m_backlog;
-  uv_tcp_t m_server;
+  uv_tcp_t m_uv_tcp_server;
   struct sockaddr_in m_server_addr;
   client_id_t m_client_cid;
   std::map<client_id_t, ClientConnection *> m_clients_map;
   game_id_t m_game_cid;
   std::map<game_id_t, Game *> m_game_map;
-  MessageHandler m_msg_hdl;
+  MessageHandler m_message_handler;
+  uv_timer_t m_uv_timer_broadcast_event_lobby_updated;
 
   Server(int port = 8080, int backlog = 128);
   ~Server();
@@ -77,7 +82,9 @@ public:
   void join_game(client_id_t client_id, game_id_t game_id);
 
   // UV callbacks
-  static void on_connection(uv_stream_t *stream, int status);
+  static void on_uv_tcp_server_connection(uv_stream_t *stream, int status);
+  static void
+  on_uv_timer_broadcast_event_lobby_updated_timeout(uv_timer_t *timer);
 };
 } // namespace C4
 

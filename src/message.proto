@@ -8,52 +8,71 @@ enum MessageType {
 }
 
 message EventServerConnected {
-  uint64 client_id = 1;
+  uint32 client_id = 1;
 }
 
 message EventUsernameCheckFailed {}
 
-message GameStatus {
-  uint64 id         = 1;
-  bool   available  = 2;
-  uint64 player1_id = 3;
-  uint64 player2_id = 4;
+enum GameState {
+  GAME_STATE_WAITING = 0;
+  GAME_STATE_IN_GAME = 1;
+  GAME_STATE_VERDICT = 2;
+}
+
+message GameInfo {
+  uint32    id         = 1;
+  uint32    player1_id = 2;
+  uint32    player2_id = 3;
+  GameState state      = 4;
+}
+
+enum ClientState {
+  CLIENT_STATE_USERNAME = 0;
+  CLIENT_STATE_LOBBY    = 1;
+  CLIENT_STATE_IN_GAME  = 2;
+}
+
+message ClientInfo {
+  uint32      id       = 1;
+  string      username = 2;
+  ClientState state    = 3;
 }
 
 message EventLobbyUpdated {
-  uint64              total_clients = 1;
-  uint32              total_games   = 2;
-  repeated GameStatus games         = 3;
+  uint32              total_clients = 1;
+  repeated ClientInfo clients       = 2;
+  uint32              total_games   = 3;
+  repeated GameInfo   games         = 4;
 }
 
 message EventLobbyEntered {}
 
 message EventGameCreated {
-  uint64 game_id    = 1;
-  uint64 player1_id = 2;
+  uint32 game_id    = 1;
+  uint32 player1_id = 2;
 }
 
 message EventPlayerJoined {
-  uint64 game_id    = 1;
-  uint64 player2_id = 2;
+  uint32 game_id    = 1;
+  uint32 player2_id = 2;
 }
 
-message EventGameStarted { uint64 game_id = 1; }
+message EventGameStarted { uint32 game_id = 1; }
 
 message EventPlayerMadeMove {
-  uint64 game_id       = 1;
-  uint64 player_id     = 2;
+  uint32 game_id       = 1;
+  uint32 player_id     = 2;
   uint32 played_column = 3;
 }
 
 message EventGameVerdicted {
-  uint64 game_id      = 1;
-  uint64 game_verdict = 2;
+  uint32 game_id      = 1;
+  uint32 game_verdict = 2;
 }
 
 message EventPlayerLeft {
-  uint64 game_id   = 1;
-  uint64 player_id = 2;
+  uint32 game_id   = 1;
+  uint32 player_id = 2;
 }
 
 message EventPayload {
@@ -78,22 +97,22 @@ message CommandEnterLobby {
 message CommandCreateNewGame {}
 
 message CommandJoinGame {
-  uint64 game_id = 1;
+  uint32 game_id = 1;
 }
 
 message CommandStartGame {
-  uint64 game_id = 1;
+  uint32 game_id = 1;
 }
 
 message CommandPlayerMakeMove {
-  uint64 game_id       = 1;
-  uint64 player_id     = 2;
+  uint32 game_id       = 1;
+  uint32 player_id     = 2;
   uint32 played_column = 3;
 }
 
 message CommandPlayerLeave {
-  uint64 game_id   = 1;
-  uint64 player_id = 2;
+  uint32 game_id   = 1;
+  uint32 player_id = 2;
 }
 
 message CommandPayload {
@@ -108,7 +127,7 @@ message CommandPayload {
 }
 
 message Message {
-  uint64 id = 1;
+  uint32 id = 1;
   oneof payload_type {
     EventPayload   event_payload   = 2;
     CommandPayload command_payload = 3;

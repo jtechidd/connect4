@@ -12,7 +12,7 @@ Game::Game() {
   m_verdict = GAME_VERDICT_UNDECIDED;
   memset(m_board, 0, sizeof(m_board));
 };
-Game::Game(uint64_t id, client_id_t p1_id) : Game() {
+Game::Game(game_id_t id, client_id_t p1_id) : Game() {
   m_id = id;
   m_p1_id = p1_id;
 }

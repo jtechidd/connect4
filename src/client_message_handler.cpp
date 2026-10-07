@@ -46,19 +46,19 @@ void Client::MessageHandler::handle_event_server_connected(
 
 void Client::MessageHandler::handle_event_lobby_entered(
     const EventLobbyEntered *le) {
-  m_client->m_qui.lobby_entered();
+  m_client->m_qt_ui.lobby_entered();
   spdlog::info("Entered lobby");
 }
 
 void Client::MessageHandler::handle_event_username_check_failed(
     const EventUsernameCheckFailed *ucf) {
-  m_client->m_qui.username_check_failed();
+  m_client->m_qt_ui.username_check_failed();
   spdlog::info("Username check failed");
 }
 
 void Client::MessageHandler::handle_event_lobby_updated(
     const EventLobbyUpdated *lu) {
-  m_client->m_total_clients = lu->total_clients();
+  m_client->m_qt_ui.lobby_updated(lu);
   spdlog::info("Set total clients to {}", m_client->m_total_clients);
 }
 
@@ -66,8 +66,8 @@ void Client::MessageHandler::send_message(Message *msg) {
   WriteRequest *wr = new WriteRequest(msg);
   wr->req.data = this;
   spdlog::debug("Sending message with {} bytes", wr->buf.len);
-  uv_write((uv_write_t *)wr, (uv_stream_t *)&m_client->m_connection, &wr->buf,
-           1, Client::on_write);
+  uv_write((uv_write_t *)wr, (uv_stream_t *)&m_client->m_uv_tcp_connection,
+           &wr->buf, 1, Client::on_uv_tcp_connection_write);
 }
 
 void Client::MessageHandler::send_command_enter_lobby() {

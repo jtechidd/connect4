@@ -2,22 +2,20 @@
 #include "game.hpp"
 #include "message.pb.h"
 #include "server.hpp"
-#include <cstring>
 
 namespace C4 {
 
 Server::MessageHandler::MessageHandler(Server *server) { m_server = server; }
 Server::MessageHandler::~MessageHandler() {}
 
-void Server::MessageHandler::send_message(client_id_t client_id,
-                                          Message *msg) {
+void Server::MessageHandler::send_message(client_id_t client_id, Message *msg) {
   ClientConnection *s = m_server->m_clients_map[client_id];
   if (!s)
     return;
   WriteRequest *wr = new WriteRequest(msg);
   wr->req.data = this;
-  uv_write((uv_write_t *)wr, (uv_stream_t *)&s->m_connection, &wr->buf, 1,
-           Server::ClientConnection::on_write);
+  uv_write((uv_write_t *)wr, (uv_stream_t *)&s->m_uv_tcp_connection, &wr->buf,
+           1, Server::ClientConnection::on_uv_tcp_connection_write);
 }
 
 void Server::MessageHandler::broadcast_message(Message *msg) {
@@ -35,20 +33,37 @@ void Server::MessageHandler::emit_event_server_connected(
   send_message(client_id, &msg);
 }
 
-void Server::MessageHandler::broadcast_event_lobby_updated() {
-  Message msg;
-  EventPayload *ep = msg.mutable_event_payload();
+void Server::MessageHandler::init_event_lobby_updated(Message *msg) {
+  EventPayload *ep = msg->mutable_event_payload();
   EventLobbyUpdated *lu = ep->mutable_event_lobby_updated();
   lu->set_total_clients(m_server->m_clients_map.size());
   lu->set_total_games(m_server->m_game_map.size());
   for (auto [_, g] : m_server->m_game_map) {
-    GameStatus *gs = lu->add_games();
-    gs->set_id(g->m_id);
-    gs->set_available(!g->m_p1_id || !g->m_p2_id);
-    gs->set_player1_id(g->m_p1_id);
-    gs->set_player2_id(g->m_p2_id);
+    GameInfo *gi = lu->add_games();
+    gi->set_id(g->m_id);
+    gi->set_player1_id(g->m_p1_id);
+    gi->set_player2_id(g->m_p2_id);
+    gi->set_state(g->m_state);
   }
+  for (auto [_, c] : m_server->m_clients_map) {
+    ClientInfo *ci = lu->add_clients();
+    ci->set_id(c->m_id);
+    ci->set_state(c->m_state);
+    ci->set_username(c->m_username);
+  }
+}
+
+void Server::MessageHandler::broadcast_event_lobby_updated() {
+  spdlog::debug("Broadcasting event lobby updated to all clients...");
+  Message msg;
+  init_event_lobby_updated(&msg);
   broadcast_message(&msg);
+}
+
+void Server::MessageHandler::emit_event_lobby_updated(client_id_t client_id) {
+  Message msg;
+  init_event_lobby_updated(&msg);
+  send_message(client_id, &msg);
 }
 
 void Server::MessageHandler::emit_event_lobby_entered(client_id_t client_id) {
@@ -112,7 +127,10 @@ void Server::MessageHandler::handle_command_enter_lobby(
   assert(s != NULL);
   assert(el->username().length() <= USERNAME_MAX_SIZE);
   strncpy(s->m_username, el->username().c_str(), el->username().length());
+  assert(m_server->m_clients_map[client_id] != nullptr);
+  m_server->m_clients_map[client_id]->m_state = CLIENT_STATE_LOBBY;
   emit_event_lobby_entered(client_id);
+  emit_event_lobby_updated(client_id);
 }
 
 }; // namespace C4
