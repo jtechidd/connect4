@@ -5,12 +5,7 @@
 #include "game.hpp"
 #include "message.pb.h"
 #include "ring_buffer.hpp"
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_opengl.h>
-#include <SDL3/SDL_opengles2.h>
-#include <imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl3.h>
+#include <QtWidgets>
 
 namespace C4 {
 
@@ -44,36 +39,36 @@ public:
     void send_command_enter_lobby();
   };
 
-  class UI {
+  class QUI : public QWidget {
   public:
+    QUI(Client *client, QWidget *parent = nullptr);
+
     Client *m_client;
-    char *m_glsl_version;
-    SDL_WindowFlags m_sdl_window_flags;
-    SDL_Window *m_sdl_window;
-    SDL_GLContext m_sdl_gl_context;
-    bool m_show_msgbox_username_check_failed;
-    bool m_done;
-    SDL_Event m_sdl_event;
-    float m_f = 0.0f;
-    int m_counter = 0;
 
-    UI(Client *client);
-    ~UI();
+    QStackedWidget *m_sw_pages;
 
-    int run();
-    void imgui();
-    void imgui_username();
-    void imgui_lobby();
+    QLineEdit *m_le_username;
+    QLabel *m_lb_server_status;
+    QPushButton *m_btn_enter_lobby;
+
+    QListWidget *m_lw_online_players;
+
+    void update_server_connection(bool is_connected);
+    void username_check_failed();
+    void lobby_entered();
+
+    void on_btn_enter_lobby_clicked();
+    void on_le_username_text_changed(const QString &text);
   };
 
   char *m_host;
   int m_port;
 
   uv_loop_t *m_loop;
-  std::thread m_thr_uv;
+  std::thread m_thread_uv;
 
   uv_timer_t m_try_connect;
-  uv_tcp_t m_session;
+  uv_tcp_t m_connection;
   struct sockaddr_in m_server_addr;
   RingBuffer m_ring_buf;
   MessageHandler m_msg_hdl;
@@ -85,7 +80,8 @@ public:
   char m_username[USERNAME_MAX_SIZE + 1];
   Game m_game;
 
-  UI m_ui;
+  QApplication m_qapp;
+  QUI m_qui;
 
   // UV async handles
   uv_async_t m_keep_alive;
@@ -93,14 +89,15 @@ public:
   uv_async_t m_stop;
   uv_async_t m_enter_lobby;
 
-  Client(const char *host = CLIENT_DEFAULT_HOST,
+  Client(int argc, char **argv, const char *host = CLIENT_DEFAULT_HOST,
          int port = CLIENT_DEFAULT_PORT);
   ~Client();
 
-  void run_uv();
   void run();
-  void stop();
-  void enter_lobby();
+  int run_ui();
+  void run_uv();
+  void stop_async();
+  void enter_lobby_async();
 
   static void on_try_connect(uv_timer_t *timer);
   static void on_connect(uv_connect_t *connect, int status);
@@ -109,9 +106,10 @@ public:
   static void on_write(uv_write_t *write, int status);
   static void on_close(uv_handle_t *handle);
 
-  static void async_enter_lobby(uv_async_t *handle);
-  static void async_stop(uv_async_t *handle);
+  static void enter_lobby_async_cb(uv_async_t *handle);
+  static void stop_async_cb(uv_async_t *handle);
 };
+
 }; // namespace C4
 
 #endif

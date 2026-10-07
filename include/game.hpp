@@ -26,8 +26,8 @@ typedef enum {
 class Game {
 public:
   game_id_t m_id;
-  session_id_t m_p1_id;
-  session_id_t m_p2_id;
+  client_id_t m_p1_id;
+  client_id_t m_p2_id;
 
   uint8_t m_round;
   game_state_t m_state;
@@ -36,7 +36,7 @@ public:
   game_player_t m_board[6][7];
 
   Game();
-  Game(game_id_t id, session_id_t p1_id);
+  Game(game_id_t id, client_id_t p1_id);
   ~Game();
 
   // server side

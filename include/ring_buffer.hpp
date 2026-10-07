@@ -16,7 +16,7 @@ public:
   RingBuffer(size_t cap = DEFAULT_RING_BUFFER_CAPACITY);
   ~RingBuffer();
 
-  size_t free_space();
+  size_t free();
   int grow();
   int write(void *src, size_t len);
   size_t peek(void *dst, size_t cnt, size_t len);

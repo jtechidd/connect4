@@ -8,19 +8,19 @@
 namespace C4 {
 class Server {
 public:
-  class Session {
+  class ClientConnection {
   public:
     uv_loop_t *m_loop;
     Server *m_server;
-    session_id_t m_id;
-    uv_tcp_t m_session;
+    client_id_t m_id;
+    uv_tcp_t m_connection;
     char m_username[USERNAME_MAX_SIZE + 1];
     RingBuffer m_ring_buf;
     game_id_t m_curr_game_id;
 
-    Session(uv_loop_t *loop, Server *server = nullptr,
-            session_id_t id = ++g_session_cid);
-    ~Session();
+    ClientConnection(uv_loop_t *loop, Server *server = nullptr,
+                     client_id_t id = ++g_client_cid);
+    ~ClientConnection();
 
     void run();
 
@@ -41,41 +41,40 @@ public:
     MessageHandler(Server *server);
     ~MessageHandler();
 
-    void handle_message(session_id_t session_id, Message *msg);
-    void handle_event(session_id_t session_id,
-                      const EventPayload *event_payload);
-    void handle_command(session_id_t session_id,
+    void handle_message(client_id_t client_id, Message *msg);
+    void handle_event(client_id_t client_id, const EventPayload *event_payload);
+    void handle_command(client_id_t client_id,
                         const CommandPayload *command_payload);
-    void handle_command_enter_lobby(session_id_t session_id,
+    void handle_command_enter_lobby(client_id_t client_id,
                                     const CommandEnterLobby *el);
 
-    void send_message(session_id_t session_id, Message *msg);
+    void send_message(client_id_t client_id, Message *msg);
     void broadcast_message(Message *msg);
-    void emit_event_server_connected(session_id_t session_id);
+    void emit_event_server_connected(client_id_t client_id);
     void broadcast_event_lobby_updated();
-    void emit_event_username_check_failed(session_id_t session_id);
-    void emit_event_lobby_entered(session_id_t session_id);
+    void emit_event_username_check_failed(client_id_t client_id);
+    void emit_event_lobby_entered(client_id_t client_id);
   };
 
-  uv_loop_t *m_loop;                                // Main UV loop
-  int m_port;                                       // Server port
-  int m_backlog;                                    // Server backlog
-  uv_tcp_t m_server;                                // UV TCP Server
-  struct sockaddr_in m_server_addr;                 // Server address info
-  session_id_t m_session_cid;                       // Session counting ID
-  std::map<session_id_t, Session *> m_sessions_map; // Session map
-  game_id_t m_game_cid;                             // Game counting ID
-  std::map<game_id_t, Game *> m_game_map;           // Game map
-  MessageHandler m_msg_hdl;                         // Message handler
+  uv_loop_t *m_loop;
+  int m_port;
+  int m_backlog;
+  uv_tcp_t m_server;
+  struct sockaddr_in m_server_addr;
+  client_id_t m_client_cid;
+  std::map<client_id_t, ClientConnection *> m_clients_map;
+  game_id_t m_game_cid;
+  std::map<game_id_t, Game *> m_game_map;
+  MessageHandler m_msg_hdl;
 
   Server(int port = 8080, int backlog = 128);
   ~Server();
 
   void run();
 
-  void disconnect(session_id_t session_id);
-  void create_new_game(session_id_t session_id);
-  void join_game(session_id_t session_id, game_id_t game_id);
+  void disconnect(client_id_t client_id);
+  void create_new_game(client_id_t client_id);
+  void join_game(client_id_t client_id, game_id_t game_id);
 
   // UV callbacks
   static void on_connection(uv_stream_t *stream, int status);

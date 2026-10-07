@@ -9,7 +9,7 @@ RingBuffer::RingBuffer(size_t cap) {
     throw std::invalid_argument{
         "Ring buffer capacity must be greater than zero"};
   }
-  m_buf = (uint8_t *)malloc(cap);
+  m_buf = new uint8_t[cap];
   if (!m_buf)
     throw std::bad_alloc{};
   m_size = 0;
@@ -18,9 +18,9 @@ RingBuffer::RingBuffer(size_t cap) {
   m_write_pos = 0;
 }
 
-RingBuffer::~RingBuffer() { free(m_buf); }
+RingBuffer::~RingBuffer() { delete m_buf; }
 
-size_t RingBuffer::free_space() { return m_cap - m_size; }
+size_t RingBuffer::free() { return m_cap - m_size; }
 
 int RingBuffer::grow() {
   if (m_cap > (SIZE_MAX >> 1)) {
@@ -41,7 +41,7 @@ int RingBuffer::grow() {
 }
 
 int RingBuffer::write(void *src, size_t len) {
-  while (free_space() < len)
+  while (free() < len)
     if (grow() < 0)
       return -1;
   size_t first = std::min(m_cap - m_write_pos, len);

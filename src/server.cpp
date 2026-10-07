@@ -8,7 +8,7 @@ Server::Server(int port, int backlog) : m_msg_hdl(this) {
   m_loop = g_loop;
   m_port = port;
   m_backlog = backlog;
-  m_session_cid = 0;
+  m_client_cid = 0;
   m_game_cid = 0;
   uv_tcp_init(m_loop, &m_server);
   m_server.data = this;
@@ -30,55 +30,56 @@ void Server::on_connection(uv_stream_t *stream, int status) {
     spdlog::error("Client connection error");
     return;
   }
-  Session *session = new Session(self->m_loop, self, ++self->m_session_cid);
+  ClientConnection *connection =
+      new ClientConnection(self->m_loop, self, ++self->m_client_cid);
   if (uv_accept((uv_stream_t *)&self->m_server,
-                (uv_stream_t *)&session->m_session) != 0) {
+                (uv_stream_t *)&connection->m_connection) != 0) {
     spdlog::error("Client accept error");
-    free(session);
+    delete connection;
     return;
   }
-  spdlog::info("New client connection with ID: {}", self->m_session_cid);
-  self->m_sessions_map[self->m_session_cid] = session;
+  spdlog::info("New client connection with ID: {}", self->m_client_cid);
+  self->m_clients_map[self->m_client_cid] = connection;
   self->m_msg_hdl.broadcast_event_lobby_updated();
-  session->run();
+  connection->run();
 }
 
-void Server::disconnect(session_id_t session_id) {
-  Session *session = m_sessions_map[session_id];
-  if (session == NULL || m_sessions_map.erase(session_id) != 1)
+void Server::disconnect(client_id_t client_id) {
+  ClientConnection *connection = m_clients_map[client_id];
+  if (connection == NULL || m_clients_map.erase(client_id) != 1)
     return;
-  if (session->m_curr_game_id) {
-    Game *game = m_game_map[session->m_curr_game_id];
+  if (connection->m_curr_game_id) {
+    Game *game = m_game_map[connection->m_curr_game_id];
     if (game == NULL) {
       return;
     }
     if (m_game_map.erase(game->m_id) != 1) {
       return;
     }
-    free(game);
+    delete game;
   }
-  free(session);
+  delete connection;
   m_msg_hdl.broadcast_event_lobby_updated();
 }
 
-void Server::create_new_game(session_id_t session_id) {
+void Server::create_new_game(client_id_t client_id) {
   printf("Creating new game\n");
-  Session *session = m_sessions_map[session_id];
-  if (session == NULL || session->m_curr_game_id != 0)
+  ClientConnection *connection = m_clients_map[client_id];
+  if (connection == NULL || connection->m_curr_game_id != 0)
     return;
-  Game *game = new Game(++m_game_cid, session->m_id);
+  Game *game = new Game(++m_game_cid, connection->m_id);
   m_game_map[game->m_id] = game;
-  session->m_curr_game_id = game->m_id;
+  connection->m_curr_game_id = game->m_id;
 }
 
-void Server::join_game(session_id_t session_id, game_id_t game_id) {
-  Session *session = m_sessions_map[session_id];
+void Server::join_game(client_id_t client_id, game_id_t game_id) {
+  ClientConnection *connection = m_clients_map[client_id];
   Game *game = m_game_map[game_id];
-  if (session == NULL)
+  if (connection == NULL)
     return;
   if (game == NULL)
     return;
-  game->m_p2_id = session_id;
+  game->m_p2_id = client_id;
   game->start();
 }
 

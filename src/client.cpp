@@ -6,7 +6,8 @@ namespace C4 {
 const char *CLIENT_DEFAULT_HOST = "localhost";
 const int CLIENT_DEFAULT_PORT = 8080;
 
-Client::Client(const char *host, int port) : m_msg_hdl(this), m_ui(this) {
+Client::Client(int argc, char **argv, const char *host, int port)
+    : m_msg_hdl(this), m_qapp(argc, argv), m_qui(this) {
   m_loop = g_loop;
   m_host = (char *)host;
   m_port = port;
@@ -14,20 +15,18 @@ Client::Client(const char *host, int port) : m_msg_hdl(this), m_ui(this) {
   m_total_clients = 0;
   m_state = CLIENT_STATE_USERNAME;
   m_is_connected = false;
+  memset(m_username, 0, sizeof(m_username));
 
-  // uv handle initialization
-  uv_tcp_init(m_loop, &m_session);
-  m_session.data = this;
-  // async zone
-  uv_async_init(m_loop, &m_keep_alive, NULL); // keep alive hack
-  uv_async_init(m_loop, &m_enter_lobby, Client::async_enter_lobby);
+  uv_tcp_init(m_loop, &m_connection);
+  m_connection.data = this;
+  uv_async_init(m_loop, &m_keep_alive, NULL);
+  m_keep_alive.data = this;
+  uv_async_init(m_loop, &m_enter_lobby, Client::enter_lobby_async_cb);
   m_enter_lobby.data = this;
-  uv_async_init(m_loop, &m_stop, Client::async_stop);
+  uv_async_init(m_loop, &m_stop, Client::stop_async_cb);
   m_stop.data = this;
   uv_timer_init(m_loop, &m_try_connect);
   m_try_connect.data = this;
-
-  memset(m_username, 0, sizeof(m_username));
 }
 
 Client::~Client() {}
@@ -37,31 +36,36 @@ void Client::run_uv() {
   uv_run(m_loop, UV_RUN_DEFAULT);
 }
 
+int Client::run_ui() {
+  m_qui.show();
+  return m_qapp.exec();
+}
+
 void Client::run() {
-  m_thr_uv = std::thread(&Client::run_uv, this);
-  m_ui.run();
+  m_thread_uv = std::thread(&Client::run_uv, this);
+  run_ui();
   spdlog::info("UI stopped");
-  stop();
-  m_thr_uv.join();
+  stop_async();
+  m_thread_uv.join();
 }
 
 void Client::on_connect(uv_connect_t *connect, int status) {
   Client *self = (Client *)connect->data;
   if (status != 0) {
-    self->m_is_connected = false;
+    self->m_qui.update_server_connection(false);
     goto cleanup;
   }
 
   spdlog::info("Connected to server");
-  uv_read_start((uv_stream_t *)&self->m_session, Client::on_alloc,
+  uv_read_start((uv_stream_t *)&self->m_connection, Client::on_alloc,
                 Client::on_read);
-  self->m_is_connected = true;
+  self->m_qui.update_server_connection(true);
 cleanup:
-  free(connect);
+  delete connect;
 }
 
 void Client::on_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {
-  buf->base = (char *)malloc(size);
+  buf->base = new char[size];
   buf->len = size;
 }
 
@@ -87,44 +91,44 @@ void Client::on_read(uv_stream_t *stream, long nread, const uv_buf_t *buf) {
     if (self->m_ring_buf.m_size < MSG_SIZE_NBYTES + msg_size)
       break;
     self->m_ring_buf.consume(MSG_SIZE_NBYTES);
-    uint8_t *raw_msg = (uint8_t *)malloc(msg_size);
+    uint8_t *raw_msg = new uint8_t[msg_size];
     self->m_ring_buf.read(raw_msg, msg_size, msg_size);
     msg.ParseFromArray(raw_msg, msg_size);
-    free(raw_msg);
+    delete[] raw_msg;
     self->m_msg_hdl.handle_message(&msg);
   }
 cleanup:
-  free(buf->base);
+  delete[] buf->base;
 }
 
 void Client::on_write(uv_write_t *write, int status) {
   if (status != 0) {
     // TODO: handle
   }
-  free(write);
+  delete write;
 }
 
 void Client::on_close(uv_handle_t *handle) {
   Client *client = (Client *)handle->data;
   spdlog::info("Disconnencted from server");
-  client->m_is_connected = false;
+  client->m_qui.update_server_connection(false);
   client->m_state = CLIENT_STATE_USERNAME;
   uv_timer_start(&client->m_try_connect, Client::on_try_connect, 1000, 1000);
 }
 
-void Client::async_stop(uv_async_t *handle) {
+void Client::stop_async_cb(uv_async_t *handle) {
   Client *client = (Client *)handle->data;
   uv_stop(client->m_loop);
 }
 
-void Client::async_enter_lobby(uv_async_t *handle) {
+void Client::enter_lobby_async_cb(uv_async_t *handle) {
   Client *client = (Client *)handle->data;
   client->m_msg_hdl.send_command_enter_lobby();
 }
 
-void Client::stop() { uv_async_send(&m_stop); }
+void Client::stop_async() { uv_async_send(&m_stop); }
 
-void Client::enter_lobby() { uv_async_send(&m_enter_lobby); }
+void Client::enter_lobby_async() { uv_async_send(&m_enter_lobby); }
 
 void Client::on_try_connect(uv_timer_t *timer) {
   Client *client = (Client *)timer->data;
@@ -133,12 +137,12 @@ void Client::on_try_connect(uv_timer_t *timer) {
     return;
   }
   spdlog::info("Connecting to server...");
-  uv_tcp_init(client->m_loop, &client->m_session);
-  client->m_session.data = client;
+  uv_tcp_init(client->m_loop, &client->m_connection);
+  client->m_connection.data = client;
   uv_ip4_addr(client->m_host, client->m_port, &client->m_server_addr);
-  uv_connect_t *connect = (uv_connect_t *)malloc(sizeof(uv_connect_t));
+  uv_connect_t *connect = new uv_connect_t;
   connect->data = client;
-  uv_tcp_connect(connect, &client->m_session,
+  uv_tcp_connect(connect, &client->m_connection,
                  (struct sockaddr *)&client->m_server_addr, Client::on_connect);
 }
 

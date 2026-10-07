@@ -9,37 +9,37 @@ namespace C4 {
 Server::MessageHandler::MessageHandler(Server *server) { m_server = server; }
 Server::MessageHandler::~MessageHandler() {}
 
-void Server::MessageHandler::send_message(session_id_t session_id,
+void Server::MessageHandler::send_message(client_id_t client_id,
                                           Message *msg) {
-  Session *s = m_server->m_sessions_map[session_id];
+  ClientConnection *s = m_server->m_clients_map[client_id];
   if (!s)
     return;
   WriteRequest *wr = new WriteRequest(msg);
   wr->req.data = this;
-  uv_write((uv_write_t *)wr, (uv_stream_t *)&s->m_session, &wr->buf, 1,
-           Server::Session::on_write);
+  uv_write((uv_write_t *)wr, (uv_stream_t *)&s->m_connection, &wr->buf, 1,
+           Server::ClientConnection::on_write);
 }
 
 void Server::MessageHandler::broadcast_message(Message *msg) {
-  for (auto [id, _] : m_server->m_sessions_map) {
+  for (auto [id, _] : m_server->m_clients_map) {
     send_message(id, msg);
   }
 }
 
 void Server::MessageHandler::emit_event_server_connected(
-    session_id_t session_id) {
+    client_id_t client_id) {
   Message msg;
   EventPayload *ep = msg.mutable_event_payload();
   EventServerConnected *sc = ep->mutable_event_server_connected();
-  sc->set_client_id(session_id);
-  send_message(session_id, &msg);
+  sc->set_client_id(client_id);
+  send_message(client_id, &msg);
 }
 
 void Server::MessageHandler::broadcast_event_lobby_updated() {
   Message msg;
   EventPayload *ep = msg.mutable_event_payload();
   EventLobbyUpdated *lu = ep->mutable_event_lobby_updated();
-  lu->set_total_clients(m_server->m_sessions_map.size());
+  lu->set_total_clients(m_server->m_clients_map.size());
   lu->set_total_games(m_server->m_game_map.size());
   for (auto [_, g] : m_server->m_game_map) {
     GameStatus *gs = lu->add_games();
@@ -51,36 +51,36 @@ void Server::MessageHandler::broadcast_event_lobby_updated() {
   broadcast_message(&msg);
 }
 
-void Server::MessageHandler::emit_event_lobby_entered(session_id_t session_id) {
+void Server::MessageHandler::emit_event_lobby_entered(client_id_t client_id) {
   Message msg;
   EventPayload *ep = msg.mutable_event_payload();
   EventLobbyEntered *el = ep->mutable_event_lobby_entered();
-  send_message(session_id, &msg);
+  send_message(client_id, &msg);
 }
 
 void Server::MessageHandler::emit_event_username_check_failed(
-    session_id_t session_id) {
+    client_id_t client_id) {
   Message msg;
   EventPayload *ep = msg.mutable_event_payload();
   EventUsernameCheckFailed *ucf = ep->mutable_event_username_check_failed();
-  send_message(session_id, &msg);
+  send_message(client_id, &msg);
 }
 
-void Server::MessageHandler::handle_message(session_id_t session_id,
+void Server::MessageHandler::handle_message(client_id_t client_id,
                                             Message *msg) {
   switch (msg->payload_type_case()) {
   case Message::kEventPayload:
-    handle_event(session_id, &msg->event_payload());
+    handle_event(client_id, &msg->event_payload());
     break;
   case Message::kCommandPayload:
-    handle_command(session_id, &msg->command_payload());
+    handle_command(client_id, &msg->command_payload());
   case Message::PAYLOAD_TYPE_NOT_SET:
   default:
     break;
   }
 }
 
-void Server::MessageHandler::handle_event(session_id_t session_id,
+void Server::MessageHandler::handle_event(client_id_t client_id,
                                           const EventPayload *event_payload) {
   switch (event_payload->payload_case()) {
   default:
@@ -89,10 +89,10 @@ void Server::MessageHandler::handle_event(session_id_t session_id,
 }
 
 void Server::MessageHandler::handle_command(
-    session_id_t session_id, const CommandPayload *command_payload) {
+    client_id_t client_id, const CommandPayload *command_payload) {
   switch (command_payload->payload_case()) {
   case CommandPayload::kCommandEnterLobby:
-    handle_command_enter_lobby(session_id,
+    handle_command_enter_lobby(client_id,
                                &command_payload->command_enter_lobby());
     break;
   default:
@@ -101,18 +101,18 @@ void Server::MessageHandler::handle_command(
 }
 
 void Server::MessageHandler::handle_command_enter_lobby(
-    session_id_t session_id, const CommandEnterLobby *el) {
-  for (auto [_, s] : m_server->m_sessions_map) {
+    client_id_t client_id, const CommandEnterLobby *el) {
+  for (auto [_, s] : m_server->m_clients_map) {
     if (!strcmp(s->m_username, el->username().c_str())) {
-      emit_event_username_check_failed(session_id);
+      emit_event_username_check_failed(client_id);
       return;
     }
   }
-  auto s = m_server->m_sessions_map[session_id];
+  auto s = m_server->m_clients_map[client_id];
   assert(s != NULL);
   assert(el->username().length() <= USERNAME_MAX_SIZE);
   strncpy(s->m_username, el->username().c_str(), el->username().length());
-  emit_event_lobby_entered(session_id);
+  emit_event_lobby_entered(client_id);
 }
 
 }; // namespace C4

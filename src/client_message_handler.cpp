@@ -46,13 +46,13 @@ void Client::MessageHandler::handle_event_server_connected(
 
 void Client::MessageHandler::handle_event_lobby_entered(
     const EventLobbyEntered *le) {
-  m_client->m_state = CLIENT_STATE_LOBBY;
+  m_client->m_qui.lobby_entered();
   spdlog::info("Entered lobby");
 }
 
 void Client::MessageHandler::handle_event_username_check_failed(
     const EventUsernameCheckFailed *ucf) {
-  m_client->m_ui.m_show_msgbox_username_check_failed = true;
+  m_client->m_qui.username_check_failed();
   spdlog::info("Username check failed");
 }
 
@@ -66,8 +66,8 @@ void Client::MessageHandler::send_message(Message *msg) {
   WriteRequest *wr = new WriteRequest(msg);
   wr->req.data = this;
   spdlog::debug("Sending message with {} bytes", wr->buf.len);
-  uv_write((uv_write_t *)wr, (uv_stream_t *)&m_client->m_session, &wr->buf, 1,
-           Client::on_write);
+  uv_write((uv_write_t *)wr, (uv_stream_t *)&m_client->m_connection, &wr->buf,
+           1, Client::on_write);
 }
 
 void Client::MessageHandler::send_command_enter_lobby() {
