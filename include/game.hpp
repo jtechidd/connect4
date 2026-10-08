@@ -14,7 +14,7 @@ typedef enum {
   GAME_VERDICT_UNDECIDED = 1,
   GAME_VERDICT_PLAYER_1_WIN,
   GAME_VERDICT_PLAYER_2_WIN,
-  GAME_VERDICT_TIE
+  GAME_VERDICT_TIE,
 } game_verdict_t;
 
 class Game {

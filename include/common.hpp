@@ -2,6 +2,7 @@
 #define C4_COMMON_HPP
 
 #include "message.pb.h"
+#include <deque>
 #include <spdlog/spdlog.h>
 #include <uv.h>
 
@@ -25,6 +26,12 @@ public:
   WriteRequest();
   WriteRequest(Message *msg);
   ~WriteRequest();
+};
+
+class NewGameInvite {
+public:
+  client_id_t inviter_client_id;
+  char inviter_username[USERNAME_MAX_SIZE + 1];
 };
 
 }; // namespace C4

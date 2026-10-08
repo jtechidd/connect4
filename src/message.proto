@@ -47,6 +47,17 @@ message EventLobbyUpdated {
 
 message EventLobbyEntered {}
 
+message EventNewGameInviteReceived {
+  uint32 inviter_client_id = 1;
+  string inviter_username  = 2;
+}
+
+message EventNewGameJoined {
+  uint32 game_id            = 1;
+  uint32 opponent_client_id = 2;
+  string opponent_username  = 3;
+}
+
 message EventGameCreated {
   uint32 game_id    = 1;
   uint32 player1_id = 2;
@@ -77,16 +88,18 @@ message EventPlayerLeft {
 
 message EventPayload {
   oneof payload {
-    EventServerConnected     event_server_connected      = 1;
-    EventUsernameCheckFailed event_username_check_failed = 2;
-    EventLobbyUpdated        event_lobby_updated         = 3;
-    EventLobbyEntered        event_lobby_entered         = 4;
-    EventGameCreated         event_game_created          = 5;
-    EventPlayerJoined        event_player_joined         = 6;
-    EventGameStarted         event_game_started          = 7;
-    EventPlayerMadeMove      event_player_made_move      = 8;
-    EventGameVerdicted       event_game_verdicted        = 9;
-    EventPlayerLeft          event_player_left           = 10;
+    EventServerConnected       event_server_connected         = 1;
+    EventUsernameCheckFailed   event_username_check_failed    = 2;
+    EventLobbyUpdated          event_lobby_updated            = 3;
+    EventLobbyEntered          event_lobby_entered            = 4;
+    EventNewGameInviteReceived event_new_game_invite_received = 5;
+    EventNewGameJoined         event_new_game_joined          = 6;
+    EventGameCreated           event_game_created             = 7;
+    EventPlayerJoined          event_player_joined            = 8;
+    EventGameStarted           event_game_started             = 9;
+    EventPlayerMadeMove        event_player_made_move         = 10;
+    EventGameVerdicted         event_game_verdicted           = 11;
+    EventPlayerLeft            event_player_left              = 12;
   }
 }
 
@@ -94,7 +107,13 @@ message CommandEnterLobby {
   string username = 1;
 }
 
-message CommandCreateNewGame {}
+message CommandNewGameInvite {
+  uint32 client_id = 1;
+}
+
+message CommandInviteAccept {
+  uint32 inviter_client_id = 1;
+}
 
 message CommandJoinGame {
   uint32 game_id = 1;
@@ -118,11 +137,12 @@ message CommandPlayerLeave {
 message CommandPayload {
   oneof payload {
     CommandEnterLobby     command_enter_lobby     = 1;
-    CommandCreateNewGame  command_create_new_game = 2;
-    CommandJoinGame       command_join_game       = 3;
-    CommandStartGame      command_start_game      = 4;
-    CommandPlayerMakeMove command_make_move       = 5;
-    CommandPlayerLeave    command_player_leave    = 6;
+    CommandNewGameInvite  command_new_game_invite = 2;
+    CommandInviteAccept   command_invite_accept   = 3;
+    CommandJoinGame       command_join_game       = 4;
+    CommandStartGame      command_start_game      = 5;
+    CommandPlayerMakeMove command_make_move       = 6;
+    CommandPlayerLeave    command_player_leave    = 7;
   }
 }
 

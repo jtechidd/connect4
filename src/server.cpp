@@ -21,11 +21,8 @@ Server::~Server() {}
 void Server::run() {
   uv_ip4_addr(NULL, m_port, &m_server_addr);
   uv_tcp_bind(&m_uv_tcp_server, (struct sockaddr *)&m_server_addr, 0);
-  uv_listen((uv_stream_t *)&m_uv_tcp_server, m_backlog,
-            on_uv_tcp_server_connection);
-  uv_timer_start(&m_uv_timer_broadcast_event_lobby_updated,
-                 Server::on_uv_timer_broadcast_event_lobby_updated_timeout,
-                 10000, 10000);
+  uv_listen((uv_stream_t *)&m_uv_tcp_server, m_backlog, on_uv_tcp_server_connection);
+  uv_timer_start(&m_uv_timer_broadcast_event_lobby_updated, Server::on_uv_timer_broadcast_event_lobby_updated_timeout, 10000, 10000);
   spdlog::info("Listening on port {}", m_port);
   uv_run(m_uv_loop, UV_RUN_DEFAULT);
 }
@@ -36,10 +33,8 @@ void Server::on_uv_tcp_server_connection(uv_stream_t *stream, int status) {
     spdlog::error("Client connection error");
     return;
   }
-  ClientConnection *connection =
-      new ClientConnection(self->m_uv_loop, self, ++self->m_client_cid);
-  if (uv_accept((uv_stream_t *)&self->m_uv_tcp_server,
-                (uv_stream_t *)&connection->m_uv_tcp_connection) != 0) {
+  ClientConnection *connection = new ClientConnection(self->m_uv_loop, self, ++self->m_client_cid);
+  if (uv_accept((uv_stream_t *)&self->m_uv_tcp_server, (uv_stream_t *)&connection->m_uv_tcp_connection) != 0) {
     spdlog::error("Client accept error");
     delete connection;
     return;
@@ -87,8 +82,7 @@ void Server::join_game(client_id_t client_id, game_id_t game_id) {
   game->start();
 }
 
-void Server::on_uv_timer_broadcast_event_lobby_updated_timeout(
-    uv_timer_t *timer) {
+void Server::on_uv_timer_broadcast_event_lobby_updated_timeout(uv_timer_t *timer) {
   Server *self = (Server *)timer->data;
   self->m_message_handler.broadcast_event_lobby_updated();
 }

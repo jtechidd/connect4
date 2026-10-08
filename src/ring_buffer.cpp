@@ -6,8 +6,7 @@ const size_t DEFAULT_RING_BUFFER_CAPACITY = 8;
 
 RingBuffer::RingBuffer(size_t cap) {
   if (cap == 0) {
-    throw std::invalid_argument{
-        "Ring buffer capacity must be greater than zero"};
+    throw std::invalid_argument{"Ring buffer capacity must be greater than zero"};
   }
   m_buf = new uint8_t[cap];
   if (!m_buf)

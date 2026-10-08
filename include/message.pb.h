@@ -50,15 +50,18 @@ namespace C4 {
 class ClientInfo;
 struct ClientInfoDefaultTypeInternal;
 extern ClientInfoDefaultTypeInternal _ClientInfo_default_instance_;
-class CommandCreateNewGame;
-struct CommandCreateNewGameDefaultTypeInternal;
-extern CommandCreateNewGameDefaultTypeInternal _CommandCreateNewGame_default_instance_;
 class CommandEnterLobby;
 struct CommandEnterLobbyDefaultTypeInternal;
 extern CommandEnterLobbyDefaultTypeInternal _CommandEnterLobby_default_instance_;
+class CommandInviteAccept;
+struct CommandInviteAcceptDefaultTypeInternal;
+extern CommandInviteAcceptDefaultTypeInternal _CommandInviteAccept_default_instance_;
 class CommandJoinGame;
 struct CommandJoinGameDefaultTypeInternal;
 extern CommandJoinGameDefaultTypeInternal _CommandJoinGame_default_instance_;
+class CommandNewGameInvite;
+struct CommandNewGameInviteDefaultTypeInternal;
+extern CommandNewGameInviteDefaultTypeInternal _CommandNewGameInvite_default_instance_;
 class CommandPayload;
 struct CommandPayloadDefaultTypeInternal;
 extern CommandPayloadDefaultTypeInternal _CommandPayload_default_instance_;
@@ -86,6 +89,12 @@ extern EventLobbyEnteredDefaultTypeInternal _EventLobbyEntered_default_instance_
 class EventLobbyUpdated;
 struct EventLobbyUpdatedDefaultTypeInternal;
 extern EventLobbyUpdatedDefaultTypeInternal _EventLobbyUpdated_default_instance_;
+class EventNewGameInviteReceived;
+struct EventNewGameInviteReceivedDefaultTypeInternal;
+extern EventNewGameInviteReceivedDefaultTypeInternal _EventNewGameInviteReceived_default_instance_;
+class EventNewGameJoined;
+struct EventNewGameJoinedDefaultTypeInternal;
+extern EventNewGameJoinedDefaultTypeInternal _EventNewGameJoined_default_instance_;
 class EventPayload;
 struct EventPayloadDefaultTypeInternal;
 extern EventPayloadDefaultTypeInternal _EventPayload_default_instance_;
@@ -113,9 +122,10 @@ extern MessageDefaultTypeInternal _Message_default_instance_;
 }  // namespace C4
 PROTOBUF_NAMESPACE_OPEN
 template<> ::C4::ClientInfo* Arena::CreateMaybeMessage<::C4::ClientInfo>(Arena*);
-template<> ::C4::CommandCreateNewGame* Arena::CreateMaybeMessage<::C4::CommandCreateNewGame>(Arena*);
 template<> ::C4::CommandEnterLobby* Arena::CreateMaybeMessage<::C4::CommandEnterLobby>(Arena*);
+template<> ::C4::CommandInviteAccept* Arena::CreateMaybeMessage<::C4::CommandInviteAccept>(Arena*);
 template<> ::C4::CommandJoinGame* Arena::CreateMaybeMessage<::C4::CommandJoinGame>(Arena*);
+template<> ::C4::CommandNewGameInvite* Arena::CreateMaybeMessage<::C4::CommandNewGameInvite>(Arena*);
 template<> ::C4::CommandPayload* Arena::CreateMaybeMessage<::C4::CommandPayload>(Arena*);
 template<> ::C4::CommandPlayerLeave* Arena::CreateMaybeMessage<::C4::CommandPlayerLeave>(Arena*);
 template<> ::C4::CommandPlayerMakeMove* Arena::CreateMaybeMessage<::C4::CommandPlayerMakeMove>(Arena*);
@@ -125,6 +135,8 @@ template<> ::C4::EventGameStarted* Arena::CreateMaybeMessage<::C4::EventGameStar
 template<> ::C4::EventGameVerdicted* Arena::CreateMaybeMessage<::C4::EventGameVerdicted>(Arena*);
 template<> ::C4::EventLobbyEntered* Arena::CreateMaybeMessage<::C4::EventLobbyEntered>(Arena*);
 template<> ::C4::EventLobbyUpdated* Arena::CreateMaybeMessage<::C4::EventLobbyUpdated>(Arena*);
+template<> ::C4::EventNewGameInviteReceived* Arena::CreateMaybeMessage<::C4::EventNewGameInviteReceived>(Arena*);
+template<> ::C4::EventNewGameJoined* Arena::CreateMaybeMessage<::C4::EventNewGameJoined>(Arena*);
 template<> ::C4::EventPayload* Arena::CreateMaybeMessage<::C4::EventPayload>(Arena*);
 template<> ::C4::EventPlayerJoined* Arena::CreateMaybeMessage<::C4::EventPlayerJoined>(Arena*);
 template<> ::C4::EventPlayerLeft* Arena::CreateMaybeMessage<::C4::EventPlayerLeft>(Arena*);
@@ -1154,6 +1166,345 @@ class EventLobbyEntered final :
 };
 // -------------------------------------------------------------------
 
+class EventNewGameInviteReceived final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.EventNewGameInviteReceived) */ {
+ public:
+  inline EventNewGameInviteReceived() : EventNewGameInviteReceived(nullptr) {}
+  ~EventNewGameInviteReceived() override;
+  explicit PROTOBUF_CONSTEXPR EventNewGameInviteReceived(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  EventNewGameInviteReceived(const EventNewGameInviteReceived& from);
+  EventNewGameInviteReceived(EventNewGameInviteReceived&& from) noexcept
+    : EventNewGameInviteReceived() {
+    *this = ::std::move(from);
+  }
+
+  inline EventNewGameInviteReceived& operator=(const EventNewGameInviteReceived& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline EventNewGameInviteReceived& operator=(EventNewGameInviteReceived&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const EventNewGameInviteReceived& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const EventNewGameInviteReceived* internal_default_instance() {
+    return reinterpret_cast<const EventNewGameInviteReceived*>(
+               &_EventNewGameInviteReceived_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  friend void swap(EventNewGameInviteReceived& a, EventNewGameInviteReceived& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(EventNewGameInviteReceived* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(EventNewGameInviteReceived* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  EventNewGameInviteReceived* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<EventNewGameInviteReceived>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const EventNewGameInviteReceived& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const EventNewGameInviteReceived& from) {
+    EventNewGameInviteReceived::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(EventNewGameInviteReceived* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "C4.EventNewGameInviteReceived";
+  }
+  protected:
+  explicit EventNewGameInviteReceived(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kInviterUsernameFieldNumber = 2,
+    kInviterClientIdFieldNumber = 1,
+  };
+  // string inviter_username = 2;
+  void clear_inviter_username();
+  const std::string& inviter_username() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_inviter_username(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_inviter_username();
+  PROTOBUF_NODISCARD std::string* release_inviter_username();
+  void set_allocated_inviter_username(std::string* inviter_username);
+  private:
+  const std::string& _internal_inviter_username() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_inviter_username(const std::string& value);
+  std::string* _internal_mutable_inviter_username();
+  public:
+
+  // uint32 inviter_client_id = 1;
+  void clear_inviter_client_id();
+  uint32_t inviter_client_id() const;
+  void set_inviter_client_id(uint32_t value);
+  private:
+  uint32_t _internal_inviter_client_id() const;
+  void _internal_set_inviter_client_id(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:C4.EventNewGameInviteReceived)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr inviter_username_;
+    uint32_t inviter_client_id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_message_2eproto;
+};
+// -------------------------------------------------------------------
+
+class EventNewGameJoined final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.EventNewGameJoined) */ {
+ public:
+  inline EventNewGameJoined() : EventNewGameJoined(nullptr) {}
+  ~EventNewGameJoined() override;
+  explicit PROTOBUF_CONSTEXPR EventNewGameJoined(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  EventNewGameJoined(const EventNewGameJoined& from);
+  EventNewGameJoined(EventNewGameJoined&& from) noexcept
+    : EventNewGameJoined() {
+    *this = ::std::move(from);
+  }
+
+  inline EventNewGameJoined& operator=(const EventNewGameJoined& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline EventNewGameJoined& operator=(EventNewGameJoined&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const EventNewGameJoined& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const EventNewGameJoined* internal_default_instance() {
+    return reinterpret_cast<const EventNewGameJoined*>(
+               &_EventNewGameJoined_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(EventNewGameJoined& a, EventNewGameJoined& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(EventNewGameJoined* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(EventNewGameJoined* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  EventNewGameJoined* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<EventNewGameJoined>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const EventNewGameJoined& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const EventNewGameJoined& from) {
+    EventNewGameJoined::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(EventNewGameJoined* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "C4.EventNewGameJoined";
+  }
+  protected:
+  explicit EventNewGameJoined(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kOpponentUsernameFieldNumber = 3,
+    kGameIdFieldNumber = 1,
+    kOpponentClientIdFieldNumber = 2,
+  };
+  // string opponent_username = 3;
+  void clear_opponent_username();
+  const std::string& opponent_username() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_opponent_username(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_opponent_username();
+  PROTOBUF_NODISCARD std::string* release_opponent_username();
+  void set_allocated_opponent_username(std::string* opponent_username);
+  private:
+  const std::string& _internal_opponent_username() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_opponent_username(const std::string& value);
+  std::string* _internal_mutable_opponent_username();
+  public:
+
+  // uint32 game_id = 1;
+  void clear_game_id();
+  uint32_t game_id() const;
+  void set_game_id(uint32_t value);
+  private:
+  uint32_t _internal_game_id() const;
+  void _internal_set_game_id(uint32_t value);
+  public:
+
+  // uint32 opponent_client_id = 2;
+  void clear_opponent_client_id();
+  uint32_t opponent_client_id() const;
+  void set_opponent_client_id(uint32_t value);
+  private:
+  uint32_t _internal_opponent_client_id() const;
+  void _internal_set_opponent_client_id(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:C4.EventNewGameJoined)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr opponent_username_;
+    uint32_t game_id_;
+    uint32_t opponent_client_id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_message_2eproto;
+};
+// -------------------------------------------------------------------
+
 class EventGameCreated final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.EventGameCreated) */ {
  public:
@@ -1202,7 +1553,7 @@ class EventGameCreated final :
                &_EventGameCreated_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    8;
 
   friend void swap(EventGameCreated& a, EventGameCreated& b) {
     a.Swap(&b);
@@ -1361,7 +1712,7 @@ class EventPlayerJoined final :
                &_EventPlayerJoined_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    9;
 
   friend void swap(EventPlayerJoined& a, EventPlayerJoined& b) {
     a.Swap(&b);
@@ -1520,7 +1871,7 @@ class EventGameStarted final :
                &_EventGameStarted_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    10;
 
   friend void swap(EventGameStarted& a, EventGameStarted& b) {
     a.Swap(&b);
@@ -1668,7 +2019,7 @@ class EventPlayerMadeMove final :
                &_EventPlayerMadeMove_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    11;
 
   friend void swap(EventPlayerMadeMove& a, EventPlayerMadeMove& b) {
     a.Swap(&b);
@@ -1838,7 +2189,7 @@ class EventGameVerdicted final :
                &_EventGameVerdicted_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    12;
 
   friend void swap(EventGameVerdicted& a, EventGameVerdicted& b) {
     a.Swap(&b);
@@ -1997,7 +2348,7 @@ class EventPlayerLeft final :
                &_EventPlayerLeft_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    13;
 
   friend void swap(EventPlayerLeft& a, EventPlayerLeft& b) {
     a.Swap(&b);
@@ -2156,12 +2507,14 @@ class EventPayload final :
     kEventUsernameCheckFailed = 2,
     kEventLobbyUpdated = 3,
     kEventLobbyEntered = 4,
-    kEventGameCreated = 5,
-    kEventPlayerJoined = 6,
-    kEventGameStarted = 7,
-    kEventPlayerMadeMove = 8,
-    kEventGameVerdicted = 9,
-    kEventPlayerLeft = 10,
+    kEventNewGameInviteReceived = 5,
+    kEventNewGameJoined = 6,
+    kEventGameCreated = 7,
+    kEventPlayerJoined = 8,
+    kEventGameStarted = 9,
+    kEventPlayerMadeMove = 10,
+    kEventGameVerdicted = 11,
+    kEventPlayerLeft = 12,
     PAYLOAD_NOT_SET = 0,
   };
 
@@ -2170,7 +2523,7 @@ class EventPayload final :
                &_EventPayload_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    14;
 
   friend void swap(EventPayload& a, EventPayload& b) {
     a.Swap(&b);
@@ -2247,12 +2600,14 @@ class EventPayload final :
     kEventUsernameCheckFailedFieldNumber = 2,
     kEventLobbyUpdatedFieldNumber = 3,
     kEventLobbyEnteredFieldNumber = 4,
-    kEventGameCreatedFieldNumber = 5,
-    kEventPlayerJoinedFieldNumber = 6,
-    kEventGameStartedFieldNumber = 7,
-    kEventPlayerMadeMoveFieldNumber = 8,
-    kEventGameVerdictedFieldNumber = 9,
-    kEventPlayerLeftFieldNumber = 10,
+    kEventNewGameInviteReceivedFieldNumber = 5,
+    kEventNewGameJoinedFieldNumber = 6,
+    kEventGameCreatedFieldNumber = 7,
+    kEventPlayerJoinedFieldNumber = 8,
+    kEventGameStartedFieldNumber = 9,
+    kEventPlayerMadeMoveFieldNumber = 10,
+    kEventGameVerdictedFieldNumber = 11,
+    kEventPlayerLeftFieldNumber = 12,
   };
   // .C4.EventServerConnected event_server_connected = 1;
   bool has_event_server_connected() const;
@@ -2326,7 +2681,43 @@ class EventPayload final :
       ::C4::EventLobbyEntered* event_lobby_entered);
   ::C4::EventLobbyEntered* unsafe_arena_release_event_lobby_entered();
 
-  // .C4.EventGameCreated event_game_created = 5;
+  // .C4.EventNewGameInviteReceived event_new_game_invite_received = 5;
+  bool has_event_new_game_invite_received() const;
+  private:
+  bool _internal_has_event_new_game_invite_received() const;
+  public:
+  void clear_event_new_game_invite_received();
+  const ::C4::EventNewGameInviteReceived& event_new_game_invite_received() const;
+  PROTOBUF_NODISCARD ::C4::EventNewGameInviteReceived* release_event_new_game_invite_received();
+  ::C4::EventNewGameInviteReceived* mutable_event_new_game_invite_received();
+  void set_allocated_event_new_game_invite_received(::C4::EventNewGameInviteReceived* event_new_game_invite_received);
+  private:
+  const ::C4::EventNewGameInviteReceived& _internal_event_new_game_invite_received() const;
+  ::C4::EventNewGameInviteReceived* _internal_mutable_event_new_game_invite_received();
+  public:
+  void unsafe_arena_set_allocated_event_new_game_invite_received(
+      ::C4::EventNewGameInviteReceived* event_new_game_invite_received);
+  ::C4::EventNewGameInviteReceived* unsafe_arena_release_event_new_game_invite_received();
+
+  // .C4.EventNewGameJoined event_new_game_joined = 6;
+  bool has_event_new_game_joined() const;
+  private:
+  bool _internal_has_event_new_game_joined() const;
+  public:
+  void clear_event_new_game_joined();
+  const ::C4::EventNewGameJoined& event_new_game_joined() const;
+  PROTOBUF_NODISCARD ::C4::EventNewGameJoined* release_event_new_game_joined();
+  ::C4::EventNewGameJoined* mutable_event_new_game_joined();
+  void set_allocated_event_new_game_joined(::C4::EventNewGameJoined* event_new_game_joined);
+  private:
+  const ::C4::EventNewGameJoined& _internal_event_new_game_joined() const;
+  ::C4::EventNewGameJoined* _internal_mutable_event_new_game_joined();
+  public:
+  void unsafe_arena_set_allocated_event_new_game_joined(
+      ::C4::EventNewGameJoined* event_new_game_joined);
+  ::C4::EventNewGameJoined* unsafe_arena_release_event_new_game_joined();
+
+  // .C4.EventGameCreated event_game_created = 7;
   bool has_event_game_created() const;
   private:
   bool _internal_has_event_game_created() const;
@@ -2344,7 +2735,7 @@ class EventPayload final :
       ::C4::EventGameCreated* event_game_created);
   ::C4::EventGameCreated* unsafe_arena_release_event_game_created();
 
-  // .C4.EventPlayerJoined event_player_joined = 6;
+  // .C4.EventPlayerJoined event_player_joined = 8;
   bool has_event_player_joined() const;
   private:
   bool _internal_has_event_player_joined() const;
@@ -2362,7 +2753,7 @@ class EventPayload final :
       ::C4::EventPlayerJoined* event_player_joined);
   ::C4::EventPlayerJoined* unsafe_arena_release_event_player_joined();
 
-  // .C4.EventGameStarted event_game_started = 7;
+  // .C4.EventGameStarted event_game_started = 9;
   bool has_event_game_started() const;
   private:
   bool _internal_has_event_game_started() const;
@@ -2380,7 +2771,7 @@ class EventPayload final :
       ::C4::EventGameStarted* event_game_started);
   ::C4::EventGameStarted* unsafe_arena_release_event_game_started();
 
-  // .C4.EventPlayerMadeMove event_player_made_move = 8;
+  // .C4.EventPlayerMadeMove event_player_made_move = 10;
   bool has_event_player_made_move() const;
   private:
   bool _internal_has_event_player_made_move() const;
@@ -2398,7 +2789,7 @@ class EventPayload final :
       ::C4::EventPlayerMadeMove* event_player_made_move);
   ::C4::EventPlayerMadeMove* unsafe_arena_release_event_player_made_move();
 
-  // .C4.EventGameVerdicted event_game_verdicted = 9;
+  // .C4.EventGameVerdicted event_game_verdicted = 11;
   bool has_event_game_verdicted() const;
   private:
   bool _internal_has_event_game_verdicted() const;
@@ -2416,7 +2807,7 @@ class EventPayload final :
       ::C4::EventGameVerdicted* event_game_verdicted);
   ::C4::EventGameVerdicted* unsafe_arena_release_event_game_verdicted();
 
-  // .C4.EventPlayerLeft event_player_left = 10;
+  // .C4.EventPlayerLeft event_player_left = 12;
   bool has_event_player_left() const;
   private:
   bool _internal_has_event_player_left() const;
@@ -2443,6 +2834,8 @@ class EventPayload final :
   void set_has_event_username_check_failed();
   void set_has_event_lobby_updated();
   void set_has_event_lobby_entered();
+  void set_has_event_new_game_invite_received();
+  void set_has_event_new_game_joined();
   void set_has_event_game_created();
   void set_has_event_player_joined();
   void set_has_event_game_started();
@@ -2464,6 +2857,8 @@ class EventPayload final :
       ::C4::EventUsernameCheckFailed* event_username_check_failed_;
       ::C4::EventLobbyUpdated* event_lobby_updated_;
       ::C4::EventLobbyEntered* event_lobby_entered_;
+      ::C4::EventNewGameInviteReceived* event_new_game_invite_received_;
+      ::C4::EventNewGameJoined* event_new_game_joined_;
       ::C4::EventGameCreated* event_game_created_;
       ::C4::EventPlayerJoined* event_player_joined_;
       ::C4::EventGameStarted* event_game_started_;
@@ -2528,7 +2923,7 @@ class CommandEnterLobby final :
                &_CommandEnterLobby_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    15;
 
   friend void swap(CommandEnterLobby& a, CommandEnterLobby& b) {
     a.Swap(&b);
@@ -2633,23 +3028,24 @@ class CommandEnterLobby final :
 };
 // -------------------------------------------------------------------
 
-class CommandCreateNewGame final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:C4.CommandCreateNewGame) */ {
+class CommandNewGameInvite final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.CommandNewGameInvite) */ {
  public:
-  inline CommandCreateNewGame() : CommandCreateNewGame(nullptr) {}
-  explicit PROTOBUF_CONSTEXPR CommandCreateNewGame(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline CommandNewGameInvite() : CommandNewGameInvite(nullptr) {}
+  ~CommandNewGameInvite() override;
+  explicit PROTOBUF_CONSTEXPR CommandNewGameInvite(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  CommandCreateNewGame(const CommandCreateNewGame& from);
-  CommandCreateNewGame(CommandCreateNewGame&& from) noexcept
-    : CommandCreateNewGame() {
+  CommandNewGameInvite(const CommandNewGameInvite& from);
+  CommandNewGameInvite(CommandNewGameInvite&& from) noexcept
+    : CommandNewGameInvite() {
     *this = ::std::move(from);
   }
 
-  inline CommandCreateNewGame& operator=(const CommandCreateNewGame& from) {
+  inline CommandNewGameInvite& operator=(const CommandNewGameInvite& from) {
     CopyFrom(from);
     return *this;
   }
-  inline CommandCreateNewGame& operator=(CommandCreateNewGame&& from) noexcept {
+  inline CommandNewGameInvite& operator=(CommandNewGameInvite&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -2672,20 +3068,20 @@ class CommandCreateNewGame final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const CommandCreateNewGame& default_instance() {
+  static const CommandNewGameInvite& default_instance() {
     return *internal_default_instance();
   }
-  static inline const CommandCreateNewGame* internal_default_instance() {
-    return reinterpret_cast<const CommandCreateNewGame*>(
-               &_CommandCreateNewGame_default_instance_);
+  static inline const CommandNewGameInvite* internal_default_instance() {
+    return reinterpret_cast<const CommandNewGameInvite*>(
+               &_CommandNewGameInvite_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    16;
 
-  friend void swap(CommandCreateNewGame& a, CommandCreateNewGame& b) {
+  friend void swap(CommandNewGameInvite& a, CommandNewGameInvite& b) {
     a.Swap(&b);
   }
-  inline void Swap(CommandCreateNewGame* other) {
+  inline void Swap(CommandNewGameInvite* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -2698,7 +3094,7 @@ class CommandCreateNewGame final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(CommandCreateNewGame* other) {
+  void UnsafeArenaSwap(CommandNewGameInvite* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -2706,26 +3102,40 @@ class CommandCreateNewGame final :
 
   // implements Message ----------------------------------------------
 
-  CommandCreateNewGame* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<CommandCreateNewGame>(arena);
+  CommandNewGameInvite* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CommandNewGameInvite>(arena);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const CommandCreateNewGame& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const CommandNewGameInvite& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const CommandNewGameInvite& from) {
+    CommandNewGameInvite::MergeImpl(*this, from);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const CommandCreateNewGame& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
   public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CommandNewGameInvite* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "C4.CommandCreateNewGame";
+    return "C4.CommandNewGameInvite";
   }
   protected:
-  explicit CommandCreateNewGame(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit CommandNewGameInvite(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -2738,7 +3148,19 @@ class CommandCreateNewGame final :
 
   // accessors -------------------------------------------------------
 
-  // @@protoc_insertion_point(class_scope:C4.CommandCreateNewGame)
+  enum : int {
+    kClientIdFieldNumber = 1,
+  };
+  // uint32 client_id = 1;
+  void clear_client_id();
+  uint32_t client_id() const;
+  void set_client_id(uint32_t value);
+  private:
+  uint32_t _internal_client_id() const;
+  void _internal_set_client_id(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:C4.CommandNewGameInvite)
  private:
   class _Internal;
 
@@ -2746,7 +3168,158 @@ class CommandCreateNewGame final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    uint32_t client_id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_message_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CommandInviteAccept final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:C4.CommandInviteAccept) */ {
+ public:
+  inline CommandInviteAccept() : CommandInviteAccept(nullptr) {}
+  ~CommandInviteAccept() override;
+  explicit PROTOBUF_CONSTEXPR CommandInviteAccept(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  CommandInviteAccept(const CommandInviteAccept& from);
+  CommandInviteAccept(CommandInviteAccept&& from) noexcept
+    : CommandInviteAccept() {
+    *this = ::std::move(from);
+  }
+
+  inline CommandInviteAccept& operator=(const CommandInviteAccept& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CommandInviteAccept& operator=(CommandInviteAccept&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CommandInviteAccept& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CommandInviteAccept* internal_default_instance() {
+    return reinterpret_cast<const CommandInviteAccept*>(
+               &_CommandInviteAccept_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    17;
+
+  friend void swap(CommandInviteAccept& a, CommandInviteAccept& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(CommandInviteAccept* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CommandInviteAccept* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CommandInviteAccept* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CommandInviteAccept>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const CommandInviteAccept& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const CommandInviteAccept& from) {
+    CommandInviteAccept::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CommandInviteAccept* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "C4.CommandInviteAccept";
+  }
+  protected:
+  explicit CommandInviteAccept(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kInviterClientIdFieldNumber = 1,
+  };
+  // uint32 inviter_client_id = 1;
+  void clear_inviter_client_id();
+  uint32_t inviter_client_id() const;
+  void set_inviter_client_id(uint32_t value);
+  private:
+  uint32_t _internal_inviter_client_id() const;
+  void _internal_set_inviter_client_id(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:C4.CommandInviteAccept)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    uint32_t inviter_client_id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
   friend struct ::TableStruct_message_2eproto;
 };
 // -------------------------------------------------------------------
@@ -2799,7 +3372,7 @@ class CommandJoinGame final :
                &_CommandJoinGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    18;
 
   friend void swap(CommandJoinGame& a, CommandJoinGame& b) {
     a.Swap(&b);
@@ -2947,7 +3520,7 @@ class CommandStartGame final :
                &_CommandStartGame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    19;
 
   friend void swap(CommandStartGame& a, CommandStartGame& b) {
     a.Swap(&b);
@@ -3095,7 +3668,7 @@ class CommandPlayerMakeMove final :
                &_CommandPlayerMakeMove_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    20;
 
   friend void swap(CommandPlayerMakeMove& a, CommandPlayerMakeMove& b) {
     a.Swap(&b);
@@ -3265,7 +3838,7 @@ class CommandPlayerLeave final :
                &_CommandPlayerLeave_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    21;
 
   friend void swap(CommandPlayerLeave& a, CommandPlayerLeave& b) {
     a.Swap(&b);
@@ -3421,11 +3994,12 @@ class CommandPayload final :
   }
   enum PayloadCase {
     kCommandEnterLobby = 1,
-    kCommandCreateNewGame = 2,
-    kCommandJoinGame = 3,
-    kCommandStartGame = 4,
-    kCommandMakeMove = 5,
-    kCommandPlayerLeave = 6,
+    kCommandNewGameInvite = 2,
+    kCommandInviteAccept = 3,
+    kCommandJoinGame = 4,
+    kCommandStartGame = 5,
+    kCommandMakeMove = 6,
+    kCommandPlayerLeave = 7,
     PAYLOAD_NOT_SET = 0,
   };
 
@@ -3434,7 +4008,7 @@ class CommandPayload final :
                &_CommandPayload_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    22;
 
   friend void swap(CommandPayload& a, CommandPayload& b) {
     a.Swap(&b);
@@ -3508,11 +4082,12 @@ class CommandPayload final :
 
   enum : int {
     kCommandEnterLobbyFieldNumber = 1,
-    kCommandCreateNewGameFieldNumber = 2,
-    kCommandJoinGameFieldNumber = 3,
-    kCommandStartGameFieldNumber = 4,
-    kCommandMakeMoveFieldNumber = 5,
-    kCommandPlayerLeaveFieldNumber = 6,
+    kCommandNewGameInviteFieldNumber = 2,
+    kCommandInviteAcceptFieldNumber = 3,
+    kCommandJoinGameFieldNumber = 4,
+    kCommandStartGameFieldNumber = 5,
+    kCommandMakeMoveFieldNumber = 6,
+    kCommandPlayerLeaveFieldNumber = 7,
   };
   // .C4.CommandEnterLobby command_enter_lobby = 1;
   bool has_command_enter_lobby() const;
@@ -3532,25 +4107,43 @@ class CommandPayload final :
       ::C4::CommandEnterLobby* command_enter_lobby);
   ::C4::CommandEnterLobby* unsafe_arena_release_command_enter_lobby();
 
-  // .C4.CommandCreateNewGame command_create_new_game = 2;
-  bool has_command_create_new_game() const;
+  // .C4.CommandNewGameInvite command_new_game_invite = 2;
+  bool has_command_new_game_invite() const;
   private:
-  bool _internal_has_command_create_new_game() const;
+  bool _internal_has_command_new_game_invite() const;
   public:
-  void clear_command_create_new_game();
-  const ::C4::CommandCreateNewGame& command_create_new_game() const;
-  PROTOBUF_NODISCARD ::C4::CommandCreateNewGame* release_command_create_new_game();
-  ::C4::CommandCreateNewGame* mutable_command_create_new_game();
-  void set_allocated_command_create_new_game(::C4::CommandCreateNewGame* command_create_new_game);
+  void clear_command_new_game_invite();
+  const ::C4::CommandNewGameInvite& command_new_game_invite() const;
+  PROTOBUF_NODISCARD ::C4::CommandNewGameInvite* release_command_new_game_invite();
+  ::C4::CommandNewGameInvite* mutable_command_new_game_invite();
+  void set_allocated_command_new_game_invite(::C4::CommandNewGameInvite* command_new_game_invite);
   private:
-  const ::C4::CommandCreateNewGame& _internal_command_create_new_game() const;
-  ::C4::CommandCreateNewGame* _internal_mutable_command_create_new_game();
+  const ::C4::CommandNewGameInvite& _internal_command_new_game_invite() const;
+  ::C4::CommandNewGameInvite* _internal_mutable_command_new_game_invite();
   public:
-  void unsafe_arena_set_allocated_command_create_new_game(
-      ::C4::CommandCreateNewGame* command_create_new_game);
-  ::C4::CommandCreateNewGame* unsafe_arena_release_command_create_new_game();
+  void unsafe_arena_set_allocated_command_new_game_invite(
+      ::C4::CommandNewGameInvite* command_new_game_invite);
+  ::C4::CommandNewGameInvite* unsafe_arena_release_command_new_game_invite();
 
-  // .C4.CommandJoinGame command_join_game = 3;
+  // .C4.CommandInviteAccept command_invite_accept = 3;
+  bool has_command_invite_accept() const;
+  private:
+  bool _internal_has_command_invite_accept() const;
+  public:
+  void clear_command_invite_accept();
+  const ::C4::CommandInviteAccept& command_invite_accept() const;
+  PROTOBUF_NODISCARD ::C4::CommandInviteAccept* release_command_invite_accept();
+  ::C4::CommandInviteAccept* mutable_command_invite_accept();
+  void set_allocated_command_invite_accept(::C4::CommandInviteAccept* command_invite_accept);
+  private:
+  const ::C4::CommandInviteAccept& _internal_command_invite_accept() const;
+  ::C4::CommandInviteAccept* _internal_mutable_command_invite_accept();
+  public:
+  void unsafe_arena_set_allocated_command_invite_accept(
+      ::C4::CommandInviteAccept* command_invite_accept);
+  ::C4::CommandInviteAccept* unsafe_arena_release_command_invite_accept();
+
+  // .C4.CommandJoinGame command_join_game = 4;
   bool has_command_join_game() const;
   private:
   bool _internal_has_command_join_game() const;
@@ -3568,7 +4161,7 @@ class CommandPayload final :
       ::C4::CommandJoinGame* command_join_game);
   ::C4::CommandJoinGame* unsafe_arena_release_command_join_game();
 
-  // .C4.CommandStartGame command_start_game = 4;
+  // .C4.CommandStartGame command_start_game = 5;
   bool has_command_start_game() const;
   private:
   bool _internal_has_command_start_game() const;
@@ -3586,7 +4179,7 @@ class CommandPayload final :
       ::C4::CommandStartGame* command_start_game);
   ::C4::CommandStartGame* unsafe_arena_release_command_start_game();
 
-  // .C4.CommandPlayerMakeMove command_make_move = 5;
+  // .C4.CommandPlayerMakeMove command_make_move = 6;
   bool has_command_make_move() const;
   private:
   bool _internal_has_command_make_move() const;
@@ -3604,7 +4197,7 @@ class CommandPayload final :
       ::C4::CommandPlayerMakeMove* command_make_move);
   ::C4::CommandPlayerMakeMove* unsafe_arena_release_command_make_move();
 
-  // .C4.CommandPlayerLeave command_player_leave = 6;
+  // .C4.CommandPlayerLeave command_player_leave = 7;
   bool has_command_player_leave() const;
   private:
   bool _internal_has_command_player_leave() const;
@@ -3628,7 +4221,8 @@ class CommandPayload final :
  private:
   class _Internal;
   void set_has_command_enter_lobby();
-  void set_has_command_create_new_game();
+  void set_has_command_new_game_invite();
+  void set_has_command_invite_accept();
   void set_has_command_join_game();
   void set_has_command_start_game();
   void set_has_command_make_move();
@@ -3645,7 +4239,8 @@ class CommandPayload final :
       constexpr PayloadUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
       ::C4::CommandEnterLobby* command_enter_lobby_;
-      ::C4::CommandCreateNewGame* command_create_new_game_;
+      ::C4::CommandNewGameInvite* command_new_game_invite_;
+      ::C4::CommandInviteAccept* command_invite_accept_;
       ::C4::CommandJoinGame* command_join_game_;
       ::C4::CommandStartGame* command_start_game_;
       ::C4::CommandPlayerMakeMove* command_make_move_;
@@ -3714,7 +4309,7 @@ class Message final :
                &_Message_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    23;
 
   friend void swap(Message& a, Message& b) {
     a.Swap(&b);
@@ -4205,6 +4800,174 @@ EventLobbyUpdated::games() const {
 // -------------------------------------------------------------------
 
 // EventLobbyEntered
+
+// -------------------------------------------------------------------
+
+// EventNewGameInviteReceived
+
+// uint32 inviter_client_id = 1;
+inline void EventNewGameInviteReceived::clear_inviter_client_id() {
+  _impl_.inviter_client_id_ = 0u;
+}
+inline uint32_t EventNewGameInviteReceived::_internal_inviter_client_id() const {
+  return _impl_.inviter_client_id_;
+}
+inline uint32_t EventNewGameInviteReceived::inviter_client_id() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameInviteReceived.inviter_client_id)
+  return _internal_inviter_client_id();
+}
+inline void EventNewGameInviteReceived::_internal_set_inviter_client_id(uint32_t value) {
+  
+  _impl_.inviter_client_id_ = value;
+}
+inline void EventNewGameInviteReceived::set_inviter_client_id(uint32_t value) {
+  _internal_set_inviter_client_id(value);
+  // @@protoc_insertion_point(field_set:C4.EventNewGameInviteReceived.inviter_client_id)
+}
+
+// string inviter_username = 2;
+inline void EventNewGameInviteReceived::clear_inviter_username() {
+  _impl_.inviter_username_.ClearToEmpty();
+}
+inline const std::string& EventNewGameInviteReceived::inviter_username() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameInviteReceived.inviter_username)
+  return _internal_inviter_username();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void EventNewGameInviteReceived::set_inviter_username(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.inviter_username_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:C4.EventNewGameInviteReceived.inviter_username)
+}
+inline std::string* EventNewGameInviteReceived::mutable_inviter_username() {
+  std::string* _s = _internal_mutable_inviter_username();
+  // @@protoc_insertion_point(field_mutable:C4.EventNewGameInviteReceived.inviter_username)
+  return _s;
+}
+inline const std::string& EventNewGameInviteReceived::_internal_inviter_username() const {
+  return _impl_.inviter_username_.Get();
+}
+inline void EventNewGameInviteReceived::_internal_set_inviter_username(const std::string& value) {
+  
+  _impl_.inviter_username_.Set(value, GetArenaForAllocation());
+}
+inline std::string* EventNewGameInviteReceived::_internal_mutable_inviter_username() {
+  
+  return _impl_.inviter_username_.Mutable(GetArenaForAllocation());
+}
+inline std::string* EventNewGameInviteReceived::release_inviter_username() {
+  // @@protoc_insertion_point(field_release:C4.EventNewGameInviteReceived.inviter_username)
+  return _impl_.inviter_username_.Release();
+}
+inline void EventNewGameInviteReceived::set_allocated_inviter_username(std::string* inviter_username) {
+  if (inviter_username != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.inviter_username_.SetAllocated(inviter_username, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.inviter_username_.IsDefault()) {
+    _impl_.inviter_username_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:C4.EventNewGameInviteReceived.inviter_username)
+}
+
+// -------------------------------------------------------------------
+
+// EventNewGameJoined
+
+// uint32 game_id = 1;
+inline void EventNewGameJoined::clear_game_id() {
+  _impl_.game_id_ = 0u;
+}
+inline uint32_t EventNewGameJoined::_internal_game_id() const {
+  return _impl_.game_id_;
+}
+inline uint32_t EventNewGameJoined::game_id() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameJoined.game_id)
+  return _internal_game_id();
+}
+inline void EventNewGameJoined::_internal_set_game_id(uint32_t value) {
+  
+  _impl_.game_id_ = value;
+}
+inline void EventNewGameJoined::set_game_id(uint32_t value) {
+  _internal_set_game_id(value);
+  // @@protoc_insertion_point(field_set:C4.EventNewGameJoined.game_id)
+}
+
+// uint32 opponent_client_id = 2;
+inline void EventNewGameJoined::clear_opponent_client_id() {
+  _impl_.opponent_client_id_ = 0u;
+}
+inline uint32_t EventNewGameJoined::_internal_opponent_client_id() const {
+  return _impl_.opponent_client_id_;
+}
+inline uint32_t EventNewGameJoined::opponent_client_id() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameJoined.opponent_client_id)
+  return _internal_opponent_client_id();
+}
+inline void EventNewGameJoined::_internal_set_opponent_client_id(uint32_t value) {
+  
+  _impl_.opponent_client_id_ = value;
+}
+inline void EventNewGameJoined::set_opponent_client_id(uint32_t value) {
+  _internal_set_opponent_client_id(value);
+  // @@protoc_insertion_point(field_set:C4.EventNewGameJoined.opponent_client_id)
+}
+
+// string opponent_username = 3;
+inline void EventNewGameJoined::clear_opponent_username() {
+  _impl_.opponent_username_.ClearToEmpty();
+}
+inline const std::string& EventNewGameJoined::opponent_username() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameJoined.opponent_username)
+  return _internal_opponent_username();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void EventNewGameJoined::set_opponent_username(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.opponent_username_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:C4.EventNewGameJoined.opponent_username)
+}
+inline std::string* EventNewGameJoined::mutable_opponent_username() {
+  std::string* _s = _internal_mutable_opponent_username();
+  // @@protoc_insertion_point(field_mutable:C4.EventNewGameJoined.opponent_username)
+  return _s;
+}
+inline const std::string& EventNewGameJoined::_internal_opponent_username() const {
+  return _impl_.opponent_username_.Get();
+}
+inline void EventNewGameJoined::_internal_set_opponent_username(const std::string& value) {
+  
+  _impl_.opponent_username_.Set(value, GetArenaForAllocation());
+}
+inline std::string* EventNewGameJoined::_internal_mutable_opponent_username() {
+  
+  return _impl_.opponent_username_.Mutable(GetArenaForAllocation());
+}
+inline std::string* EventNewGameJoined::release_opponent_username() {
+  // @@protoc_insertion_point(field_release:C4.EventNewGameJoined.opponent_username)
+  return _impl_.opponent_username_.Release();
+}
+inline void EventNewGameJoined::set_allocated_opponent_username(std::string* opponent_username) {
+  if (opponent_username != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.opponent_username_.SetAllocated(opponent_username, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.opponent_username_.IsDefault()) {
+    _impl_.opponent_username_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:C4.EventNewGameJoined.opponent_username)
+}
 
 // -------------------------------------------------------------------
 
@@ -4770,7 +5533,155 @@ inline ::C4::EventLobbyEntered* EventPayload::mutable_event_lobby_entered() {
   return _msg;
 }
 
-// .C4.EventGameCreated event_game_created = 5;
+// .C4.EventNewGameInviteReceived event_new_game_invite_received = 5;
+inline bool EventPayload::_internal_has_event_new_game_invite_received() const {
+  return payload_case() == kEventNewGameInviteReceived;
+}
+inline bool EventPayload::has_event_new_game_invite_received() const {
+  return _internal_has_event_new_game_invite_received();
+}
+inline void EventPayload::set_has_event_new_game_invite_received() {
+  _impl_._oneof_case_[0] = kEventNewGameInviteReceived;
+}
+inline void EventPayload::clear_event_new_game_invite_received() {
+  if (_internal_has_event_new_game_invite_received()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete _impl_.payload_.event_new_game_invite_received_;
+    }
+    clear_has_payload();
+  }
+}
+inline ::C4::EventNewGameInviteReceived* EventPayload::release_event_new_game_invite_received() {
+  // @@protoc_insertion_point(field_release:C4.EventPayload.event_new_game_invite_received)
+  if (_internal_has_event_new_game_invite_received()) {
+    clear_has_payload();
+    ::C4::EventNewGameInviteReceived* temp = _impl_.payload_.event_new_game_invite_received_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.event_new_game_invite_received_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::C4::EventNewGameInviteReceived& EventPayload::_internal_event_new_game_invite_received() const {
+  return _internal_has_event_new_game_invite_received()
+      ? *_impl_.payload_.event_new_game_invite_received_
+      : reinterpret_cast< ::C4::EventNewGameInviteReceived&>(::C4::_EventNewGameInviteReceived_default_instance_);
+}
+inline const ::C4::EventNewGameInviteReceived& EventPayload::event_new_game_invite_received() const {
+  // @@protoc_insertion_point(field_get:C4.EventPayload.event_new_game_invite_received)
+  return _internal_event_new_game_invite_received();
+}
+inline ::C4::EventNewGameInviteReceived* EventPayload::unsafe_arena_release_event_new_game_invite_received() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:C4.EventPayload.event_new_game_invite_received)
+  if (_internal_has_event_new_game_invite_received()) {
+    clear_has_payload();
+    ::C4::EventNewGameInviteReceived* temp = _impl_.payload_.event_new_game_invite_received_;
+    _impl_.payload_.event_new_game_invite_received_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void EventPayload::unsafe_arena_set_allocated_event_new_game_invite_received(::C4::EventNewGameInviteReceived* event_new_game_invite_received) {
+  clear_payload();
+  if (event_new_game_invite_received) {
+    set_has_event_new_game_invite_received();
+    _impl_.payload_.event_new_game_invite_received_ = event_new_game_invite_received;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.EventPayload.event_new_game_invite_received)
+}
+inline ::C4::EventNewGameInviteReceived* EventPayload::_internal_mutable_event_new_game_invite_received() {
+  if (!_internal_has_event_new_game_invite_received()) {
+    clear_payload();
+    set_has_event_new_game_invite_received();
+    _impl_.payload_.event_new_game_invite_received_ = CreateMaybeMessage< ::C4::EventNewGameInviteReceived >(GetArenaForAllocation());
+  }
+  return _impl_.payload_.event_new_game_invite_received_;
+}
+inline ::C4::EventNewGameInviteReceived* EventPayload::mutable_event_new_game_invite_received() {
+  ::C4::EventNewGameInviteReceived* _msg = _internal_mutable_event_new_game_invite_received();
+  // @@protoc_insertion_point(field_mutable:C4.EventPayload.event_new_game_invite_received)
+  return _msg;
+}
+
+// .C4.EventNewGameJoined event_new_game_joined = 6;
+inline bool EventPayload::_internal_has_event_new_game_joined() const {
+  return payload_case() == kEventNewGameJoined;
+}
+inline bool EventPayload::has_event_new_game_joined() const {
+  return _internal_has_event_new_game_joined();
+}
+inline void EventPayload::set_has_event_new_game_joined() {
+  _impl_._oneof_case_[0] = kEventNewGameJoined;
+}
+inline void EventPayload::clear_event_new_game_joined() {
+  if (_internal_has_event_new_game_joined()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete _impl_.payload_.event_new_game_joined_;
+    }
+    clear_has_payload();
+  }
+}
+inline ::C4::EventNewGameJoined* EventPayload::release_event_new_game_joined() {
+  // @@protoc_insertion_point(field_release:C4.EventPayload.event_new_game_joined)
+  if (_internal_has_event_new_game_joined()) {
+    clear_has_payload();
+    ::C4::EventNewGameJoined* temp = _impl_.payload_.event_new_game_joined_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.event_new_game_joined_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::C4::EventNewGameJoined& EventPayload::_internal_event_new_game_joined() const {
+  return _internal_has_event_new_game_joined()
+      ? *_impl_.payload_.event_new_game_joined_
+      : reinterpret_cast< ::C4::EventNewGameJoined&>(::C4::_EventNewGameJoined_default_instance_);
+}
+inline const ::C4::EventNewGameJoined& EventPayload::event_new_game_joined() const {
+  // @@protoc_insertion_point(field_get:C4.EventPayload.event_new_game_joined)
+  return _internal_event_new_game_joined();
+}
+inline ::C4::EventNewGameJoined* EventPayload::unsafe_arena_release_event_new_game_joined() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:C4.EventPayload.event_new_game_joined)
+  if (_internal_has_event_new_game_joined()) {
+    clear_has_payload();
+    ::C4::EventNewGameJoined* temp = _impl_.payload_.event_new_game_joined_;
+    _impl_.payload_.event_new_game_joined_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void EventPayload::unsafe_arena_set_allocated_event_new_game_joined(::C4::EventNewGameJoined* event_new_game_joined) {
+  clear_payload();
+  if (event_new_game_joined) {
+    set_has_event_new_game_joined();
+    _impl_.payload_.event_new_game_joined_ = event_new_game_joined;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.EventPayload.event_new_game_joined)
+}
+inline ::C4::EventNewGameJoined* EventPayload::_internal_mutable_event_new_game_joined() {
+  if (!_internal_has_event_new_game_joined()) {
+    clear_payload();
+    set_has_event_new_game_joined();
+    _impl_.payload_.event_new_game_joined_ = CreateMaybeMessage< ::C4::EventNewGameJoined >(GetArenaForAllocation());
+  }
+  return _impl_.payload_.event_new_game_joined_;
+}
+inline ::C4::EventNewGameJoined* EventPayload::mutable_event_new_game_joined() {
+  ::C4::EventNewGameJoined* _msg = _internal_mutable_event_new_game_joined();
+  // @@protoc_insertion_point(field_mutable:C4.EventPayload.event_new_game_joined)
+  return _msg;
+}
+
+// .C4.EventGameCreated event_game_created = 7;
 inline bool EventPayload::_internal_has_event_game_created() const {
   return payload_case() == kEventGameCreated;
 }
@@ -4844,7 +5755,7 @@ inline ::C4::EventGameCreated* EventPayload::mutable_event_game_created() {
   return _msg;
 }
 
-// .C4.EventPlayerJoined event_player_joined = 6;
+// .C4.EventPlayerJoined event_player_joined = 8;
 inline bool EventPayload::_internal_has_event_player_joined() const {
   return payload_case() == kEventPlayerJoined;
 }
@@ -4918,7 +5829,7 @@ inline ::C4::EventPlayerJoined* EventPayload::mutable_event_player_joined() {
   return _msg;
 }
 
-// .C4.EventGameStarted event_game_started = 7;
+// .C4.EventGameStarted event_game_started = 9;
 inline bool EventPayload::_internal_has_event_game_started() const {
   return payload_case() == kEventGameStarted;
 }
@@ -4992,7 +5903,7 @@ inline ::C4::EventGameStarted* EventPayload::mutable_event_game_started() {
   return _msg;
 }
 
-// .C4.EventPlayerMadeMove event_player_made_move = 8;
+// .C4.EventPlayerMadeMove event_player_made_move = 10;
 inline bool EventPayload::_internal_has_event_player_made_move() const {
   return payload_case() == kEventPlayerMadeMove;
 }
@@ -5066,7 +5977,7 @@ inline ::C4::EventPlayerMadeMove* EventPayload::mutable_event_player_made_move()
   return _msg;
 }
 
-// .C4.EventGameVerdicted event_game_verdicted = 9;
+// .C4.EventGameVerdicted event_game_verdicted = 11;
 inline bool EventPayload::_internal_has_event_game_verdicted() const {
   return payload_case() == kEventGameVerdicted;
 }
@@ -5140,7 +6051,7 @@ inline ::C4::EventGameVerdicted* EventPayload::mutable_event_game_verdicted() {
   return _msg;
 }
 
-// .C4.EventPlayerLeft event_player_left = 10;
+// .C4.EventPlayerLeft event_player_left = 12;
 inline bool EventPayload::_internal_has_event_player_left() const {
   return payload_case() == kEventPlayerLeft;
 }
@@ -5279,7 +6190,51 @@ inline void CommandEnterLobby::set_allocated_username(std::string* username) {
 
 // -------------------------------------------------------------------
 
-// CommandCreateNewGame
+// CommandNewGameInvite
+
+// uint32 client_id = 1;
+inline void CommandNewGameInvite::clear_client_id() {
+  _impl_.client_id_ = 0u;
+}
+inline uint32_t CommandNewGameInvite::_internal_client_id() const {
+  return _impl_.client_id_;
+}
+inline uint32_t CommandNewGameInvite::client_id() const {
+  // @@protoc_insertion_point(field_get:C4.CommandNewGameInvite.client_id)
+  return _internal_client_id();
+}
+inline void CommandNewGameInvite::_internal_set_client_id(uint32_t value) {
+  
+  _impl_.client_id_ = value;
+}
+inline void CommandNewGameInvite::set_client_id(uint32_t value) {
+  _internal_set_client_id(value);
+  // @@protoc_insertion_point(field_set:C4.CommandNewGameInvite.client_id)
+}
+
+// -------------------------------------------------------------------
+
+// CommandInviteAccept
+
+// uint32 inviter_client_id = 1;
+inline void CommandInviteAccept::clear_inviter_client_id() {
+  _impl_.inviter_client_id_ = 0u;
+}
+inline uint32_t CommandInviteAccept::_internal_inviter_client_id() const {
+  return _impl_.inviter_client_id_;
+}
+inline uint32_t CommandInviteAccept::inviter_client_id() const {
+  // @@protoc_insertion_point(field_get:C4.CommandInviteAccept.inviter_client_id)
+  return _internal_inviter_client_id();
+}
+inline void CommandInviteAccept::_internal_set_inviter_client_id(uint32_t value) {
+  
+  _impl_.inviter_client_id_ = value;
+}
+inline void CommandInviteAccept::set_inviter_client_id(uint32_t value) {
+  _internal_set_inviter_client_id(value);
+  // @@protoc_insertion_point(field_set:C4.CommandInviteAccept.inviter_client_id)
+}
 
 // -------------------------------------------------------------------
 
@@ -5515,81 +6470,155 @@ inline ::C4::CommandEnterLobby* CommandPayload::mutable_command_enter_lobby() {
   return _msg;
 }
 
-// .C4.CommandCreateNewGame command_create_new_game = 2;
-inline bool CommandPayload::_internal_has_command_create_new_game() const {
-  return payload_case() == kCommandCreateNewGame;
+// .C4.CommandNewGameInvite command_new_game_invite = 2;
+inline bool CommandPayload::_internal_has_command_new_game_invite() const {
+  return payload_case() == kCommandNewGameInvite;
 }
-inline bool CommandPayload::has_command_create_new_game() const {
-  return _internal_has_command_create_new_game();
+inline bool CommandPayload::has_command_new_game_invite() const {
+  return _internal_has_command_new_game_invite();
 }
-inline void CommandPayload::set_has_command_create_new_game() {
-  _impl_._oneof_case_[0] = kCommandCreateNewGame;
+inline void CommandPayload::set_has_command_new_game_invite() {
+  _impl_._oneof_case_[0] = kCommandNewGameInvite;
 }
-inline void CommandPayload::clear_command_create_new_game() {
-  if (_internal_has_command_create_new_game()) {
+inline void CommandPayload::clear_command_new_game_invite() {
+  if (_internal_has_command_new_game_invite()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.payload_.command_create_new_game_;
+      delete _impl_.payload_.command_new_game_invite_;
     }
     clear_has_payload();
   }
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::release_command_create_new_game() {
-  // @@protoc_insertion_point(field_release:C4.CommandPayload.command_create_new_game)
-  if (_internal_has_command_create_new_game()) {
+inline ::C4::CommandNewGameInvite* CommandPayload::release_command_new_game_invite() {
+  // @@protoc_insertion_point(field_release:C4.CommandPayload.command_new_game_invite)
+  if (_internal_has_command_new_game_invite()) {
     clear_has_payload();
-    ::C4::CommandCreateNewGame* temp = _impl_.payload_.command_create_new_game_;
+    ::C4::CommandNewGameInvite* temp = _impl_.payload_.command_new_game_invite_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.payload_.command_create_new_game_ = nullptr;
+    _impl_.payload_.command_new_game_invite_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline const ::C4::CommandCreateNewGame& CommandPayload::_internal_command_create_new_game() const {
-  return _internal_has_command_create_new_game()
-      ? *_impl_.payload_.command_create_new_game_
-      : reinterpret_cast< ::C4::CommandCreateNewGame&>(::C4::_CommandCreateNewGame_default_instance_);
+inline const ::C4::CommandNewGameInvite& CommandPayload::_internal_command_new_game_invite() const {
+  return _internal_has_command_new_game_invite()
+      ? *_impl_.payload_.command_new_game_invite_
+      : reinterpret_cast< ::C4::CommandNewGameInvite&>(::C4::_CommandNewGameInvite_default_instance_);
 }
-inline const ::C4::CommandCreateNewGame& CommandPayload::command_create_new_game() const {
-  // @@protoc_insertion_point(field_get:C4.CommandPayload.command_create_new_game)
-  return _internal_command_create_new_game();
+inline const ::C4::CommandNewGameInvite& CommandPayload::command_new_game_invite() const {
+  // @@protoc_insertion_point(field_get:C4.CommandPayload.command_new_game_invite)
+  return _internal_command_new_game_invite();
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::unsafe_arena_release_command_create_new_game() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_create_new_game)
-  if (_internal_has_command_create_new_game()) {
+inline ::C4::CommandNewGameInvite* CommandPayload::unsafe_arena_release_command_new_game_invite() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_new_game_invite)
+  if (_internal_has_command_new_game_invite()) {
     clear_has_payload();
-    ::C4::CommandCreateNewGame* temp = _impl_.payload_.command_create_new_game_;
-    _impl_.payload_.command_create_new_game_ = nullptr;
+    ::C4::CommandNewGameInvite* temp = _impl_.payload_.command_new_game_invite_;
+    _impl_.payload_.command_new_game_invite_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline void CommandPayload::unsafe_arena_set_allocated_command_create_new_game(::C4::CommandCreateNewGame* command_create_new_game) {
+inline void CommandPayload::unsafe_arena_set_allocated_command_new_game_invite(::C4::CommandNewGameInvite* command_new_game_invite) {
   clear_payload();
-  if (command_create_new_game) {
-    set_has_command_create_new_game();
-    _impl_.payload_.command_create_new_game_ = command_create_new_game;
+  if (command_new_game_invite) {
+    set_has_command_new_game_invite();
+    _impl_.payload_.command_new_game_invite_ = command_new_game_invite;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_create_new_game)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_new_game_invite)
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::_internal_mutable_command_create_new_game() {
-  if (!_internal_has_command_create_new_game()) {
+inline ::C4::CommandNewGameInvite* CommandPayload::_internal_mutable_command_new_game_invite() {
+  if (!_internal_has_command_new_game_invite()) {
     clear_payload();
-    set_has_command_create_new_game();
-    _impl_.payload_.command_create_new_game_ = CreateMaybeMessage< ::C4::CommandCreateNewGame >(GetArenaForAllocation());
+    set_has_command_new_game_invite();
+    _impl_.payload_.command_new_game_invite_ = CreateMaybeMessage< ::C4::CommandNewGameInvite >(GetArenaForAllocation());
   }
-  return _impl_.payload_.command_create_new_game_;
+  return _impl_.payload_.command_new_game_invite_;
 }
-inline ::C4::CommandCreateNewGame* CommandPayload::mutable_command_create_new_game() {
-  ::C4::CommandCreateNewGame* _msg = _internal_mutable_command_create_new_game();
-  // @@protoc_insertion_point(field_mutable:C4.CommandPayload.command_create_new_game)
+inline ::C4::CommandNewGameInvite* CommandPayload::mutable_command_new_game_invite() {
+  ::C4::CommandNewGameInvite* _msg = _internal_mutable_command_new_game_invite();
+  // @@protoc_insertion_point(field_mutable:C4.CommandPayload.command_new_game_invite)
   return _msg;
 }
 
-// .C4.CommandJoinGame command_join_game = 3;
+// .C4.CommandInviteAccept command_invite_accept = 3;
+inline bool CommandPayload::_internal_has_command_invite_accept() const {
+  return payload_case() == kCommandInviteAccept;
+}
+inline bool CommandPayload::has_command_invite_accept() const {
+  return _internal_has_command_invite_accept();
+}
+inline void CommandPayload::set_has_command_invite_accept() {
+  _impl_._oneof_case_[0] = kCommandInviteAccept;
+}
+inline void CommandPayload::clear_command_invite_accept() {
+  if (_internal_has_command_invite_accept()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete _impl_.payload_.command_invite_accept_;
+    }
+    clear_has_payload();
+  }
+}
+inline ::C4::CommandInviteAccept* CommandPayload::release_command_invite_accept() {
+  // @@protoc_insertion_point(field_release:C4.CommandPayload.command_invite_accept)
+  if (_internal_has_command_invite_accept()) {
+    clear_has_payload();
+    ::C4::CommandInviteAccept* temp = _impl_.payload_.command_invite_accept_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.command_invite_accept_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::C4::CommandInviteAccept& CommandPayload::_internal_command_invite_accept() const {
+  return _internal_has_command_invite_accept()
+      ? *_impl_.payload_.command_invite_accept_
+      : reinterpret_cast< ::C4::CommandInviteAccept&>(::C4::_CommandInviteAccept_default_instance_);
+}
+inline const ::C4::CommandInviteAccept& CommandPayload::command_invite_accept() const {
+  // @@protoc_insertion_point(field_get:C4.CommandPayload.command_invite_accept)
+  return _internal_command_invite_accept();
+}
+inline ::C4::CommandInviteAccept* CommandPayload::unsafe_arena_release_command_invite_accept() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:C4.CommandPayload.command_invite_accept)
+  if (_internal_has_command_invite_accept()) {
+    clear_has_payload();
+    ::C4::CommandInviteAccept* temp = _impl_.payload_.command_invite_accept_;
+    _impl_.payload_.command_invite_accept_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void CommandPayload::unsafe_arena_set_allocated_command_invite_accept(::C4::CommandInviteAccept* command_invite_accept) {
+  clear_payload();
+  if (command_invite_accept) {
+    set_has_command_invite_accept();
+    _impl_.payload_.command_invite_accept_ = command_invite_accept;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:C4.CommandPayload.command_invite_accept)
+}
+inline ::C4::CommandInviteAccept* CommandPayload::_internal_mutable_command_invite_accept() {
+  if (!_internal_has_command_invite_accept()) {
+    clear_payload();
+    set_has_command_invite_accept();
+    _impl_.payload_.command_invite_accept_ = CreateMaybeMessage< ::C4::CommandInviteAccept >(GetArenaForAllocation());
+  }
+  return _impl_.payload_.command_invite_accept_;
+}
+inline ::C4::CommandInviteAccept* CommandPayload::mutable_command_invite_accept() {
+  ::C4::CommandInviteAccept* _msg = _internal_mutable_command_invite_accept();
+  // @@protoc_insertion_point(field_mutable:C4.CommandPayload.command_invite_accept)
+  return _msg;
+}
+
+// .C4.CommandJoinGame command_join_game = 4;
 inline bool CommandPayload::_internal_has_command_join_game() const {
   return payload_case() == kCommandJoinGame;
 }
@@ -5663,7 +6692,7 @@ inline ::C4::CommandJoinGame* CommandPayload::mutable_command_join_game() {
   return _msg;
 }
 
-// .C4.CommandStartGame command_start_game = 4;
+// .C4.CommandStartGame command_start_game = 5;
 inline bool CommandPayload::_internal_has_command_start_game() const {
   return payload_case() == kCommandStartGame;
 }
@@ -5737,7 +6766,7 @@ inline ::C4::CommandStartGame* CommandPayload::mutable_command_start_game() {
   return _msg;
 }
 
-// .C4.CommandPlayerMakeMove command_make_move = 5;
+// .C4.CommandPlayerMakeMove command_make_move = 6;
 inline bool CommandPayload::_internal_has_command_make_move() const {
   return payload_case() == kCommandMakeMove;
 }
@@ -5811,7 +6840,7 @@ inline ::C4::CommandPlayerMakeMove* CommandPayload::mutable_command_make_move() 
   return _msg;
 }
 
-// .C4.CommandPlayerLeave command_player_leave = 6;
+// .C4.CommandPlayerLeave command_player_leave = 7;
 inline bool CommandPayload::_internal_has_command_player_leave() const {
   return payload_case() == kCommandPlayerLeave;
 }
@@ -6078,6 +7107,12 @@ inline Message::PayloadTypeCase Message::payload_type_case() const {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

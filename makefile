@@ -29,17 +29,21 @@ $(COMPILED_PROTOS): $(PROTOS)
 	protoc --proto_path=./src --cpp_out=. $(PROTOS)
 	mv $(PROTOS:src/%.proto=%.pb.h) include
 	mv $(PROTOS:src/%.proto=%.pb.cc) src
+protos: $(COMPILED_PROTOS)
 
 $(LIB): $(LIB_SRCS) $(LIB_IMGUI)
 	$(CXX) $(CXXFLAGS) -shared $(LIB_SRCS) -o $(LIB) $(LDFLAGS)
+lib: $(LIB)
 
 $(SERVER): $(LIB) $(SERVER_SRC)
 	$(CXX) $(CXXFLAGS) $(SERVER_SRC) -o $(SERVER) $(LDFLAGS) -lc4
+server: $(SERVER)
 run_server: $(SERVER)
 	$(SERVER)
 
 $(CLIENT): $(LIB) $(CLIENT_SRC)
 	$(CXX) $(CXXFLAGS) $(CLIENT_SRC) -o $(CLIENT) $(LDFLAGS) -lc4
+client: $(CLIENT)
 run_client: $(CLIENT)
 	$(CLIENT)
 
