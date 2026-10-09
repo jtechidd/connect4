@@ -44,9 +44,9 @@ public:
     void handle_message(client_id_t client_id, Message *msg);
     void handle_event(client_id_t client_id, const EventPayload *event_payload);
     void handle_command(client_id_t client_id, const CommandPayload *command_payload);
-    void handle_command_enter_lobby(client_id_t client_id, const CommandEnterLobby *el);
-    void handle_command_new_game_invite(client_id_t client_id, const CommandNewGameInvite *ngr);
-    void handle_command_invite_accept(client_id_t client_id, const CommandInviteAccept *ia);
+    void handle_command_enter_lobby(client_id_t client_id, const CommandEnterLobby *payload);
+    void handle_command_new_game_invite(client_id_t client_id, const CommandNewGameInvite *payload);
+    void handle_command_invite_accept(client_id_t client_id, const CommandInviteAccept *payload);
 
     void send_message(client_id_t client_id, Message *msg);
     void broadcast_message(Message *msg);

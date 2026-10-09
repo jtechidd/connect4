@@ -111,7 +111,6 @@ void Client::QUI::lobby_updated(const EventLobbyUpdated *lu) {
     client_id_t selected_id = 0;
     if (m_lw_online_players->selectedItems().size() > 0) {
       selected_id = m_lw_online_players->selectedItems()[0]->data(Qt::UserRole).toUInt();
-      spdlog::debug("Previous selected id: {}", selected_id);
     }
     m_lw_online_players->clear();
     for (auto &ci : lu.clients()) {
@@ -147,7 +146,9 @@ void Client::QUI::update_invite() {
 
 void Client::QUI::on_btn_enter_lobby_clicked() { m_client->async_enter_lobby(); }
 
-void Client::QUI::on_le_username_text_changed(const QString &text) { strncpy(m_client->m_username, text.toUtf8().constData(), USERNAME_MAX_SIZE); }
+void Client::QUI::on_le_username_text_changed(const QString &text) {
+  snprintf(m_client->m_username, sizeof(m_client->m_username), "%s", text.toUtf8().constData());
+}
 
 void Client::QUI::on_lw_online_players_item_clicked(QListWidgetItem *item) {
   m_client->m_selected_client_id = item->data(Qt::UserRole).toUInt();

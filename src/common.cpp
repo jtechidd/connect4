@@ -17,7 +17,7 @@ WriteRequest::WriteRequest(Message *msg) {
   buf.base = new char[MSG_SIZE_NBYTES + len];
   buf.len = MSG_SIZE_NBYTES + len;
   memcpy(buf.base, &len_net, sizeof(uint32_t));
-  strncpy(buf.base + MSG_SIZE_NBYTES, str.c_str(), len);
+  memcpy(buf.base + MSG_SIZE_NBYTES, str.c_str(), len);
 }
 
 WriteRequest::~WriteRequest() { delete[] buf.base; };

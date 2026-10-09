@@ -62,7 +62,6 @@ void Server::disconnect(client_id_t client_id) {
 }
 
 void Server::create_new_game(client_id_t client_id) {
-  printf("Creating new game\n");
   ClientConnection *connection = m_clients_map[client_id];
   if (connection == NULL || connection->m_current_game_id != 0)
     return;

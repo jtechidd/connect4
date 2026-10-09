@@ -24,13 +24,13 @@ public:
     ~MessageHandler();
 
     void handle_message(Message *msg);
-    void handle_event(const EventPayload *event);
-    void handle_event_server_connected(const EventServerConnected *sc);
-    void handle_event_username_check_failed(const EventUsernameCheckFailed *ucf);
-    void handle_event_lobby_entered(const EventLobbyEntered *le);
-    void handle_event_lobby_updated(const EventLobbyUpdated *lu);
-    void handle_event_new_game_invite_received(const EventNewGameInviteReceived *ngir);
-    void handle_event_new_game_joined(const EventNewGameJoined *);
+    void handle_event(const EventPayload *event_payload);
+    void handle_event_server_connected(const EventServerConnected *payload);
+    void handle_event_username_check_failed(const EventUsernameCheckFailed *payload);
+    void handle_event_lobby_entered(const EventLobbyEntered *payload);
+    void handle_event_lobby_updated(const EventLobbyUpdated *payload);
+    void handle_event_new_game_invite_received(const EventNewGameInviteReceived *payload);
+    void handle_event_new_game_joined(const EventNewGameJoined *payload);
 
     void send_message(Message *msg);
     void send_command_enter_lobby();
@@ -62,7 +62,7 @@ public:
     void update_server_connection(bool is_connected);
     void username_check_failed();
     void lobby_entered();
-    void lobby_updated(const EventLobbyUpdated *lu);
+    void lobby_updated(const EventLobbyUpdated *payload);
     void update_invite();
 
     void on_btn_enter_lobby_clicked();
