@@ -51,7 +51,7 @@ Client::QUI::QUI(Client *client, QWidget *parent) : QWidget(parent) {
   QVBoxLayout *vbl_game = new QVBoxLayout;
   QPushButton *btn_new_game = new QPushButton(tr("New Game"));
   btn_new_game->setEnabled(false);
-  m_btn_new_game_invite = new QPushButton("New Game With player");
+  m_btn_new_game_invite = new QPushButton("New Game With Player");
   m_btn_new_game_invite->setEnabled(false);
   connect(m_btn_new_game_invite, &QPushButton::clicked, this, &QUI::on_btn_new_game_invite_clicked);
   vbl_game->addStretch(1);
@@ -97,12 +97,16 @@ void Client::QUI::update_server_connection(bool is_connected) {
       m_sw_pages->setCurrentIndex(0);
       m_lb_server_status->setText(tr("Server disconnected"));
       m_btn_enter_lobby->setEnabled(false);
+      setWindowTitle("Connect4");
     }
   });
 }
 
 void Client::QUI::lobby_entered() {
-  QMetaObject::invokeMethod(this, [this]() { m_sw_pages->setCurrentIndex(1); });
+  QMetaObject::invokeMethod(this, [this]() {
+    m_sw_pages->setCurrentIndex(1);
+    setWindowTitle(QString("Connect4 (%1)").arg(m_client->m_username));
+  });
 }
 
 void Client::QUI::lobby_updated(const EventLobbyUpdated *lu) {
@@ -153,7 +157,7 @@ void Client::QUI::on_le_username_text_changed(const QString &text) {
 void Client::QUI::on_lw_online_players_item_clicked(QListWidgetItem *item) {
   m_client->m_selected_client_id = item->data(Qt::UserRole).toUInt();
   m_btn_new_game_invite->setEnabled(true);
-  m_lb_invite_text->setText(QString("New Game With %1").arg(item->text()));
+  m_btn_new_game_invite->setText(QString("New Game With %1").arg(item->text()));
 }
 
 void Client::QUI::on_btn_new_game_invite_clicked() { m_client->async_new_game_invite(); }
