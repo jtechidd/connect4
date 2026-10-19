@@ -1,11 +1,11 @@
 #include "server.hpp"
-#include "common.hpp"
 #include "game.hpp"
+#include "server_client_connection.hpp"
 
 namespace C4 {
 
 Server::Server(int port, int backlog) : m_message_handler(this) {
-  m_uv_loop = g_uv_loop;
+  m_uv_loop = uv_default_loop();
   m_port = port;
   m_backlog = backlog;
   m_client_cid = 0;
@@ -33,7 +33,7 @@ void Server::on_uv_tcp_server_connection(uv_stream_t *stream, int status) {
     spdlog::error("Client connection error");
     return;
   }
-  ClientConnection *connection = new ClientConnection(self->m_uv_loop, self, ++self->m_client_cid);
+  ServerClientConnection *connection = new ServerClientConnection(self->m_uv_loop, self, ++self->m_client_cid);
   if (uv_accept((uv_stream_t *)&self->m_uv_tcp_server, (uv_stream_t *)&connection->m_uv_tcp_connection) != 0) {
     spdlog::error("Client accept error");
     delete connection;
@@ -45,7 +45,7 @@ void Server::on_uv_tcp_server_connection(uv_stream_t *stream, int status) {
 }
 
 void Server::disconnect(client_id_t client_id) {
-  ClientConnection *connection = m_clients_map[client_id];
+  ServerClientConnection *connection = m_clients_map[client_id];
   if (connection == NULL || m_clients_map.erase(client_id) != 1)
     return;
   if (connection->m_current_game_id) {
@@ -62,7 +62,7 @@ void Server::disconnect(client_id_t client_id) {
 }
 
 void Server::create_new_game(client_id_t client_id) {
-  ClientConnection *connection = m_clients_map[client_id];
+  ServerClientConnection *connection = m_clients_map[client_id];
   if (connection == NULL || connection->m_current_game_id != 0)
     return;
   Game *game = new Game(++m_game_cid, connection->m_id);
@@ -71,7 +71,7 @@ void Server::create_new_game(client_id_t client_id) {
 }
 
 void Server::join_game(client_id_t client_id, game_id_t game_id) {
-  ClientConnection *connection = m_clients_map[client_id];
+  ServerClientConnection *connection = m_clients_map[client_id];
   Game *game = m_game_map[game_id];
   if (connection == NULL)
     return;

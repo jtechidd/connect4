@@ -4,11 +4,8 @@
 
 namespace C4 {
 
-const char *CLIENT_DEFAULT_HOST = "localhost";
-const int CLIENT_DEFAULT_PORT = 8080;
-
-Client::Client(int argc, char **argv, const char *host, int port) : m_message_handler(this), m_qt_app(argc, argv), m_qt_ui(this) {
-  m_uv_loop = g_uv_loop;
+Client::Client(int argc, char **argv, const char *host, int port) : m_message_handler(this), m_qapp(argc, argv), m_ui(this) {
+  m_uv_loop = uv_default_loop();
   m_host = (char *)host;
   m_port = port;
   m_client_id = 0;
@@ -41,8 +38,8 @@ void Client::run_uv_loop() {
 }
 
 int Client::run_qt_ui() {
-  m_qt_ui.show();
-  return m_qt_app.exec();
+  m_ui.show();
+  return m_qapp.exec();
 }
 
 void Client::run() {
@@ -57,14 +54,14 @@ void Client::on_uv_tcp_server_connect(uv_connect_t *connect, int status) {
   Client *self = (Client *)connect->data;
   if (status != 0) {
     self->m_is_connected = false;
-    self->m_qt_ui.update_server_connection(false);
+    self->m_ui.update_server_connection(false);
     goto cleanup;
   }
 
   spdlog::info("Connected to server");
   uv_read_start((uv_stream_t *)&self->m_uv_tcp_connection, Client::on_uv_tcp_connection_alloc, Client::on_uv_tcp_connection_read);
   self->m_is_connected = true;
-  self->m_qt_ui.update_server_connection(true);
+  self->m_ui.update_server_connection(true);
 cleanup:
   delete connect;
 }
@@ -117,7 +114,7 @@ void Client::on_uv_tcp_connection_close(uv_handle_t *handle) {
   Client *self = (Client *)handle->data;
   spdlog::info("Disconnencted from server");
   self->m_is_connected = false;
-  self->m_qt_ui.update_server_connection(false);
+  self->m_ui.update_server_connection(false);
   self->m_state = CLIENT_STATE_USERNAME;
   uv_timer_start(&self->m_uv_timer_try_connect, Client::on_uv_timer_try_connect_timeout, 1000, 1000);
 }

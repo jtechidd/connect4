@@ -4,10 +4,6 @@ using namespace C4;
 
 namespace C4 {
 
-uv_loop_t *g_uv_loop = uv_default_loop();
-const size_t MSG_SIZE_NBYTES = 4;
-const size_t MSG_MAX_SIZE = 16 * 1024 * 1024;
-
 WriteRequest::WriteRequest() {};
 
 WriteRequest::WriteRequest(Message *msg) {

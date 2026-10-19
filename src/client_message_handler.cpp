@@ -1,12 +1,13 @@
+#include "client_message_handler.hpp"
 #include "client.hpp"
 #include "message.pb.h"
 
 namespace C4 {
 
-Client::MessageHandler::MessageHandler(Client *client) { m_client = client; }
-Client::MessageHandler::~MessageHandler() {}
+ClientMessageHandler::ClientMessageHandler(Client *client) { m_client = client; }
+ClientMessageHandler::~ClientMessageHandler() {}
 
-void Client::MessageHandler::handle_message(Message *message) {
+void ClientMessageHandler::handle_message(Message *message) {
   switch (message->payload_type_case()) {
   case Message::kEventPayload:
     handle_event(&message->event_payload());
@@ -18,7 +19,7 @@ void Client::MessageHandler::handle_message(Message *message) {
   }
 }
 
-void Client::MessageHandler::handle_event(const EventPayload *event_payload) {
+void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
   switch (event_payload->payload_case()) {
   case EventPayload::kEventServerConnected:
     handle_event_server_connected(&event_payload->event_server_connected());
@@ -43,29 +44,29 @@ void Client::MessageHandler::handle_event(const EventPayload *event_payload) {
   }
 }
 
-void Client::MessageHandler::handle_event_server_connected(const EventServerConnected *payload) {
+void ClientMessageHandler::handle_event_server_connected(const EventServerConnected *payload) {
   m_client->m_client_id = payload->client_id();
   spdlog::info("Set client ID to {}", m_client->m_client_id);
 }
 
-void Client::MessageHandler::handle_event_lobby_entered(const EventLobbyEntered *payload) {
+void ClientMessageHandler::handle_event_lobby_entered(const EventLobbyEntered *payload) {
   m_client->m_state = CLIENT_STATE_LOBBY;
-  m_client->m_qt_ui.lobby_entered();
+  m_client->m_ui.lobby_entered();
   spdlog::info("Entered lobby");
 }
 
-void Client::MessageHandler::handle_event_username_check_failed(const EventUsernameCheckFailed *payload) {
-  m_client->m_qt_ui.username_check_failed();
+void ClientMessageHandler::handle_event_username_check_failed(const EventUsernameCheckFailed *payload) {
+  m_client->m_ui.username_check_failed();
   spdlog::info("Username check failed");
 }
 
-void Client::MessageHandler::handle_event_lobby_updated(const EventLobbyUpdated *payload) {
+void ClientMessageHandler::handle_event_lobby_updated(const EventLobbyUpdated *payload) {
   m_client->m_total_clients = payload->total_clients();
-  m_client->m_qt_ui.lobby_updated(payload);
+  m_client->m_ui.lobby_updated(payload);
   spdlog::info("Set total clients to {}", m_client->m_total_clients);
 }
 
-void Client::MessageHandler::handle_event_new_game_invite_received(const EventNewGameInviteReceived *payload) {
+void ClientMessageHandler::handle_event_new_game_invite_received(const EventNewGameInviteReceived *payload) {
   for (NewGameInvite invite : m_client->m_new_game_invite_queue)
     if (invite.inviter_client_id == payload->inviter_client_id())
       return;
@@ -73,21 +74,19 @@ void Client::MessageHandler::handle_event_new_game_invite_received(const EventNe
   invite.inviter_client_id = payload->inviter_client_id();
   snprintf(invite.inviter_username, sizeof(invite.inviter_username), "%s", payload->inviter_username().c_str());
   m_client->m_new_game_invite_queue.push_back(invite);
-  m_client->m_qt_ui.update_invite();
+  m_client->m_ui.update_invite();
 }
 
-void Client::MessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) {
-  // TODO: in game ui
-}
+void ClientMessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) { m_client->m_ui.new_game_joined(payload); }
 
-void Client::MessageHandler::send_message(Message *msg) {
+void ClientMessageHandler::send_message(Message *msg) {
   WriteRequest *write_req = new WriteRequest(msg);
   write_req->req.data = this;
   spdlog::debug("Sending message with {} bytes", write_req->buf.len);
   uv_write((uv_write_t *)write_req, (uv_stream_t *)&m_client->m_uv_tcp_connection, &write_req->buf, 1, Client::on_uv_tcp_connection_write);
 }
 
-void Client::MessageHandler::send_command_enter_lobby() {
+void ClientMessageHandler::send_command_enter_lobby() {
   Message msg;
   CommandEnterLobby *payload = msg.mutable_command_payload()->mutable_command_enter_lobby();
   payload->set_username(m_client->m_username);
@@ -95,7 +94,7 @@ void Client::MessageHandler::send_command_enter_lobby() {
   send_message(&msg);
 }
 
-void Client::MessageHandler::send_command_new_game_invite() {
+void ClientMessageHandler::send_command_new_game_invite() {
   if (!m_client->m_selected_client_id)
     return;
   Message msg;
@@ -105,14 +104,14 @@ void Client::MessageHandler::send_command_new_game_invite() {
   send_message(&msg);
 }
 
-void Client::MessageHandler::send_command_invite_accept() {
+void ClientMessageHandler::send_command_invite_accept() {
   if (m_client->m_new_game_invite_queue.size() == 0)
     return;
   Message msg;
   CommandInviteAccept *payload = msg.mutable_command_payload()->mutable_command_invite_accept();
   payload->set_inviter_client_id(m_client->m_new_game_invite_queue.front().inviter_client_id);
   m_client->m_new_game_invite_queue.pop_front();
-  m_client->m_qt_ui.update_invite();
+  m_client->m_ui.update_invite();
   spdlog::info("Accepting invite from client: {}", payload->inviter_client_id());
   send_message(&msg);
 }

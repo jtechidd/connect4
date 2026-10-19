@@ -8,15 +8,16 @@
 
 namespace C4 {
 
-extern uv_loop_t *g_uv_loop;
-extern uint32_t g_client_cid, g_game_cid;
-extern const size_t MSG_SIZE_NBYTES;
-extern const size_t MSG_MAX_SIZE;
+constexpr size_t MSG_SIZE_NBYTES = 4;
+constexpr size_t MSG_MAX_SIZE = 16 * 1024 * 1024;
 constexpr size_t USERNAME_MAX_SIZE = 32;
 
 typedef uint32_t game_id_t;
 typedef uint32_t client_id_t;
 
+class Server;
+class ServerClientConnection;
+class Client;
 class Game;
 
 class WriteRequest {
@@ -26,12 +27,6 @@ public:
   WriteRequest();
   WriteRequest(Message *msg);
   ~WriteRequest();
-};
-
-class NewGameInvite {
-public:
-  client_id_t inviter_client_id;
-  char inviter_username[USERNAME_MAX_SIZE + 1];
 };
 
 }; // namespace C4

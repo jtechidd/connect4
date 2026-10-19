@@ -1,37 +1,39 @@
+#include "server_client_connection.hpp"
 #include "server.hpp"
 
 namespace C4 {
 
-Server::ClientConnection::ClientConnection(uv_loop_t *loop, Server *server, client_id_t id) {
+ServerClientConnection::ServerClientConnection(uv_loop_t *loop, Server *server, client_id_t id) {
   m_uv_loop = loop;
   m_server = server;
   m_id = id;
   m_current_game_id = 0;
-  uv_tcp_init(m_uv_loop, &m_uv_tcp_connection);
-  m_uv_tcp_connection.data = this;
   m_state = CLIENT_STATE_USERNAME;
   memset(m_username, 0, sizeof(m_username));
+
+  uv_tcp_init(loop, &m_uv_tcp_connection);
+  m_uv_tcp_connection.data = this;
 }
 
-Server::ClientConnection::~ClientConnection() {}
+ServerClientConnection::~ServerClientConnection() {}
 
-void Server::ClientConnection::run() {
-  uv_read_start((uv_stream_t *)&m_uv_tcp_connection, on_uv_tcp_connection_alloc, Server::ClientConnection::on_uv_tcp_connection_read);
+void ServerClientConnection::run() {
+  uv_read_start((uv_stream_t *)&m_uv_tcp_connection, on_uv_tcp_connection_alloc, ServerClientConnection::on_uv_tcp_connection_read);
   m_server->m_message_handler.emit_event_server_connected(m_id);
 }
 
-void Server::ClientConnection::on_uv_tcp_connection_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {
+void ServerClientConnection::on_uv_tcp_connection_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {
   buf->base = new char[size];
   buf->len = size;
 }
 
-void Server::ClientConnection::on_uv_tcp_connection_read(uv_stream_t *stream, long nread, const uv_buf_t *buf) {
-  ClientConnection *self = (ClientConnection *)stream->data;
+void ServerClientConnection::on_uv_tcp_connection_read(uv_stream_t *stream, long nread, const uv_buf_t *buf) {
+  ServerClientConnection *self = (ServerClientConnection *)stream->data;
   uint32_t msg_size = 0;
   Message msg;
 
   if (nread < 0) {
-    uv_close((uv_handle_t *)stream, Server::ClientConnection::on_uv_tcp_connection_close);
+    uv_close((uv_handle_t *)stream, ServerClientConnection::on_uv_tcp_connection_close);
     goto cleanup;
   }
 
@@ -58,14 +60,14 @@ cleanup:
   delete[] buf->base;
 }
 
-void Server::ClientConnection::on_uv_tcp_connection_write(uv_write_t *write, int status) {
+void ServerClientConnection::on_uv_tcp_connection_write(uv_write_t *write, int status) {
   if (status != 0) {
   }
   delete write;
 }
 
-void Server::ClientConnection::on_uv_tcp_connection_close(uv_handle_t *handle) {
-  ClientConnection *self = (ClientConnection *)handle->data;
+void ServerClientConnection::on_uv_tcp_connection_close(uv_handle_t *handle) {
+  ServerClientConnection *self = (ServerClientConnection *)handle->data;
   self->m_server->disconnect(self->m_id);
 }
 
