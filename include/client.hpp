@@ -1,6 +1,7 @@
 #ifndef C4_CLIENT_HPP
 #define C4_CLIENT_HPP
 
+#include "client_data.hpp"
 #include "client_message_handler.hpp"
 #include "client_ui.hpp"
 #include "common.hpp"
@@ -13,6 +14,7 @@ namespace C4 {
 
 constexpr const char *CLIENT_DEFAULT_HOST = "localhost";
 constexpr int CLIENT_DEFAULT_PORT = 8080;
+constexpr uint64_t CLIENT_TRY_CONNECT_INTERVAL = 1000;
 
 class NewGameInvite {
 public:
@@ -35,12 +37,12 @@ public:
   ClientMessageHandler m_message_handler;
 
   bool m_is_connected;
-  client_id_t m_client_id;
-  uint64_t m_total_clients;
-  ClientState m_state;
   client_id_t m_selected_client_id;
+  uint64_t m_total_clients;
   std::deque<NewGameInvite> m_new_game_invite_queue;
-  char m_username[USERNAME_MAX_SIZE + 1];
+
+  // Shared
+  ClientData m_data;
   Game m_game;
 
   QApplication m_qapp;

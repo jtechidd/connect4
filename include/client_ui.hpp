@@ -5,14 +5,15 @@
 #include <QtWidgets>
 
 namespace C4 {
+
+class Board : public QWidget {
+public:
+  Board(QWidget *parent = nullptr);
+  void paintEvent(QPaintEvent *event) override;
+};
+
 class ClientUI : public QWidget {
 public:
-  class QGame : public QWidget {
-  public:
-    QGame(QWidget *parent = nullptr);
-    void paintEvent(QPaintEvent *event) override;
-  };
-
   ClientUI(Client *client, QWidget *parent = nullptr);
 
   Client *m_client;
@@ -33,6 +34,10 @@ public:
   QPushButton *m_btn_invite_decline;
 
   QStackedWidget *m_sw_game;
+
+  QLabel *m_lb_game_opp_side;
+  QLabel *m_lb_game_player_side;
+  QPushButton *m_btn_board_cell[6][7];
 
   void update_server_connection(bool is_connected);
   void username_check_failed();

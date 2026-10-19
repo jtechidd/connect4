@@ -8,11 +8,8 @@ Client::Client(int argc, char **argv, const char *host, int port) : m_message_ha
   m_uv_loop = uv_default_loop();
   m_host = (char *)host;
   m_port = port;
-  m_client_id = 0;
   m_total_clients = 0;
-  m_state = CLIENT_STATE_USERNAME;
   m_is_connected = false;
-  memset(m_username, 0, sizeof(m_username));
 
   uv_tcp_init(m_uv_loop, &m_uv_tcp_connection);
   m_uv_tcp_connection.data = this;
@@ -33,7 +30,7 @@ Client::Client(int argc, char **argv, const char *host, int port) : m_message_ha
 Client::~Client() {}
 
 void Client::run_uv_loop() {
-  uv_timer_start(&m_uv_timer_try_connect, Client::on_uv_timer_try_connect_timeout, 1000, 1000);
+  uv_timer_start(&m_uv_timer_try_connect, Client::on_uv_timer_try_connect_timeout, CLIENT_TRY_CONNECT_INTERVAL, CLIENT_TRY_CONNECT_INTERVAL);
   uv_run(m_uv_loop, UV_RUN_DEFAULT);
 }
 
@@ -115,8 +112,8 @@ void Client::on_uv_tcp_connection_close(uv_handle_t *handle) {
   spdlog::info("Disconnencted from server");
   self->m_is_connected = false;
   self->m_ui.update_server_connection(false);
-  self->m_state = CLIENT_STATE_USERNAME;
-  uv_timer_start(&self->m_uv_timer_try_connect, Client::on_uv_timer_try_connect_timeout, 1000, 1000);
+  self->m_data.m_state = CLIENT_STATE_USERNAME;
+  uv_timer_start(&self->m_uv_timer_try_connect, Client::on_uv_timer_try_connect_timeout, CLIENT_TRY_CONNECT_INTERVAL, CLIENT_TRY_CONNECT_INTERVAL);
 }
 
 void Client::on_uv_async_stop_uv_loop_awake(uv_async_t *handle) {

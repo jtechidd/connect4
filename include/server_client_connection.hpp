@@ -1,6 +1,7 @@
 #ifndef C4_SERVER_CLIENT_CONNECTION_HPP
 #define C4_SERVER_CLIENT_CONNECTION_HPP
 
+#include "client_data.hpp"
 #include "common.hpp"
 #include "ring_buffer.hpp"
 
@@ -9,12 +10,10 @@ class ServerClientConnection {
 public:
   uv_loop_t *m_uv_loop;
   Server *m_server;
-  client_id_t m_id;
   uv_tcp_t m_uv_tcp_connection;
-  char m_username[USERNAME_MAX_SIZE + 1];
-  ClientState m_state;
   RingBuffer m_ring_buffer;
-  game_id_t m_current_game_id;
+
+  ClientData m_client_data;
 
   ServerClientConnection(uv_loop_t *loop, Server *server, client_id_t id);
   ~ServerClientConnection();

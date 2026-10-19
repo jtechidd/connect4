@@ -14,6 +14,7 @@ LIB_SRCS = \
 	src/server_client_connection.cpp \
 	src/server_message_handler.cpp \
 	src/ring_buffer.cpp \
+	src/client_data.cpp \
 	src/game.cpp \
 	src/client.cpp \
 	src/client_message_handler.cpp \

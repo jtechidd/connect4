@@ -1,10 +1,28 @@
 #include "client_ui.hpp"
 #include "client.hpp"
+#include "qnamespace.h"
 
 namespace C4 {
 
-ClientUI::QGame::QGame(QWidget *parent) : QWidget(parent) {};
-void ClientUI::QGame::paintEvent(QPaintEvent *) {}
+Board::Board(QWidget *parent) : QWidget(parent) {};
+void Board::paintEvent(QPaintEvent *event) {
+  Q_UNUSED(event);
+  QPainter painter(this);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(Qt::gray);
+  painter.drawRect(rect());
+  painter.setBrush(Qt::white);
+  int tile_width = rect().width() / 7;
+  int tile_height = rect().height() / 6;
+  for (uint8_t i = 0; i < 6; i++) {
+    for (uint8_t j = 0; j < 7; j++) {
+      int r = std::min(tile_width, tile_height) / 2 - 5;
+      QPoint c(j * tile_width + tile_width / 2, i * tile_height + tile_height / 2);
+      painter.drawEllipse(c, r, r);
+    }
+  }
+}
 
 ClientUI::ClientUI(Client *client, QWidget *parent) : QWidget(parent) {
   m_client = client;
@@ -79,6 +97,14 @@ ClientUI::ClientUI(Client *client, QWidget *parent) : QWidget(parent) {
 
   QWidget *wg_game = new QWidget;
   QVBoxLayout *vbl_game = new QVBoxLayout;
+  vbl_game->setContentsMargins(0, 0, 0, 0);
+  m_lb_game_opp_side = new QLabel("Opponent");
+  m_lb_game_opp_side->setAlignment(Qt::AlignCenter);
+  vbl_game->addWidget(m_lb_game_opp_side);
+  vbl_game->addWidget(new Board, 1);
+  m_lb_game_player_side = new QLabel("Player");
+  m_lb_game_player_side->setAlignment(Qt::AlignCenter);
+  vbl_game->addWidget(m_lb_game_player_side);
   wg_game->setLayout(vbl_game);
 
   m_sw_game->addWidget(wg_game_menu);
@@ -114,7 +140,7 @@ void ClientUI::update_server_connection(bool is_connected) {
 void ClientUI::lobby_entered() {
   QMetaObject::invokeMethod(this, [this]() {
     m_sw_pages->setCurrentIndex(1);
-    setWindowTitle(QString("Connect4 (%1)").arg(m_client->m_username));
+    setWindowTitle(QString("Connect4 (%1)").arg(m_client->m_data.m_username));
   });
 }
 
@@ -127,7 +153,7 @@ void ClientUI::lobby_updated(const EventLobbyUpdated *lu) {
     }
     m_lw_online_players->clear();
     for (auto &ci : lu.clients()) {
-      if (ci.id() == m_client->m_client_id || ci.state() == CLIENT_STATE_USERNAME)
+      if (ci.id() == m_client->m_data.m_client_id || ci.state() == CLIENT_STATE_USERNAME)
         continue;
       QListWidgetItem *item = new QListWidgetItem(ci.username().c_str());
       item->setData(Qt::UserRole, ci.id());
@@ -164,7 +190,7 @@ void ClientUI::update_invite() {
 void ClientUI::on_btn_enter_lobby_clicked() { m_client->async_enter_lobby(); }
 
 void ClientUI::on_le_username_text_changed(const QString &text) {
-  snprintf(m_client->m_username, sizeof(m_client->m_username), "%s", text.toUtf8().constData());
+  snprintf(m_client->m_data.m_username, sizeof(m_client->m_data.m_username), "%s", text.toUtf8().constData());
 }
 
 void ClientUI::on_lw_online_players_item_clicked(QListWidgetItem *item) {

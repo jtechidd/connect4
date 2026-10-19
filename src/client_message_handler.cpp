@@ -45,12 +45,12 @@ void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
 }
 
 void ClientMessageHandler::handle_event_server_connected(const EventServerConnected *payload) {
-  m_client->m_client_id = payload->client_id();
-  spdlog::info("Set client ID to {}", m_client->m_client_id);
+  m_client->m_data.m_client_id = payload->client_id();
+  spdlog::info("Set client ID to {}", m_client->m_data.m_client_id);
 }
 
 void ClientMessageHandler::handle_event_lobby_entered(const EventLobbyEntered *payload) {
-  m_client->m_state = CLIENT_STATE_LOBBY;
+  m_client->m_data.m_state = CLIENT_STATE_LOBBY;
   m_client->m_ui.lobby_entered();
   spdlog::info("Entered lobby");
 }
@@ -89,8 +89,8 @@ void ClientMessageHandler::send_message(Message *msg) {
 void ClientMessageHandler::send_command_enter_lobby() {
   Message msg;
   CommandEnterLobby *payload = msg.mutable_command_payload()->mutable_command_enter_lobby();
-  payload->set_username(m_client->m_username);
-  spdlog::info("Entering lobby with username: {}", m_client->m_username);
+  payload->set_username(m_client->m_data.m_username);
+  spdlog::info("Entering lobby with username: {}", m_client->m_data.m_username);
   send_message(&msg);
 }
 

@@ -22,7 +22,8 @@ void Server::run() {
   uv_ip4_addr(NULL, m_port, &m_server_addr);
   uv_tcp_bind(&m_uv_tcp_server, (struct sockaddr *)&m_server_addr, 0);
   uv_listen((uv_stream_t *)&m_uv_tcp_server, m_backlog, on_uv_tcp_server_connection);
-  uv_timer_start(&m_uv_timer_broadcast_event_lobby_updated, Server::on_uv_timer_broadcast_event_lobby_updated_timeout, 10000, 10000);
+  uv_timer_start(&m_uv_timer_broadcast_event_lobby_updated, Server::on_uv_timer_broadcast_event_lobby_updated_timeout,
+                 SERVER_BROADCAST_EVENT_LOBBY_UPDATED_INTERVAL, SERVER_BROADCAST_EVENT_LOBBY_UPDATED_INTERVAL);
   spdlog::info("Listening on port {}", m_port);
   uv_run(m_uv_loop, UV_RUN_DEFAULT);
 }
@@ -45,29 +46,38 @@ void Server::on_uv_tcp_server_connection(uv_stream_t *stream, int status) {
 }
 
 void Server::disconnect(client_id_t client_id) {
+  spdlog::info("Disconnecting client ID: {}", client_id);
   ServerClientConnection *connection = m_clients_map[client_id];
-  if (connection == NULL || m_clients_map.erase(client_id) != 1)
+  if (connection == NULL || m_clients_map.erase(client_id) != 1) {
     return;
-  if (connection->m_current_game_id) {
-    Game *game = m_game_map[connection->m_current_game_id];
-    if (game == NULL) {
-      return;
+  }
+  if (connection->m_client_data.m_current_game_id) {
+    Game *game = m_game_map[connection->m_client_data.m_current_game_id];
+    if (game) {
+      if (game->m_p1_id == client_id)
+        game->m_p1_id = 0;
+      else if (game->m_p2_id == client_id)
+        game->m_p2_id = 0;
     }
-    if (m_game_map.erase(game->m_id) != 1) {
-      return;
-    }
-    delete game;
   }
   delete connection;
 }
 
-void Server::create_new_game(client_id_t client_id) {
-  ServerClientConnection *connection = m_clients_map[client_id];
-  if (connection == NULL || connection->m_current_game_id != 0)
+void Server::create_new_game(client_id_t client1_id, client_id_t client2_id) {
+  ServerClientConnection *client1 = m_clients_map[client1_id];
+  if (!(client1 && client1->m_client_data.is_ready_for_new_game())) {
     return;
-  Game *game = new Game(++m_game_cid, connection->m_id);
+  }
+  ServerClientConnection *client2 = m_clients_map[client2_id];
+  if (!(client2 && client2->m_client_data.is_ready_for_new_game())) {
+    return;
+  }
+  Game *game = new Game(++m_game_cid, client1_id, client2_id);
   m_game_map[game->m_id] = game;
-  connection->m_current_game_id = game->m_id;
+  client1->m_client_data.m_current_game_id = game->m_id;
+  client2->m_client_data.m_current_game_id = game->m_id;
+  m_message_handler.emit_event_new_game_joined(client1_id, game->m_id, client2_id);
+  m_message_handler.emit_event_new_game_joined(client2_id, game->m_id, client1_id);
 }
 
 void Server::join_game(client_id_t client_id, game_id_t game_id) {

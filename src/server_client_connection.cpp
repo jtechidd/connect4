@@ -1,15 +1,12 @@
 #include "server_client_connection.hpp"
+#include "client_data.hpp"
 #include "server.hpp"
 
 namespace C4 {
 
-ServerClientConnection::ServerClientConnection(uv_loop_t *loop, Server *server, client_id_t id) {
+ServerClientConnection::ServerClientConnection(uv_loop_t *loop, Server *server, client_id_t id) : m_client_data(id) {
   m_uv_loop = loop;
   m_server = server;
-  m_id = id;
-  m_current_game_id = 0;
-  m_state = CLIENT_STATE_USERNAME;
-  memset(m_username, 0, sizeof(m_username));
 
   uv_tcp_init(loop, &m_uv_tcp_connection);
   m_uv_tcp_connection.data = this;
@@ -19,7 +16,7 @@ ServerClientConnection::~ServerClientConnection() {}
 
 void ServerClientConnection::run() {
   uv_read_start((uv_stream_t *)&m_uv_tcp_connection, on_uv_tcp_connection_alloc, ServerClientConnection::on_uv_tcp_connection_read);
-  m_server->m_message_handler.emit_event_server_connected(m_id);
+  m_server->m_message_handler.emit_event_server_connected(m_client_data.m_client_id);
 }
 
 void ServerClientConnection::on_uv_tcp_connection_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {
@@ -53,7 +50,7 @@ void ServerClientConnection::on_uv_tcp_connection_read(uv_stream_t *stream, long
     self->m_ring_buffer.read(raw_msg, msg_size, msg_size);
     msg.ParseFromArray(raw_msg, msg_size);
     delete[] raw_msg;
-    self->m_server->m_message_handler.handle_message(self->m_id, &msg);
+    self->m_server->m_message_handler.handle_message(self->m_client_data.m_client_id, &msg);
   }
 
 cleanup:
@@ -68,7 +65,7 @@ void ServerClientConnection::on_uv_tcp_connection_write(uv_write_t *write, int s
 
 void ServerClientConnection::on_uv_tcp_connection_close(uv_handle_t *handle) {
   ServerClientConnection *self = (ServerClientConnection *)handle->data;
-  self->m_server->disconnect(self->m_id);
+  self->m_server->disconnect(self->m_client_data.m_client_id);
 }
 
 }; // namespace C4

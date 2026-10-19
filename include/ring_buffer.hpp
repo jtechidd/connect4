@@ -4,7 +4,7 @@
 #include "common.hpp"
 
 namespace C4 {
-extern const size_t DEFAULT_RING_BUFFER_CAPACITY;
+constexpr size_t DEFAULT_RING_BUFFER_CAPACITY = 8;
 class RingBuffer {
 public:
   uint8_t *m_buf;

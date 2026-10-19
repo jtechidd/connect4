@@ -30,7 +30,7 @@ public:
   game_player_t m_board[6][7];
 
   Game();
-  Game(game_id_t id, client_id_t p1_id);
+  Game(game_id_t id, client_id_t p1_id, client_id_t p2_id);
   ~Game();
 
   // server side

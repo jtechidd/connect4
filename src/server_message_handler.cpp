@@ -40,11 +40,11 @@ void ServerMessageHandler::init_event_lobby_updated(Message *msg) {
     game_info->set_player2_id(game->m_p2_id);
     game_info->set_state(game->m_state);
   }
-  for (auto [_, c] : m_server->m_clients_map) {
+  for (auto [_, conn] : m_server->m_clients_map) {
     ClientInfo *client_info = payload->add_clients();
-    client_info->set_id(c->m_id);
-    client_info->set_state(c->m_state);
-    client_info->set_username(c->m_username);
+    client_info->set_id(conn->m_client_data.m_client_id);
+    client_info->set_state(conn->m_client_data.m_state);
+    client_info->set_username(conn->m_client_data.m_username);
   }
 }
 
@@ -80,7 +80,7 @@ void ServerMessageHandler::emit_event_new_game_invite_received(client_id_t clien
   Message msg;
   EventNewGameInviteReceived *payload = msg.mutable_event_payload()->mutable_event_new_game_invite_received();
   payload->set_inviter_client_id(inviter_client_id);
-  payload->set_inviter_username(inviter_client->m_username);
+  payload->set_inviter_username(inviter_client->m_client_data.m_username);
   send_message(client_id, &msg);
 }
 
@@ -91,7 +91,7 @@ void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, gam
   EventNewGameJoined *payload = msg.mutable_event_payload()->mutable_event_new_game_joined();
   payload->set_game_id(game_id);
   payload->set_opponent_client_id(opp_client_id);
-  payload->set_opponent_username(m_server->m_clients_map[opp_client_id]->m_username);
+  payload->set_opponent_username(m_server->m_clients_map[opp_client_id]->m_client_data.m_username);
   send_message(client_id, &msg);
 }
 
@@ -132,8 +132,12 @@ void ServerMessageHandler::handle_command(client_id_t client_id, const CommandPa
 }
 
 void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, const CommandEnterLobby *payload) {
+  spdlog::info("i'm still alive, m_clients_map size: {}", m_server->m_clients_map.size());
+  for (auto [id, client_conn] : m_server->m_clients_map) {
+    spdlog::info("client_conn id: {}, {}", id, client_conn->m_client_data.m_client_id);
+  }
   for (auto [_, client_conn] : m_server->m_clients_map) {
-    if (!strcmp(client_conn->m_username, payload->username().c_str())) {
+    if (!strcmp(client_conn->m_client_data.m_username, payload->username().c_str())) {
       emit_event_username_check_failed(client_id);
       return;
     }
@@ -141,9 +145,9 @@ void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, con
   ServerClientConnection *client_conn = m_server->m_clients_map[client_id];
   assert(client_conn != NULL);
   assert(payload->username().length() <= USERNAME_MAX_SIZE);
-  snprintf(client_conn->m_username, sizeof(client_conn->m_username), "%s", payload->username().c_str());
+  snprintf(client_conn->m_client_data.m_username, sizeof(client_conn->m_client_data.m_username), "%s", payload->username().c_str());
   assert(m_server->m_clients_map[client_id] != nullptr);
-  m_server->m_clients_map[client_id]->m_state = CLIENT_STATE_LOBBY;
+  m_server->m_clients_map[client_id]->m_client_data.m_state = CLIENT_STATE_LOBBY;
   emit_event_lobby_entered(client_id);
   emit_event_lobby_updated(client_id);
 }
@@ -153,12 +157,9 @@ void ServerMessageHandler::handle_command_new_game_invite(client_id_t client_id,
 }
 
 void ServerMessageHandler::handle_command_invite_accept(client_id_t client_id, const CommandInviteAccept *payload) {
-  client_id_t client_id_1 = payload->inviter_client_id();
-  client_id_t client_id_2 = client_id;
-  // TODO: check availability, create new game
-  game_id_t game_id = 1; // fake
-  emit_event_new_game_joined(client_id_1, game_id, client_id_2);
-  emit_event_new_game_joined(client_id_2, game_id, client_id_1);
+  client_id_t client1_id = payload->inviter_client_id();
+  client_id_t client2_id = client_id;
+  m_server->create_new_game(client1_id, client2_id);
 }
 
 }; // namespace C4
