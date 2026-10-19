@@ -24,31 +24,32 @@ void Server::run() {
   uv_listen((uv_stream_t *)&m_uv_tcp_server, m_backlog, on_uv_tcp_server_connection);
   uv_timer_start(&m_uv_timer_broadcast_event_lobby_updated, Server::on_uv_timer_broadcast_event_lobby_updated_timeout,
                  SERVER_BROADCAST_EVENT_LOBBY_UPDATED_INTERVAL, SERVER_BROADCAST_EVENT_LOBBY_UPDATED_INTERVAL);
-  spdlog::info("Listening on port {}", m_port);
+  spdlog::info("Listening on port [{}].", m_port);
   uv_run(m_uv_loop, UV_RUN_DEFAULT);
 }
 
 void Server::on_uv_tcp_server_connection(uv_stream_t *stream, int status) {
   Server *self = (Server *)stream->data;
   if (status < 0) {
-    spdlog::error("Client connection error");
+    spdlog::error("Client connection error.");
     return;
   }
   ServerClientConnection *connection = new ServerClientConnection(self->m_uv_loop, self, ++self->m_client_cid);
   if (uv_accept((uv_stream_t *)&self->m_uv_tcp_server, (uv_stream_t *)&connection->m_uv_tcp_connection) != 0) {
-    spdlog::error("Client accept error");
+    spdlog::error("Client accept error.");
     delete connection;
     return;
   }
-  spdlog::info("New client connection with ID: {}", self->m_client_cid);
+  spdlog::info("New connection associated to client with ID [{}].", self->m_client_cid);
   self->m_clients_map[self->m_client_cid] = connection;
   connection->run();
 }
 
 void Server::disconnect(client_id_t client_id) {
-  spdlog::info("Disconnecting client ID: {}", client_id);
+  spdlog::info("Disconnecting client with ID [{}].", client_id);
   ServerClientConnection *connection = m_clients_map[client_id];
   if (connection == NULL || m_clients_map.erase(client_id) != 1) {
+    spdlog::error("Cannot erase connection associated to client with ID [{}] from the mapping.", client_id);
     return;
   }
   if (connection->m_client_data.m_current_game_id) {
@@ -61,15 +62,19 @@ void Server::disconnect(client_id_t client_id) {
     }
   }
   delete connection;
+  spdlog::debug("Successfully delete connection associated to client with ID [{}].", client_id);
 }
 
 void Server::create_new_game(client_id_t client1_id, client_id_t client2_id) {
+  spdlog::info("Creating new game for both clients with ID [{}] and [{}].", client1_id, client2_id);
   ServerClientConnection *client1 = m_clients_map[client1_id];
   if (!(client1 && client1->m_client_data.is_ready_for_new_game())) {
+    spdlog::info("Client with ID [{}] is not ready for new game, skipping.", client1_id);
     return;
   }
   ServerClientConnection *client2 = m_clients_map[client2_id];
   if (!(client2 && client2->m_client_data.is_ready_for_new_game())) {
+    spdlog::info("Client with ID [{}] is not ready for new game, skipping.", client2_id);
     return;
   }
   Game *game = new Game(++m_game_cid, client1_id, client2_id);

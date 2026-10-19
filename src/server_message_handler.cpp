@@ -49,34 +49,40 @@ void ServerMessageHandler::init_event_lobby_updated(Message *msg) {
 }
 
 void ServerMessageHandler::broadcast_event_lobby_updated() {
-  spdlog::debug("Broadcasting event lobby updated to all clients...");
+  spdlog::debug("Broadcasting event [lobby_updated] to all clients.");
   Message msg;
   init_event_lobby_updated(&msg);
   broadcast_message(&msg);
 }
 
 void ServerMessageHandler::emit_event_lobby_updated(client_id_t client_id) {
+  spdlog::debug("Emitting event [lobby_updated] to client with ID [{}].", client_id);
   Message msg;
   init_event_lobby_updated(&msg);
   send_message(client_id, &msg);
 }
 
 void ServerMessageHandler::emit_event_lobby_entered(client_id_t client_id) {
+  spdlog::debug("Emitting event [lobby_entered] to client with ID [{}].", client_id);
   Message msg;
   msg.mutable_event_payload()->mutable_event_lobby_entered();
   send_message(client_id, &msg);
 }
 
 void ServerMessageHandler::emit_event_username_check_failed(client_id_t client_id) {
+  spdlog::debug("Emitting event [username_check_failed] to client with ID [{}].", client_id);
   Message msg;
   msg.mutable_event_payload()->mutable_event_username_check_failed();
   send_message(client_id, &msg);
 }
 
 void ServerMessageHandler::emit_event_new_game_invite_received(client_id_t client_id, client_id_t inviter_client_id) {
+  spdlog::debug("Emitting event [new_game_invite_received] to client with ID [{}].", client_id);
   ServerClientConnection *inviter_client = m_server->m_clients_map[inviter_client_id];
-  if (!inviter_client)
+  if (!inviter_client) {
+    spdlog::debug("Inviter client with ID [{}] not found, skipping.", inviter_client_id);
     return;
+  }
   Message msg;
   EventNewGameInviteReceived *payload = msg.mutable_event_payload()->mutable_event_new_game_invite_received();
   payload->set_inviter_client_id(inviter_client_id);
@@ -85,8 +91,11 @@ void ServerMessageHandler::emit_event_new_game_invite_received(client_id_t clien
 }
 
 void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, game_id_t game_id, client_id_t opp_client_id) {
-  if (!m_server->m_clients_map[opp_client_id])
+  spdlog::debug("Emitting event [new_game_joined] to client with ID [{}].", client_id);
+  if (!m_server->m_clients_map[opp_client_id]) {
+    spdlog::debug("Opponent client with ID [{}] not found, skipping.", opp_client_id);
     return;
+  }
   Message msg;
   EventNewGameJoined *payload = msg.mutable_event_payload()->mutable_event_new_game_joined();
   payload->set_game_id(game_id);
@@ -132,12 +141,10 @@ void ServerMessageHandler::handle_command(client_id_t client_id, const CommandPa
 }
 
 void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, const CommandEnterLobby *payload) {
-  spdlog::info("i'm still alive, m_clients_map size: {}", m_server->m_clients_map.size());
-  for (auto [id, client_conn] : m_server->m_clients_map) {
-    spdlog::info("client_conn id: {}, {}", id, client_conn->m_client_data.m_client_id);
-  }
+  spdlog::info("Handling command [enter_lobby] from client with ID [{}].", client_id);
   for (auto [_, client_conn] : m_server->m_clients_map) {
     if (!strcmp(client_conn->m_client_data.m_username, payload->username().c_str())) {
+      spdlog::info("Username [{}] is already taken, rejecting.", client_conn->m_client_data.m_username);
       emit_event_username_check_failed(client_id);
       return;
     }
@@ -153,10 +160,12 @@ void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, con
 }
 
 void ServerMessageHandler::handle_command_new_game_invite(client_id_t client_id, const CommandNewGameInvite *payload) {
+  spdlog::info("Handling command [new_game_invite] from client with ID [{}].", client_id);
   emit_event_new_game_invite_received(payload->client_id(), client_id);
 }
 
 void ServerMessageHandler::handle_command_invite_accept(client_id_t client_id, const CommandInviteAccept *payload) {
+  spdlog::info("Handling command [invite_accept] from client with ID [{}]", client_id);
   client_id_t client1_id = payload->inviter_client_id();
   client_id_t client2_id = client_id;
   m_server->create_new_game(client1_id, client2_id);

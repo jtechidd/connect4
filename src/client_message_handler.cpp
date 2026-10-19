@@ -45,44 +45,54 @@ void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
 }
 
 void ClientMessageHandler::handle_event_server_connected(const EventServerConnected *payload) {
+  spdlog::info("Handling event [server_connected].");
   m_client->m_data.m_client_id = payload->client_id();
-  spdlog::info("Set client ID to {}", m_client->m_data.m_client_id);
+  spdlog::debug("Set client ID to [{}].", m_client->m_data.m_client_id);
 }
 
 void ClientMessageHandler::handle_event_lobby_entered(const EventLobbyEntered *payload) {
+  spdlog::info("Handling event [lobby_entered].");
   m_client->m_data.m_state = CLIENT_STATE_LOBBY;
   m_client->m_ui.lobby_entered();
-  spdlog::info("Entered lobby");
 }
 
 void ClientMessageHandler::handle_event_username_check_failed(const EventUsernameCheckFailed *payload) {
+  spdlog::info("Handling event [username_check_failed].");
   m_client->m_ui.username_check_failed();
-  spdlog::info("Username check failed");
 }
 
 void ClientMessageHandler::handle_event_lobby_updated(const EventLobbyUpdated *payload) {
+  spdlog::info("Handling event [lobby_updated].");
   m_client->m_total_clients = payload->total_clients();
   m_client->m_ui.lobby_updated(payload);
-  spdlog::info("Set total clients to {}", m_client->m_total_clients);
+  spdlog::debug("Set total clients to [{}].", m_client->m_total_clients);
 }
 
 void ClientMessageHandler::handle_event_new_game_invite_received(const EventNewGameInviteReceived *payload) {
-  for (NewGameInvite invite : m_client->m_new_game_invite_queue)
-    if (invite.inviter_client_id == payload->inviter_client_id())
+  spdlog::info("Handling event [new_game_invite_received].");
+  for (NewGameInvite invite : m_client->m_new_game_invite_queue) {
+    if (invite.inviter_client_id == payload->inviter_client_id()) {
+      spdlog::debug("Inviter client ID [{}] is already in queue, skipping.", invite.inviter_client_id);
       return;
+    }
+  }
   NewGameInvite invite;
   invite.inviter_client_id = payload->inviter_client_id();
   snprintf(invite.inviter_username, sizeof(invite.inviter_username), "%s", payload->inviter_username().c_str());
   m_client->m_new_game_invite_queue.push_back(invite);
   m_client->m_ui.update_invite();
+  spdlog::debug("Queued invite from client ID [{}].", invite.inviter_client_id);
 }
 
-void ClientMessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) { m_client->m_ui.new_game_joined(payload); }
+void ClientMessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) {
+  spdlog::info("Handling event [new_game_joined]");
+  m_client->m_ui.new_game_joined(payload);
+}
 
 void ClientMessageHandler::send_message(Message *msg) {
   WriteRequest *write_req = new WriteRequest(msg);
   write_req->req.data = this;
-  spdlog::debug("Sending message with {} bytes", write_req->buf.len);
+  spdlog::debug("Sending message with [{}] bytes.", write_req->buf.len);
   uv_write((uv_write_t *)write_req, (uv_stream_t *)&m_client->m_uv_tcp_connection, &write_req->buf, 1, Client::on_uv_tcp_connection_write);
 }
 
@@ -90,7 +100,7 @@ void ClientMessageHandler::send_command_enter_lobby() {
   Message msg;
   CommandEnterLobby *payload = msg.mutable_command_payload()->mutable_command_enter_lobby();
   payload->set_username(m_client->m_data.m_username);
-  spdlog::info("Entering lobby with username: {}", m_client->m_data.m_username);
+  spdlog::info("Sending command [enter_lobby] with username [{}].", m_client->m_data.m_username);
   send_message(&msg);
 }
 
@@ -100,7 +110,7 @@ void ClientMessageHandler::send_command_new_game_invite() {
   Message msg;
   CommandNewGameInvite *payload = msg.mutable_command_payload()->mutable_command_new_game_invite();
   payload->set_client_id(m_client->m_selected_client_id);
-  spdlog::info("Inviting client: {}", m_client->m_selected_client_id);
+  spdlog::info("Sending command [new_game_invite] with selected client ID [{}].", m_client->m_selected_client_id);
   send_message(&msg);
 }
 
@@ -112,7 +122,7 @@ void ClientMessageHandler::send_command_invite_accept() {
   payload->set_inviter_client_id(m_client->m_new_game_invite_queue.front().inviter_client_id);
   m_client->m_new_game_invite_queue.pop_front();
   m_client->m_ui.update_invite();
-  spdlog::info("Accepting invite from client: {}", payload->inviter_client_id());
+  spdlog::info("Sending command [invite_accept] with inviter client ID [{}].", payload->inviter_client_id());
   send_message(&msg);
 }
 

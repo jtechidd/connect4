@@ -42,7 +42,7 @@ int Client::run_qt_ui() {
 void Client::run() {
   m_thread_uv_loop = std::thread(&Client::run_uv_loop, this);
   run_qt_ui();
-  spdlog::info("UI stopped");
+  spdlog::info("UI stopped.");
   async_stop_uv_loop();
   m_thread_uv_loop.join();
 }
@@ -55,7 +55,7 @@ void Client::on_uv_tcp_server_connect(uv_connect_t *connect, int status) {
     goto cleanup;
   }
 
-  spdlog::info("Connected to server");
+  spdlog::info("Connected to server.");
   uv_read_start((uv_stream_t *)&self->m_uv_tcp_connection, Client::on_uv_tcp_connection_alloc, Client::on_uv_tcp_connection_read);
   self->m_is_connected = true;
   self->m_ui.update_server_connection(true);
@@ -109,7 +109,7 @@ void Client::on_uv_tcp_connection_write(uv_write_t *write, int status) {
 
 void Client::on_uv_tcp_connection_close(uv_handle_t *handle) {
   Client *self = (Client *)handle->data;
-  spdlog::info("Disconnencted from server");
+  spdlog::info("Disconnencted from server.");
   self->m_is_connected = false;
   self->m_ui.update_server_connection(false);
   self->m_data.m_state = CLIENT_STATE_USERNAME;
