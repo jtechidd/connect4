@@ -40,6 +40,8 @@ void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
   case EventPayload::kEventNewGameJoined:
     handle_event_new_game_joined(&event_payload->event_new_game_joined());
     break;
+  case EventPayload::kEventGameUpdated:
+    handle_event_game_updated(&event_payload->event_game_updated());
   default:
     break;
   }
@@ -87,13 +89,33 @@ void ClientMessageHandler::handle_event_new_game_invite_received(const EventNewG
 
 void ClientMessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) {
   spdlog::info("Handling event [new_game_joined]");
+  m_client->m_game.m_id = payload->game_id();
+  m_client->m_data.m_current_game_id = payload->game_id();
   m_client->m_game.m_player1_id = payload->player1_id();
   m_client->m_game.m_player2_id = payload->player2_id();
   m_client->m_game.m_opp_id = payload->opponent_client_id();
   snprintf(m_client->m_game.m_opp_username, sizeof(m_client->m_game.m_opp_username), "%s", payload->opponent_username().c_str());
-  m_client->m_game.m_state = GAME_STATE_IN_GAME;
-  m_client->m_game.m_turn = GAME_PLAYER_1;
-  m_client->m_ui.new_game_joined(payload);
+  m_client->m_ui.new_game_joined();
+  m_client->m_ui.update_game();
+}
+
+void ClientMessageHandler::handle_event_game_updated(const EventGameUpdated *payload) {
+  spdlog::info("Handling event [game_updated]");
+  if (!(payload->game_id() == m_client->m_game.m_id && payload->game_id() == m_client->m_data.m_current_game_id)) {
+    spdlog::warn("Payload game ID [{}] mismatch from game ID [{}] or player current game ID [{}]", payload->game_id(), m_client->m_game.m_id,
+                 m_client->m_data.m_current_game_id);
+    return;
+  }
+  m_client->m_game.m_round = payload->round();
+  m_client->m_game.m_state = payload->state();
+  m_client->m_game.m_turn = payload->turn();
+  m_client->m_game.m_verdict = payload->verdict();
+  for (int i = 0; i < payload->board_size(); i++) {
+    m_client->m_game.m_board[i / 7][i % 7] = (GamePlayer)payload->board().at(i);
+  }
+  for (int i = 0; i < payload->connect_mask_size(); i++) {
+    m_client->m_game.m_connect_mask[i / 7][i % 7] = payload->connect_mask().at(i);
+  }
   m_client->m_ui.update_game();
 }
 
@@ -131,6 +153,16 @@ void ClientMessageHandler::send_command_invite_accept() {
   m_client->m_new_game_invite_queue.pop_front();
   m_client->m_ui.update_invite();
   spdlog::info("Sending command [invite_accept] with inviter client ID [{}].", payload->inviter_client_id());
+  send_message(&msg);
+}
+
+void ClientMessageHandler::send_command_player_make_move(int col) {
+  Message msg;
+  CommandPlayerMakeMove *payload = msg.mutable_command_payload()->mutable_command_player_make_move();
+  payload->set_game_id(m_client->m_game.m_id);
+  payload->set_player_id(m_client->m_data.m_client_id);
+  payload->set_played_column(col);
+  spdlog::info("Sending command [player_make_move] with played column [{}]", col);
   send_message(&msg);
 }
 

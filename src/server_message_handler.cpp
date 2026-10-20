@@ -1,6 +1,8 @@
 #include "game.hpp"
+#include "message.pb.h"
 #include "server.hpp"
 #include "server_client_connection.hpp"
+#include "server_messsage_handler.hpp"
 
 namespace C4 {
 
@@ -107,6 +109,31 @@ void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, gam
   send_message(client_id, &msg);
 }
 
+void ServerMessageHandler::emit_event_game_updated(Game *game) {
+  Message msg;
+  EventGameUpdated *payload = msg.mutable_event_payload()->mutable_event_game_updated();
+  payload->set_game_id(game->m_id);
+  payload->set_state(game->m_state);
+  payload->set_round(game->m_round);
+  payload->set_turn(game->m_turn);
+  payload->set_verdict(game->m_verdict);
+  for (int i = 0; i < 6; i++) {
+    for (int j = 0; j < 7; j++) {
+      payload->add_board(game->m_board[i][j]);
+      payload->add_connect_mask(game->m_connect_mask[i][j]);
+    }
+  }
+
+  if (game->m_player1_id > 0) {
+    spdlog::debug("Emitting event [game_updated] to client with ID [{}]", game->m_player1_id);
+    send_message(game->m_player1_id, &msg);
+  }
+  if (game->m_player2_id > 0) {
+    spdlog::debug("Emitting event [game_updated] to client with ID [{}]", game->m_player2_id);
+    send_message(game->m_player2_id, &msg);
+  }
+}
+
 void ServerMessageHandler::handle_message(client_id_t client_id, Message *msg) {
   switch (msg->payload_type_case()) {
   case Message::kEventPayload:
@@ -138,6 +165,8 @@ void ServerMessageHandler::handle_command(client_id_t client_id, const CommandPa
   case CommandPayload::kCommandInviteAccept:
     handle_command_invite_accept(client_id, &command_payload->command_invite_accept());
     break;
+  case CommandPayload::kCommandPlayerMakeMove:
+    handle_command_player_make_move(client_id, &command_payload->command_player_make_move());
   default:
     break;
   }
@@ -147,7 +176,7 @@ void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, con
   spdlog::info("Handling command [enter_lobby] from client with ID [{}].", client_id);
   for (auto [_, client_conn] : m_server->m_clients_map) {
     if (!strcmp(client_conn->m_client_data.m_username, payload->username().c_str())) {
-      spdlog::info("Username [{}] is already taken, rejecting.", client_conn->m_client_data.m_username);
+      spdlog::warn("Username [{}] is already taken, rejecting.", client_conn->m_client_data.m_username);
       emit_event_username_check_failed(client_id);
       return;
     }
@@ -172,6 +201,24 @@ void ServerMessageHandler::handle_command_invite_accept(client_id_t client_id, c
   client_id_t client1_id = payload->inviter_client_id();
   client_id_t client2_id = client_id;
   m_server->create_new_game(client1_id, client2_id);
+}
+
+void ServerMessageHandler::handle_command_player_make_move(client_id_t client_id, const CommandPlayerMakeMove *payload) {
+  spdlog::info("Handling command [player_make_move] from client with ID [{}]", client_id);
+  if (client_id != payload->player_id()) {
+    spdlog::warn("Client ID [{}] and player ID [{}] mismatch, skipping.");
+    return;
+  }
+  Game *game = m_server->m_game_map[payload->game_id()];
+  if (game == NULL) {
+    spdlog::warn("Game with ID [{}] not found, skipping.", payload->game_id());
+    return;
+  }
+  if (game->place(payload->played_column()) < 0) {
+    spdlog::warn("Cannot play on column [{}], skipping.", payload->played_column());
+    return;
+  }
+  emit_event_game_updated(game);
 }
 
 }; // namespace C4

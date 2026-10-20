@@ -1,11 +1,17 @@
 #include "client_ui.hpp"
 #include "client.hpp"
+#include "message.pb.h"
+#include "qevent.h"
 #include "qnamespace.h"
+#include <algorithm>
 
 namespace C4 {
 
-Board::Board(Client *client, QWidget *parent) : QWidget(parent) { m_client = client; };
-void Board::paintEvent(QPaintEvent *event) {
+QConnect4Board::QConnect4Board(Client *client, QWidget *parent) : QWidget(parent) {
+  m_client = client;
+  setCursor(Qt::PointingHandCursor);
+};
+void QConnect4Board::paintEvent(QPaintEvent *event) {
   Q_UNUSED(event);
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
@@ -18,13 +24,36 @@ void Board::paintEvent(QPaintEvent *event) {
     for (uint8_t j = 0; j < 7; j++) {
       int r = std::min(tile_width, tile_height) / 2 - 5;
       QPoint c(j * tile_width + tile_width / 2, i * tile_height + tile_height / 2);
-      painter.setBrush(Qt::lightGray);
-      if (m_client->m_game.m_board[i][j] == m_client->m_data.m_client_id) {
+      if (m_client->m_game.m_state == GAME_STATE_IN_GAME && m_client->m_game.get_current_turn_player_id() == m_client->m_data.m_client_id) {
+        painter.setBrush(Qt::white);
+      } else {
+        painter.setBrush(Qt::lightGray);
+      }
+      GamePlayer cell = m_client->m_game.m_board[i][j];
+      client_id_t cell_id = m_client->m_game.get_player_id_from_turn(cell);
+      if (m_client->m_game.m_state == GAME_STATE_VERDICT && m_client->m_game.m_connect_mask[i][j]) {
+        painter.setPen(QPen(Qt::white, 2));
+      } else {
+        painter.setPen(Qt::NoPen);
+      }
+      if (cell_id == m_client->m_data.m_client_id) {
         painter.setBrush(Qt::blue);
-      } else if (m_client->m_game.m_board[i][j] == m_client->m_game.m_opp_id) {
+      } else if (cell_id == m_client->m_game.m_opp_id) {
         painter.setBrush(Qt::red);
       }
       painter.drawEllipse(c, r, r);
+    }
+  }
+}
+void QConnect4Board::mousePressEvent(QMouseEvent *event) {
+  if (event->button() == Qt::LeftButton) {
+    int tile_width = rect().width() / 7;
+    QPoint pos = event->pos();
+    int j = pos.x() / tile_width;
+    j = std::clamp(j, 0, 6);
+    spdlog::debug("Player attempt to click on column [{}]", j);
+    if (m_client->m_game.get_current_turn_player_id() == m_client->m_data.m_client_id) {
+      m_client->m_message_handler.send_command_player_make_move(j);
     }
   }
 }
@@ -106,7 +135,7 @@ ClientUI::ClientUI(Client *client, QWidget *parent) : QWidget(parent) {
   m_lb_game_opp_side = new QLabel("Opponent");
   m_lb_game_opp_side->setAlignment(Qt::AlignCenter);
   vbl_game->addWidget(m_lb_game_opp_side);
-  m_board = new Board(m_client);
+  m_board = new QConnect4Board(m_client);
   vbl_game->addWidget(m_board, 1);
   m_lb_game_player_side = new QLabel("Player");
   m_lb_game_player_side->setAlignment(Qt::AlignCenter);
@@ -177,18 +206,16 @@ void ClientUI::username_check_failed() {
       this, [this]() { QMessageBox::information(this, tr("Cannot use this username"), tr("This username is already taken, please try another.")); });
 }
 
-void ClientUI::new_game_joined(const EventNewGameJoined *payload) {
-  QMetaObject::invokeMethod(this, [this]() { m_sw_game->setCurrentIndex(1); });
+void ClientUI::new_game_joined() {
+  QMetaObject::invokeMethod(this, [this]() {
+    m_sw_game->setCurrentIndex(1);
+    m_lb_game_opp_side->setText(m_client->m_game.m_opp_username);
+    m_lb_game_player_side->setText(m_client->m_data.m_username);
+  });
 }
 
 void ClientUI::update_game() {
   QMetaObject::invokeMethod(this, [this]() {
-    m_lb_game_opp_side->setText(m_client->m_game.m_opp_username);
-    m_lb_game_player_side->setText(m_client->m_data.m_username);
-    // spdlog::debug("Current game turn is [{}]", (int)m_client->m_game.m_turn);
-    // spdlog::debug("Current game turn player ID is [{}]", m_client->m_game.get_current_turn_player_id());
-    // spdlog::debug("Client data client ID is [{}]", m_client->m_data.m_client_id);
-    // spdlog::debug("Game opponent ID is [{}]", m_client->m_game.m_opp_id);
     if (m_client->m_game.get_current_turn_player_id() == m_client->m_data.m_client_id) {
       QFont font = m_lb_game_player_side->font();
       font.setBold(true);

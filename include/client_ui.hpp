@@ -6,12 +6,13 @@
 
 namespace C4 {
 
-class Board : public QWidget {
+class QConnect4Board : public QWidget {
 public:
   Client *m_client;
 
-  Board(Client *client, QWidget *parent = nullptr);
+  QConnect4Board(Client *client, QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;
 };
 
 class ClientUI : public QWidget {
@@ -38,14 +39,14 @@ public:
   QStackedWidget *m_sw_game;
 
   QLabel *m_lb_game_opp_side;
-  Board *m_board;
+  QConnect4Board *m_board;
   QLabel *m_lb_game_player_side;
 
   void update_server_connection(bool is_connected);
   void username_check_failed();
   void lobby_entered();
   void lobby_updated(const EventLobbyUpdated *payload);
-  void new_game_joined(const EventNewGameJoined *payload);
+  void new_game_joined();
   void update_invite();
   void update_game();
 

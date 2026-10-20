@@ -20,11 +20,13 @@ public:
   void handle_event_lobby_updated(const EventLobbyUpdated *payload);
   void handle_event_new_game_invite_received(const EventNewGameInviteReceived *payload);
   void handle_event_new_game_joined(const EventNewGameJoined *payload);
+  void handle_event_game_updated(const EventGameUpdated *payload);
 
   void send_message(Message *msg);
   void send_command_enter_lobby();
   void send_command_new_game_invite();
   void send_command_invite_accept();
+  void send_command_player_make_move(int col);
 };
 }; // namespace C4
 

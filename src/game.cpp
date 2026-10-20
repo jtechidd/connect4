@@ -12,6 +12,7 @@ Game::Game() {
   m_turn = GAME_PLAYER_1;
   m_verdict = GAME_VERDICT_UNDECIDED;
   memset(m_opp_username, 0, sizeof(m_opp_username));
+  memset(m_connect_mask, 0, sizeof(m_connect_mask));
   memset(m_board, 0, sizeof(m_board));
 };
 Game::Game(game_id_t id, client_id_t p1_id, client_id_t p2_id) : Game() {
@@ -51,9 +52,9 @@ int Game::place(uint8_t j) {
   if (is_connect(i, j)) {
     m_state = GAME_STATE_VERDICT;
     if (m_turn == GAME_PLAYER_1)
-      m_verdict = GAME_VERDICT_PLAYER_1_WIN;
+      m_verdict = GAME_VERDICT_PLAYER1_WIN;
     else if (m_turn == GAME_PLAYER_2)
-      m_verdict = GAME_VERDICT_PLAYER_2_WIN;
+      m_verdict = GAME_VERDICT_PLAYER2_WIN;
   } else if (m_round == 42) {
     m_state = GAME_STATE_VERDICT;
     m_verdict = GAME_VERDICT_TIE;
@@ -67,10 +68,11 @@ int Game::place(uint8_t j) {
 
 int Game::is_connect(uint8_t i, uint8_t j) {
   int8_t k, di, dj, s, ti, tj, c;
-  int8_t dir[4][2] = {{0, -1}, {-1, -1}, {-1, 0}, {0, 1}};
-  for (k = 0; k < 4; k++) {
+  int8_t dir[8][2] = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
+  for (k = 0; k < 8; k++) {
     di = dir[k][0];
     dj = dir[k][1];
+    m_connect_mask[i][j] = 1;
     c = 1;
     for (s = 1; s <= 3; s++) {
       ti = i + s * di;
@@ -79,25 +81,18 @@ int Game::is_connect(uint8_t i, uint8_t j) {
         break;
       if (m_board[ti][tj] != m_turn)
         break;
-      c++;
-    }
-    for (s = -1; s >= -3; s++) {
-      ti = i + s * di;
-      tj = j + s * dj;
-      if (ti < 0 || ti >= 6 || tj < 0 || tj >= 7)
-        break;
-      if (m_board[ti][tj] != m_turn)
-        break;
+      m_connect_mask[ti][tj] = 1;
       c++;
     }
     if (c >= 4) {
       return 1;
     }
+    memset(m_connect_mask, 0, sizeof(m_connect_mask));
   }
   return 0;
 }
 
-client_id_t Game::get_player_id_from_turn(game_player_t turn) {
+client_id_t Game::get_player_id_from_turn(GamePlayer turn) {
   if (turn == GAME_PLAYER_1)
     return m_player1_id;
   if (turn == GAME_PLAYER_2)
