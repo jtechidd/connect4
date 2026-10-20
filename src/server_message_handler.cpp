@@ -36,8 +36,8 @@ void ServerMessageHandler::init_event_lobby_updated(Message *msg) {
   for (auto [_, game] : m_server->m_game_map) {
     GameInfo *game_info = payload->add_games();
     game_info->set_id(game->m_id);
-    game_info->set_player1_id(game->m_p1_id);
-    game_info->set_player2_id(game->m_p2_id);
+    game_info->set_player1_id(game->m_player1_id);
+    game_info->set_player2_id(game->m_player2_id);
     game_info->set_state(game->m_state);
   }
   for (auto [_, conn] : m_server->m_clients_map) {
@@ -90,7 +90,8 @@ void ServerMessageHandler::emit_event_new_game_invite_received(client_id_t clien
   send_message(client_id, &msg);
 }
 
-void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, game_id_t game_id, client_id_t opp_client_id) {
+void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, game_id_t game_id, client_id_t opp_client_id, client_id_t player1_id,
+                                                      client_id_t player2_id) {
   spdlog::debug("Emitting event [new_game_joined] to client with ID [{}].", client_id);
   if (!m_server->m_clients_map[opp_client_id]) {
     spdlog::debug("Opponent client with ID [{}] not found, skipping.", opp_client_id);
@@ -99,6 +100,8 @@ void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, gam
   Message msg;
   EventNewGameJoined *payload = msg.mutable_event_payload()->mutable_event_new_game_joined();
   payload->set_game_id(game_id);
+  payload->set_player1_id(player1_id);
+  payload->set_player2_id(player2_id);
   payload->set_opponent_client_id(opp_client_id);
   payload->set_opponent_username(m_server->m_clients_map[opp_client_id]->m_client_data.m_username);
   send_message(client_id, &msg);

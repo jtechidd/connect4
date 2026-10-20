@@ -56,6 +56,8 @@ message EventNewGameJoined {
   uint32 game_id            = 1;
   uint32 opponent_client_id = 2;
   string opponent_username  = 3;
+  uint32 player1_id = 4;
+  uint32 player2_id = 5;
 }
 
 message EventGameCreated {

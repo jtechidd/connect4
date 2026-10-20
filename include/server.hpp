@@ -16,7 +16,7 @@ public:
   int m_port;
   int m_backlog;
   uv_tcp_t m_uv_tcp_server;
-  struct sockaddr_in m_server_addr;
+  struct sockaddr_in m_server_address;
   client_id_t m_client_cid;
   std::map<client_id_t, ServerClientConnection *> m_clients_map;
   game_id_t m_game_cid;

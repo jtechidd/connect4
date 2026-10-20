@@ -19,8 +19,8 @@ Server::Server(int port, int backlog) : m_message_handler(this) {
 Server::~Server() {}
 
 void Server::run() {
-  uv_ip4_addr(NULL, m_port, &m_server_addr);
-  uv_tcp_bind(&m_uv_tcp_server, (struct sockaddr *)&m_server_addr, 0);
+  uv_ip4_addr(NULL, m_port, &m_server_address);
+  uv_tcp_bind(&m_uv_tcp_server, (struct sockaddr *)&m_server_address, 0);
   uv_listen((uv_stream_t *)&m_uv_tcp_server, m_backlog, on_uv_tcp_server_connection);
   uv_timer_start(&m_uv_timer_broadcast_event_lobby_updated, Server::on_uv_timer_broadcast_event_lobby_updated_timeout,
                  SERVER_BROADCAST_EVENT_LOBBY_UPDATED_INTERVAL, SERVER_BROADCAST_EVENT_LOBBY_UPDATED_INTERVAL);
@@ -55,10 +55,10 @@ void Server::disconnect(client_id_t client_id) {
   if (connection->m_client_data.m_current_game_id) {
     Game *game = m_game_map[connection->m_client_data.m_current_game_id];
     if (game) {
-      if (game->m_p1_id == client_id)
-        game->m_p1_id = 0;
-      else if (game->m_p2_id == client_id)
-        game->m_p2_id = 0;
+      if (game->m_player1_id == client_id)
+        game->m_player1_id = 0;
+      else if (game->m_player2_id == client_id)
+        game->m_player2_id = 0;
     }
   }
   delete connection;
@@ -81,8 +81,8 @@ void Server::create_new_game(client_id_t client1_id, client_id_t client2_id) {
   m_game_map[game->m_id] = game;
   client1->m_client_data.m_current_game_id = game->m_id;
   client2->m_client_data.m_current_game_id = game->m_id;
-  m_message_handler.emit_event_new_game_joined(client1_id, game->m_id, client2_id);
-  m_message_handler.emit_event_new_game_joined(client2_id, game->m_id, client1_id);
+  m_message_handler.emit_event_new_game_joined(client1_id, game->m_id, client2_id, client1_id, client2_id);
+  m_message_handler.emit_event_new_game_joined(client2_id, game->m_id, client1_id, client1_id, client2_id);
 }
 
 void Server::join_game(client_id_t client_id, game_id_t game_id) {
@@ -92,7 +92,7 @@ void Server::join_game(client_id_t client_id, game_id_t game_id) {
     return;
   if (game == NULL)
     return;
-  game->m_p2_id = client_id;
+  game->m_player2_id = client_id;
   game->start();
 }
 

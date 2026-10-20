@@ -1,5 +1,6 @@
 #include "client_message_handler.hpp"
 #include "client.hpp"
+#include "game.hpp"
 #include "message.pb.h"
 
 namespace C4 {
@@ -86,7 +87,14 @@ void ClientMessageHandler::handle_event_new_game_invite_received(const EventNewG
 
 void ClientMessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) {
   spdlog::info("Handling event [new_game_joined]");
+  m_client->m_game.m_player1_id = payload->player1_id();
+  m_client->m_game.m_player2_id = payload->player2_id();
+  m_client->m_game.m_opp_id = payload->opponent_client_id();
+  snprintf(m_client->m_game.m_opp_username, sizeof(m_client->m_game.m_opp_username), "%s", payload->opponent_username().c_str());
+  m_client->m_game.m_state = GAME_STATE_IN_GAME;
+  m_client->m_game.m_turn = GAME_PLAYER_1;
   m_client->m_ui.new_game_joined(payload);
+  m_client->m_ui.update_game();
 }
 
 void ClientMessageHandler::send_message(Message *msg) {

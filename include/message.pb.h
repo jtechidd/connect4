@@ -1454,6 +1454,8 @@ class EventNewGameJoined final :
     kOpponentUsernameFieldNumber = 3,
     kGameIdFieldNumber = 1,
     kOpponentClientIdFieldNumber = 2,
+    kPlayer1IdFieldNumber = 4,
+    kPlayer2IdFieldNumber = 5,
   };
   // string opponent_username = 3;
   void clear_opponent_username();
@@ -1487,6 +1489,24 @@ class EventNewGameJoined final :
   void _internal_set_opponent_client_id(uint32_t value);
   public:
 
+  // uint32 player1_id = 4;
+  void clear_player1_id();
+  uint32_t player1_id() const;
+  void set_player1_id(uint32_t value);
+  private:
+  uint32_t _internal_player1_id() const;
+  void _internal_set_player1_id(uint32_t value);
+  public:
+
+  // uint32 player2_id = 5;
+  void clear_player2_id();
+  uint32_t player2_id() const;
+  void set_player2_id(uint32_t value);
+  private:
+  uint32_t _internal_player2_id() const;
+  void _internal_set_player2_id(uint32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:C4.EventNewGameJoined)
  private:
   class _Internal;
@@ -1498,6 +1518,8 @@ class EventNewGameJoined final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr opponent_username_;
     uint32_t game_id_;
     uint32_t opponent_client_id_;
+    uint32_t player1_id_;
+    uint32_t player2_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -4967,6 +4989,46 @@ inline void EventNewGameJoined::set_allocated_opponent_username(std::string* opp
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:C4.EventNewGameJoined.opponent_username)
+}
+
+// uint32 player1_id = 4;
+inline void EventNewGameJoined::clear_player1_id() {
+  _impl_.player1_id_ = 0u;
+}
+inline uint32_t EventNewGameJoined::_internal_player1_id() const {
+  return _impl_.player1_id_;
+}
+inline uint32_t EventNewGameJoined::player1_id() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameJoined.player1_id)
+  return _internal_player1_id();
+}
+inline void EventNewGameJoined::_internal_set_player1_id(uint32_t value) {
+  
+  _impl_.player1_id_ = value;
+}
+inline void EventNewGameJoined::set_player1_id(uint32_t value) {
+  _internal_set_player1_id(value);
+  // @@protoc_insertion_point(field_set:C4.EventNewGameJoined.player1_id)
+}
+
+// uint32 player2_id = 5;
+inline void EventNewGameJoined::clear_player2_id() {
+  _impl_.player2_id_ = 0u;
+}
+inline uint32_t EventNewGameJoined::_internal_player2_id() const {
+  return _impl_.player2_id_;
+}
+inline uint32_t EventNewGameJoined::player2_id() const {
+  // @@protoc_insertion_point(field_get:C4.EventNewGameJoined.player2_id)
+  return _internal_player2_id();
+}
+inline void EventNewGameJoined::_internal_set_player2_id(uint32_t value) {
+  
+  _impl_.player2_id_ = value;
+}
+inline void EventNewGameJoined::set_player2_id(uint32_t value) {
+  _internal_set_player2_id(value);
+  // @@protoc_insertion_point(field_set:C4.EventNewGameJoined.player2_id)
 }
 
 // -------------------------------------------------------------------

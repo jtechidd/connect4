@@ -4,23 +4,25 @@ namespace C4 {
 
 Game::Game() {
   m_id = 0;
-  m_p1_id = 0;
-  m_p2_id = 0;
+  m_player1_id = 0;
+  m_player2_id = 0;
+  m_opp_id = 0;
   m_round = 0;
   m_state = GAME_STATE_WAITING;
   m_turn = GAME_PLAYER_1;
   m_verdict = GAME_VERDICT_UNDECIDED;
+  memset(m_opp_username, 0, sizeof(m_opp_username));
   memset(m_board, 0, sizeof(m_board));
 };
 Game::Game(game_id_t id, client_id_t p1_id, client_id_t p2_id) : Game() {
   m_id = id;
-  m_p1_id = p1_id;
-  m_p2_id = p2_id;
+  m_player1_id = p1_id;
+  m_player2_id = p2_id;
 }
 Game::~Game() {};
 
 int Game::start() {
-  if (!(m_p1_id && m_p2_id))
+  if (!(m_player1_id && m_player2_id))
     return -1;
   m_state = GAME_STATE_IN_GAME;
   m_turn = GAME_PLAYER_1;
@@ -94,5 +96,15 @@ int Game::is_connect(uint8_t i, uint8_t j) {
   }
   return 0;
 }
+
+client_id_t Game::get_player_id_from_turn(game_player_t turn) {
+  if (turn == GAME_PLAYER_1)
+    return m_player1_id;
+  if (turn == GAME_PLAYER_2)
+    return m_player2_id;
+  return 0;
+}
+
+client_id_t Game::get_current_turn_player_id() { return get_player_id_from_turn(m_turn); }
 
 }; // namespace C4

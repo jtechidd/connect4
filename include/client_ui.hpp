@@ -8,7 +8,9 @@ namespace C4 {
 
 class Board : public QWidget {
 public:
-  Board(QWidget *parent = nullptr);
+  Client *m_client;
+
+  Board(Client *client, QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event) override;
 };
 
@@ -36,8 +38,8 @@ public:
   QStackedWidget *m_sw_game;
 
   QLabel *m_lb_game_opp_side;
+  Board *m_board;
   QLabel *m_lb_game_player_side;
-  QPushButton *m_btn_board_cell[6][7];
 
   void update_server_connection(bool is_connected);
   void username_check_failed();
@@ -45,6 +47,7 @@ public:
   void lobby_updated(const EventLobbyUpdated *payload);
   void new_game_joined(const EventNewGameJoined *payload);
   void update_invite();
+  void update_game();
 
   void on_btn_enter_lobby_clicked();
   void on_le_username_text_changed(const QString &text);

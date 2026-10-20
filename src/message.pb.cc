@@ -122,6 +122,8 @@ PROTOBUF_CONSTEXPR EventNewGameJoined::EventNewGameJoined(
     /*decltype(_impl_.opponent_username_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.game_id_)*/0u
   , /*decltype(_impl_.opponent_client_id_)*/0u
+  , /*decltype(_impl_.player1_id_)*/0u
+  , /*decltype(_impl_.player2_id_)*/0u
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct EventNewGameJoinedDefaultTypeInternal {
   PROTOBUF_CONSTEXPR EventNewGameJoinedDefaultTypeInternal()
@@ -424,6 +426,8 @@ const uint32_t TableStruct_message_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   PROTOBUF_FIELD_OFFSET(::C4::EventNewGameJoined, _impl_.game_id_),
   PROTOBUF_FIELD_OFFSET(::C4::EventNewGameJoined, _impl_.opponent_client_id_),
   PROTOBUF_FIELD_OFFSET(::C4::EventNewGameJoined, _impl_.opponent_username_),
+  PROTOBUF_FIELD_OFFSET(::C4::EventNewGameJoined, _impl_.player1_id_),
+  PROTOBUF_FIELD_OFFSET(::C4::EventNewGameJoined, _impl_.player2_id_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::C4::EventGameCreated, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -577,22 +581,22 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 42, -1, -1, sizeof(::C4::EventLobbyEntered)},
   { 48, -1, -1, sizeof(::C4::EventNewGameInviteReceived)},
   { 56, -1, -1, sizeof(::C4::EventNewGameJoined)},
-  { 65, -1, -1, sizeof(::C4::EventGameCreated)},
-  { 73, -1, -1, sizeof(::C4::EventPlayerJoined)},
-  { 81, -1, -1, sizeof(::C4::EventGameStarted)},
-  { 88, -1, -1, sizeof(::C4::EventPlayerMadeMove)},
-  { 97, -1, -1, sizeof(::C4::EventGameVerdicted)},
-  { 105, -1, -1, sizeof(::C4::EventPlayerLeft)},
-  { 113, -1, -1, sizeof(::C4::EventPayload)},
-  { 132, -1, -1, sizeof(::C4::CommandEnterLobby)},
-  { 139, -1, -1, sizeof(::C4::CommandNewGameInvite)},
-  { 146, -1, -1, sizeof(::C4::CommandInviteAccept)},
-  { 153, -1, -1, sizeof(::C4::CommandJoinGame)},
-  { 160, -1, -1, sizeof(::C4::CommandStartGame)},
-  { 167, -1, -1, sizeof(::C4::CommandPlayerMakeMove)},
-  { 176, -1, -1, sizeof(::C4::CommandPlayerLeave)},
-  { 184, -1, -1, sizeof(::C4::CommandPayload)},
-  { 198, -1, -1, sizeof(::C4::Message)},
+  { 67, -1, -1, sizeof(::C4::EventGameCreated)},
+  { 75, -1, -1, sizeof(::C4::EventPlayerJoined)},
+  { 83, -1, -1, sizeof(::C4::EventGameStarted)},
+  { 90, -1, -1, sizeof(::C4::EventPlayerMadeMove)},
+  { 99, -1, -1, sizeof(::C4::EventGameVerdicted)},
+  { 107, -1, -1, sizeof(::C4::EventPlayerLeft)},
+  { 115, -1, -1, sizeof(::C4::EventPayload)},
+  { 134, -1, -1, sizeof(::C4::CommandEnterLobby)},
+  { 141, -1, -1, sizeof(::C4::CommandNewGameInvite)},
+  { 148, -1, -1, sizeof(::C4::CommandInviteAccept)},
+  { 155, -1, -1, sizeof(::C4::CommandJoinGame)},
+  { 162, -1, -1, sizeof(::C4::CommandStartGame)},
+  { 169, -1, -1, sizeof(::C4::CommandPlayerMakeMove)},
+  { 178, -1, -1, sizeof(::C4::CommandPlayerLeave)},
+  { 186, -1, -1, sizeof(::C4::CommandPayload)},
+  { 200, -1, -1, sizeof(::C4::Message)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -635,68 +639,69 @@ const char descriptor_table_protodef_message_2eproto[] PROTOBUF_SECTION_VARIABLE
   "\n\005games\030\004 \003(\0132\014.C4.GameInfo\"\023\n\021EventLobb"
   "yEntered\"Q\n\032EventNewGameInviteReceived\022\031"
   "\n\021inviter_client_id\030\001 \001(\r\022\030\n\020inviter_use"
-  "rname\030\002 \001(\t\"\\\n\022EventNewGameJoined\022\017\n\007gam"
-  "e_id\030\001 \001(\r\022\032\n\022opponent_client_id\030\002 \001(\r\022\031"
-  "\n\021opponent_username\030\003 \001(\t\"7\n\020EventGameCr"
-  "eated\022\017\n\007game_id\030\001 \001(\r\022\022\n\nplayer1_id\030\002 \001"
-  "(\r\"8\n\021EventPlayerJoined\022\017\n\007game_id\030\001 \001(\r"
-  "\022\022\n\nplayer2_id\030\002 \001(\r\"#\n\020EventGameStarted"
-  "\022\017\n\007game_id\030\001 \001(\r\"P\n\023EventPlayerMadeMove"
-  "\022\017\n\007game_id\030\001 \001(\r\022\021\n\tplayer_id\030\002 \001(\r\022\025\n\r"
-  "played_column\030\003 \001(\r\";\n\022EventGameVerdicte"
-  "d\022\017\n\007game_id\030\001 \001(\r\022\024\n\014game_verdict\030\002 \001(\r"
-  "\"5\n\017EventPlayerLeft\022\017\n\007game_id\030\001 \001(\r\022\021\n\t"
-  "player_id\030\002 \001(\r\"\314\005\n\014EventPayload\022:\n\026even"
-  "t_server_connected\030\001 \001(\0132\030.C4.EventServe"
-  "rConnectedH\000\022C\n\033event_username_check_fai"
-  "led\030\002 \001(\0132\034.C4.EventUsernameCheckFailedH"
-  "\000\0224\n\023event_lobby_updated\030\003 \001(\0132\025.C4.Even"
-  "tLobbyUpdatedH\000\0224\n\023event_lobby_entered\030\004"
-  " \001(\0132\025.C4.EventLobbyEnteredH\000\022H\n\036event_n"
-  "ew_game_invite_received\030\005 \001(\0132\036.C4.Event"
-  "NewGameInviteReceivedH\000\0227\n\025event_new_gam"
-  "e_joined\030\006 \001(\0132\026.C4.EventNewGameJoinedH\000"
-  "\0222\n\022event_game_created\030\007 \001(\0132\024.C4.EventG"
-  "ameCreatedH\000\0224\n\023event_player_joined\030\010 \001("
-  "\0132\025.C4.EventPlayerJoinedH\000\0222\n\022event_game"
-  "_started\030\t \001(\0132\024.C4.EventGameStartedH\000\0229"
-  "\n\026event_player_made_move\030\n \001(\0132\027.C4.Even"
-  "tPlayerMadeMoveH\000\0226\n\024event_game_verdicte"
-  "d\030\013 \001(\0132\026.C4.EventGameVerdictedH\000\0220\n\021eve"
-  "nt_player_left\030\014 \001(\0132\023.C4.EventPlayerLef"
-  "tH\000B\t\n\007payload\"%\n\021CommandEnterLobby\022\020\n\010u"
-  "sername\030\001 \001(\t\")\n\024CommandNewGameInvite\022\021\n"
-  "\tclient_id\030\001 \001(\r\"0\n\023CommandInviteAccept\022"
-  "\031\n\021inviter_client_id\030\001 \001(\r\"\"\n\017CommandJoi"
-  "nGame\022\017\n\007game_id\030\001 \001(\r\"#\n\020CommandStartGa"
-  "me\022\017\n\007game_id\030\001 \001(\r\"R\n\025CommandPlayerMake"
-  "Move\022\017\n\007game_id\030\001 \001(\r\022\021\n\tplayer_id\030\002 \001(\r"
-  "\022\025\n\rplayed_column\030\003 \001(\r\"8\n\022CommandPlayer"
-  "Leave\022\017\n\007game_id\030\001 \001(\r\022\021\n\tplayer_id\030\002 \001("
-  "\r\"\236\003\n\016CommandPayload\0224\n\023command_enter_lo"
-  "bby\030\001 \001(\0132\025.C4.CommandEnterLobbyH\000\022;\n\027co"
-  "mmand_new_game_invite\030\002 \001(\0132\030.C4.Command"
-  "NewGameInviteH\000\0228\n\025command_invite_accept"
-  "\030\003 \001(\0132\027.C4.CommandInviteAcceptH\000\0220\n\021com"
-  "mand_join_game\030\004 \001(\0132\023.C4.CommandJoinGam"
-  "eH\000\0222\n\022command_start_game\030\005 \001(\0132\024.C4.Com"
-  "mandStartGameH\000\0226\n\021command_make_move\030\006 \001"
-  "(\0132\031.C4.CommandPlayerMakeMoveH\000\0226\n\024comma"
-  "nd_player_leave\030\007 \001(\0132\026.C4.CommandPlayer"
-  "LeaveH\000B\t\n\007payload\"\177\n\007Message\022\n\n\002id\030\001 \001("
-  "\r\022)\n\revent_payload\030\002 \001(\0132\020.C4.EventPaylo"
-  "adH\000\022-\n\017command_payload\030\003 \001(\0132\022.C4.Comma"
-  "ndPayloadH\000B\016\n\014payload_type*%\n\013MessageTy"
-  "pe\022\013\n\007Command\020\000\022\t\n\005Event\020\001*S\n\tGameState\022"
-  "\026\n\022GAME_STATE_WAITING\020\000\022\026\n\022GAME_STATE_IN"
-  "_GAME\020\001\022\026\n\022GAME_STATE_VERDICT\020\002*Z\n\013Clien"
-  "tState\022\031\n\025CLIENT_STATE_USERNAME\020\000\022\026\n\022CLI"
-  "ENT_STATE_LOBBY\020\001\022\030\n\024CLIENT_STATE_IN_GAM"
-  "E\020\002b\006proto3"
+  "rname\030\002 \001(\t\"\204\001\n\022EventNewGameJoined\022\017\n\007ga"
+  "me_id\030\001 \001(\r\022\032\n\022opponent_client_id\030\002 \001(\r\022"
+  "\031\n\021opponent_username\030\003 \001(\t\022\022\n\nplayer1_id"
+  "\030\004 \001(\r\022\022\n\nplayer2_id\030\005 \001(\r\"7\n\020EventGameC"
+  "reated\022\017\n\007game_id\030\001 \001(\r\022\022\n\nplayer1_id\030\002 "
+  "\001(\r\"8\n\021EventPlayerJoined\022\017\n\007game_id\030\001 \001("
+  "\r\022\022\n\nplayer2_id\030\002 \001(\r\"#\n\020EventGameStarte"
+  "d\022\017\n\007game_id\030\001 \001(\r\"P\n\023EventPlayerMadeMov"
+  "e\022\017\n\007game_id\030\001 \001(\r\022\021\n\tplayer_id\030\002 \001(\r\022\025\n"
+  "\rplayed_column\030\003 \001(\r\";\n\022EventGameVerdict"
+  "ed\022\017\n\007game_id\030\001 \001(\r\022\024\n\014game_verdict\030\002 \001("
+  "\r\"5\n\017EventPlayerLeft\022\017\n\007game_id\030\001 \001(\r\022\021\n"
+  "\tplayer_id\030\002 \001(\r\"\314\005\n\014EventPayload\022:\n\026eve"
+  "nt_server_connected\030\001 \001(\0132\030.C4.EventServ"
+  "erConnectedH\000\022C\n\033event_username_check_fa"
+  "iled\030\002 \001(\0132\034.C4.EventUsernameCheckFailed"
+  "H\000\0224\n\023event_lobby_updated\030\003 \001(\0132\025.C4.Eve"
+  "ntLobbyUpdatedH\000\0224\n\023event_lobby_entered\030"
+  "\004 \001(\0132\025.C4.EventLobbyEnteredH\000\022H\n\036event_"
+  "new_game_invite_received\030\005 \001(\0132\036.C4.Even"
+  "tNewGameInviteReceivedH\000\0227\n\025event_new_ga"
+  "me_joined\030\006 \001(\0132\026.C4.EventNewGameJoinedH"
+  "\000\0222\n\022event_game_created\030\007 \001(\0132\024.C4.Event"
+  "GameCreatedH\000\0224\n\023event_player_joined\030\010 \001"
+  "(\0132\025.C4.EventPlayerJoinedH\000\0222\n\022event_gam"
+  "e_started\030\t \001(\0132\024.C4.EventGameStartedH\000\022"
+  "9\n\026event_player_made_move\030\n \001(\0132\027.C4.Eve"
+  "ntPlayerMadeMoveH\000\0226\n\024event_game_verdict"
+  "ed\030\013 \001(\0132\026.C4.EventGameVerdictedH\000\0220\n\021ev"
+  "ent_player_left\030\014 \001(\0132\023.C4.EventPlayerLe"
+  "ftH\000B\t\n\007payload\"%\n\021CommandEnterLobby\022\020\n\010"
+  "username\030\001 \001(\t\")\n\024CommandNewGameInvite\022\021"
+  "\n\tclient_id\030\001 \001(\r\"0\n\023CommandInviteAccept"
+  "\022\031\n\021inviter_client_id\030\001 \001(\r\"\"\n\017CommandJo"
+  "inGame\022\017\n\007game_id\030\001 \001(\r\"#\n\020CommandStartG"
+  "ame\022\017\n\007game_id\030\001 \001(\r\"R\n\025CommandPlayerMak"
+  "eMove\022\017\n\007game_id\030\001 \001(\r\022\021\n\tplayer_id\030\002 \001("
+  "\r\022\025\n\rplayed_column\030\003 \001(\r\"8\n\022CommandPlaye"
+  "rLeave\022\017\n\007game_id\030\001 \001(\r\022\021\n\tplayer_id\030\002 \001"
+  "(\r\"\236\003\n\016CommandPayload\0224\n\023command_enter_l"
+  "obby\030\001 \001(\0132\025.C4.CommandEnterLobbyH\000\022;\n\027c"
+  "ommand_new_game_invite\030\002 \001(\0132\030.C4.Comman"
+  "dNewGameInviteH\000\0228\n\025command_invite_accep"
+  "t\030\003 \001(\0132\027.C4.CommandInviteAcceptH\000\0220\n\021co"
+  "mmand_join_game\030\004 \001(\0132\023.C4.CommandJoinGa"
+  "meH\000\0222\n\022command_start_game\030\005 \001(\0132\024.C4.Co"
+  "mmandStartGameH\000\0226\n\021command_make_move\030\006 "
+  "\001(\0132\031.C4.CommandPlayerMakeMoveH\000\0226\n\024comm"
+  "and_player_leave\030\007 \001(\0132\026.C4.CommandPlaye"
+  "rLeaveH\000B\t\n\007payload\"\177\n\007Message\022\n\n\002id\030\001 \001"
+  "(\r\022)\n\revent_payload\030\002 \001(\0132\020.C4.EventPayl"
+  "oadH\000\022-\n\017command_payload\030\003 \001(\0132\022.C4.Comm"
+  "andPayloadH\000B\016\n\014payload_type*%\n\013MessageT"
+  "ype\022\013\n\007Command\020\000\022\t\n\005Event\020\001*S\n\tGameState"
+  "\022\026\n\022GAME_STATE_WAITING\020\000\022\026\n\022GAME_STATE_I"
+  "N_GAME\020\001\022\026\n\022GAME_STATE_VERDICT\020\002*Z\n\013Clie"
+  "ntState\022\031\n\025CLIENT_STATE_USERNAME\020\000\022\026\n\022CL"
+  "IENT_STATE_LOBBY\020\001\022\030\n\024CLIENT_STATE_IN_GA"
+  "ME\020\002b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_message_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_message_2eproto = {
-    false, false, 2771, descriptor_table_protodef_message_2eproto,
+    false, false, 2812, descriptor_table_protodef_message_2eproto,
     "message.proto",
     &descriptor_table_message_2eproto_once, nullptr, 0, 24,
     schemas, file_default_instances, TableStruct_message_2eproto::offsets,
@@ -2069,6 +2074,8 @@ EventNewGameJoined::EventNewGameJoined(const EventNewGameJoined& from)
       decltype(_impl_.opponent_username_){}
     , decltype(_impl_.game_id_){}
     , decltype(_impl_.opponent_client_id_){}
+    , decltype(_impl_.player1_id_){}
+    , decltype(_impl_.player2_id_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -2081,8 +2088,8 @@ EventNewGameJoined::EventNewGameJoined(const EventNewGameJoined& from)
       _this->GetArenaForAllocation());
   }
   ::memcpy(&_impl_.game_id_, &from._impl_.game_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.opponent_client_id_) -
-    reinterpret_cast<char*>(&_impl_.game_id_)) + sizeof(_impl_.opponent_client_id_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.player2_id_) -
+    reinterpret_cast<char*>(&_impl_.game_id_)) + sizeof(_impl_.player2_id_));
   // @@protoc_insertion_point(copy_constructor:C4.EventNewGameJoined)
 }
 
@@ -2094,6 +2101,8 @@ inline void EventNewGameJoined::SharedCtor(
       decltype(_impl_.opponent_username_){}
     , decltype(_impl_.game_id_){0u}
     , decltype(_impl_.opponent_client_id_){0u}
+    , decltype(_impl_.player1_id_){0u}
+    , decltype(_impl_.player2_id_){0u}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.opponent_username_.InitDefault();
@@ -2128,8 +2137,8 @@ void EventNewGameJoined::Clear() {
 
   _impl_.opponent_username_.ClearToEmpty();
   ::memset(&_impl_.game_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.opponent_client_id_) -
-      reinterpret_cast<char*>(&_impl_.game_id_)) + sizeof(_impl_.opponent_client_id_));
+      reinterpret_cast<char*>(&_impl_.player2_id_) -
+      reinterpret_cast<char*>(&_impl_.game_id_)) + sizeof(_impl_.player2_id_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2162,6 +2171,22 @@ const char* EventNewGameJoined::_InternalParse(const char* ptr, ::_pbi::ParseCon
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
           CHK_(::_pbi::VerifyUTF8(str, "C4.EventNewGameJoined.opponent_username"));
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 player1_id = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+          _impl_.player1_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 player2_id = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          _impl_.player2_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
@@ -2216,6 +2241,18 @@ uint8_t* EventNewGameJoined::_InternalSerialize(
         3, this->_internal_opponent_username(), target);
   }
 
+  // uint32 player1_id = 4;
+  if (this->_internal_player1_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(4, this->_internal_player1_id(), target);
+  }
+
+  // uint32 player2_id = 5;
+  if (this->_internal_player2_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(5, this->_internal_player2_id(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2249,6 +2286,16 @@ size_t EventNewGameJoined::ByteSizeLong() const {
     total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_opponent_client_id());
   }
 
+  // uint32 player1_id = 4;
+  if (this->_internal_player1_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_player1_id());
+  }
+
+  // uint32 player2_id = 5;
+  if (this->_internal_player2_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_player2_id());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -2276,6 +2323,12 @@ void EventNewGameJoined::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, con
   if (from._internal_opponent_client_id() != 0) {
     _this->_internal_set_opponent_client_id(from._internal_opponent_client_id());
   }
+  if (from._internal_player1_id() != 0) {
+    _this->_internal_set_player1_id(from._internal_player1_id());
+  }
+  if (from._internal_player2_id() != 0) {
+    _this->_internal_set_player2_id(from._internal_player2_id());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -2300,8 +2353,8 @@ void EventNewGameJoined::InternalSwap(EventNewGameJoined* other) {
       &other->_impl_.opponent_username_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(EventNewGameJoined, _impl_.opponent_client_id_)
-      + sizeof(EventNewGameJoined::_impl_.opponent_client_id_)
+      PROTOBUF_FIELD_OFFSET(EventNewGameJoined, _impl_.player2_id_)
+      + sizeof(EventNewGameJoined::_impl_.player2_id_)
       - PROTOBUF_FIELD_OFFSET(EventNewGameJoined, _impl_.game_id_)>(
           reinterpret_cast<char*>(&_impl_.game_id_),
           reinterpret_cast<char*>(&other->_impl_.game_id_));

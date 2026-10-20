@@ -27,7 +27,7 @@ public:
   void emit_event_username_check_failed(client_id_t client_id);
   void emit_event_lobby_entered(client_id_t client_id);
   void emit_event_new_game_invite_received(client_id_t client_id, client_id_t invited_client_id);
-  void emit_event_new_game_joined(client_id_t client_id, game_id_t game_id, client_id_t opp_client_id);
+  void emit_event_new_game_joined(client_id_t client_id, game_id_t game_id, client_id_t opp_client_id, client_id_t player1_id, client_id_t player2_id);
 };
 }; // namespace C4
 
