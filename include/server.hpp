@@ -31,7 +31,9 @@ public:
 
   void disconnect(client_id_t client_id);
   void create_new_game(client_id_t client1_id, client_id_t client2_id);
-  void join_game(client_id_t client_id, game_id_t game_id);
+  void delete_game(game_id_t game_id);
+  Game *find_game_by_id(game_id_t game_id);
+  ServerClientConnection *find_client_by_id(client_id_t client_id);
 
   // UV callbacks
   static void on_uv_tcp_server_connection(uv_stream_t *stream, int status);

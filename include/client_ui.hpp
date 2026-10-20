@@ -38,15 +38,15 @@ public:
 
   QStackedWidget *m_sw_game;
 
+  QPushButton *m_btn_game_quit;
   QLabel *m_lb_game_opp_side;
   QConnect4Board *m_board;
   QLabel *m_lb_game_player_side;
 
-  void update_server_connection(bool is_connected);
+  void update_server_connection();
   void username_check_failed();
-  void lobby_entered();
   void lobby_updated(const EventLobbyUpdated *payload);
-  void new_game_joined();
+  void update_client_data();
   void update_invite();
   void update_game();
 
@@ -56,6 +56,7 @@ public:
   void on_btn_new_game_invite_clicked();
   void on_btn_invite_accept_clicked();
   void on_btn_invite_decline_clicked();
+  void on_btn_game_quit_clicked();
 };
 }; // namespace C4
 

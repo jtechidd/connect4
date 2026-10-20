@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "common.hpp"
 #include "game.hpp"
 #include "server_client_connection.hpp"
 
@@ -47,18 +48,21 @@ void Server::on_uv_tcp_server_connection(uv_stream_t *stream, int status) {
 
 void Server::disconnect(client_id_t client_id) {
   spdlog::info("Disconnecting client with ID [{}].", client_id);
-  ServerClientConnection *connection = m_clients_map[client_id];
+  ServerClientConnection *connection = find_client_by_id(client_id);
   if (connection == NULL || m_clients_map.erase(client_id) != 1) {
     spdlog::error("Cannot erase connection associated to client with ID [{}] from the mapping.", client_id);
     return;
   }
   if (connection->m_client_data.m_current_game_id) {
-    Game *game = m_game_map[connection->m_client_data.m_current_game_id];
+    Game *game = find_game_by_id(connection->m_client_data.m_current_game_id);
     if (game) {
-      if (game->m_player1_id == client_id)
-        game->m_player1_id = 0;
-      else if (game->m_player2_id == client_id)
-        game->m_player2_id = 0;
+      game->player_left(client_id);
+      if (game->m_player1_left && game->m_player2_left)
+        delete_game(game->m_id);
+      else if (game->m_player1_left)
+        m_message_handler.emit_event_game_updated(game->m_player2_id, game->m_id);
+      else if (game->m_player2_left)
+        m_message_handler.emit_event_game_updated(game->m_player1_id, game->m_id);
     }
   }
   delete connection;
@@ -67,35 +71,62 @@ void Server::disconnect(client_id_t client_id) {
 
 void Server::create_new_game(client_id_t client1_id, client_id_t client2_id) {
   spdlog::info("Creating new game for both clients with ID [{}] and [{}].", client1_id, client2_id);
-  ServerClientConnection *client1 = m_clients_map[client1_id];
+  ServerClientConnection *client1 = find_client_by_id(client1_id);
   if (!(client1 && client1->m_client_data.is_ready_for_new_game())) {
     spdlog::info("Client with ID [{}] is not ready for new game, skipping.", client1_id);
     return;
   }
-  ServerClientConnection *client2 = m_clients_map[client2_id];
+  ServerClientConnection *client2 = find_client_by_id(client2_id);
   if (!(client2 && client2->m_client_data.is_ready_for_new_game())) {
     spdlog::info("Client with ID [{}] is not ready for new game, skipping.", client2_id);
     return;
   }
   Game *game = new Game(++m_game_cid, client1_id, client2_id);
   m_game_map[game->m_id] = game;
+
   client1->m_client_data.m_current_game_id = game->m_id;
   client2->m_client_data.m_current_game_id = game->m_id;
-  m_message_handler.emit_event_new_game_joined(client1_id, game->m_id, client2_id, client1_id, client2_id);
-  m_message_handler.emit_event_new_game_joined(client2_id, game->m_id, client1_id, client1_id, client2_id);
+  m_message_handler.emit_event_client_data_updated(client1_id);
+  m_message_handler.emit_event_client_data_updated(client2_id);
+
   game->start();
-  m_message_handler.emit_event_game_updated(game);
+  m_message_handler.emit_event_game_updated(client1_id, game->m_id);
+  m_message_handler.emit_event_game_updated(client2_id, game->m_id);
 }
 
-void Server::join_game(client_id_t client_id, game_id_t game_id) {
-  ServerClientConnection *connection = m_clients_map[client_id];
-  Game *game = m_game_map[game_id];
-  if (connection == NULL)
+void Server::delete_game(game_id_t game_id) {
+  spdlog::info("Deleting game with ID [{}].", game_id);
+  Game *game = find_game_by_id(game_id);
+  if (game == NULL) {
+    spdlog::warn("Cannot find game with ID [{}].", game_id);
     return;
-  if (game == NULL)
+  }
+  if (!(game->m_player1_left && game->m_player2_left)) {
+    spdlog::warn("Both player are not quit.");
     return;
-  game->m_player2_id = client_id;
-  game->start();
+  }
+  if (m_game_map.erase(game_id) != 1) {
+    spdlog::warn("Cannot erase game from map.");
+    return;
+  }
+  delete game;
+  spdlog::debug("Successfully delete game with ID [{}]", game_id);
+}
+
+ServerClientConnection *Server::find_client_by_id(client_id_t client_id) {
+  auto it = m_clients_map.find(client_id);
+  if (it == m_clients_map.end())
+    return NULL;
+  assert(it->second != NULL);
+  return it->second;
+}
+
+Game *Server::find_game_by_id(game_id_t game_id) {
+  auto it = m_game_map.find(game_id);
+  if (it == m_game_map.end())
+    return NULL;
+  assert(it->second != NULL);
+  return it->second;
 }
 
 void Server::on_uv_timer_broadcast_event_lobby_updated_timeout(uv_timer_t *timer) {

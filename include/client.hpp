@@ -36,6 +36,7 @@ public:
   RingBuffer m_ring_buffer;
   ClientMessageHandler m_message_handler;
 
+  char m_username_input[USERNAME_MAX_SIZE + 1];
   bool m_is_connected;
   client_id_t m_selected_client_id;
   uint64_t m_total_clients;
@@ -55,6 +56,7 @@ public:
   uv_async_t m_uv_async_enter_lobby;
   uv_async_t m_uv_async_new_game_invite;
   uv_async_t m_uv_async_invite_accept;
+  uv_async_t m_uv_async_quit_game;
 
   Client(int argc, char **argv, const char *host = CLIENT_DEFAULT_HOST, int port = CLIENT_DEFAULT_PORT);
   ~Client();
@@ -62,10 +64,12 @@ public:
   void run();
   int run_qt_ui();
   void run_uv_loop();
+  void set_is_connected(bool is_connected);
   void async_stop_uv_loop();
   void async_enter_lobby();
   void async_new_game_invite();
   void async_invite_accept();
+  void async_quit_game();
 
   static void on_uv_timer_try_connect_timeout(uv_timer_t *timer);
   static void on_uv_tcp_server_connect(uv_connect_t *connect, int status);
@@ -78,6 +82,7 @@ public:
   static void on_uv_async_stop_uv_loop_awake(uv_async_t *handle);
   static void on_uv_async_new_game_invite_awake(uv_async_t *handle);
   static void on_uv_async_invite_accept_awake(uv_async_t *handle);
+  static void on_uv_async_quit_game_awake(uv_async_t *handle);
 };
 
 }; // namespace C4

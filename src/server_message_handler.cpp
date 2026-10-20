@@ -10,7 +10,7 @@ ServerMessageHandler::ServerMessageHandler(Server *server) { m_server = server; 
 ServerMessageHandler::~ServerMessageHandler() {}
 
 void ServerMessageHandler::send_message(client_id_t client_id, Message *msg) {
-  ServerClientConnection *client_conn = m_server->m_clients_map[client_id];
+  ServerClientConnection *client_conn = m_server->find_client_by_id(client_id);
   if (!client_conn)
     return;
   WriteRequest *write_req = new WriteRequest(msg);
@@ -24,10 +24,16 @@ void ServerMessageHandler::broadcast_message(Message *msg) {
   }
 }
 
-void ServerMessageHandler::emit_event_server_connected(client_id_t client_id) {
+void ServerMessageHandler::emit_event_client_data_updated(client_id_t client_id) {
+  ServerClientConnection *client = m_server->find_client_by_id(client_id);
+  if (!client)
+    return;
   Message msg;
-  EventServerConnected *payload = msg.mutable_event_payload()->mutable_event_server_connected();
-  payload->set_client_id(client_id);
+  EventClientDataUpdated *payload = msg.mutable_event_payload()->mutable_event_client_data_updated();
+  payload->set_client_id(client->m_client_data.m_client_id);
+  payload->set_state(client->m_client_data.m_state);
+  payload->set_current_game_id(client->m_client_data.m_current_game_id);
+  payload->set_username(client->m_client_data.m_username);
   send_message(client_id, &msg);
 }
 
@@ -42,7 +48,8 @@ void ServerMessageHandler::init_event_lobby_updated(Message *msg) {
     game_info->set_player2_id(game->m_player2_id);
     game_info->set_state(game->m_state);
   }
-  for (auto [_, conn] : m_server->m_clients_map) {
+  for (auto [id, conn] : m_server->m_clients_map) {
+    spdlog::debug("Iterating id {}, conn ptr {}", id, fmt::ptr(conn));
     ClientInfo *client_info = payload->add_clients();
     client_info->set_id(conn->m_client_data.m_client_id);
     client_info->set_state(conn->m_client_data.m_state);
@@ -64,13 +71,6 @@ void ServerMessageHandler::emit_event_lobby_updated(client_id_t client_id) {
   send_message(client_id, &msg);
 }
 
-void ServerMessageHandler::emit_event_lobby_entered(client_id_t client_id) {
-  spdlog::debug("Emitting event [lobby_entered] to client with ID [{}].", client_id);
-  Message msg;
-  msg.mutable_event_payload()->mutable_event_lobby_entered();
-  send_message(client_id, &msg);
-}
-
 void ServerMessageHandler::emit_event_username_check_failed(client_id_t client_id) {
   spdlog::debug("Emitting event [username_check_failed] to client with ID [{}].", client_id);
   Message msg;
@@ -80,7 +80,7 @@ void ServerMessageHandler::emit_event_username_check_failed(client_id_t client_i
 
 void ServerMessageHandler::emit_event_new_game_invite_received(client_id_t client_id, client_id_t inviter_client_id) {
   spdlog::debug("Emitting event [new_game_invite_received] to client with ID [{}].", client_id);
-  ServerClientConnection *inviter_client = m_server->m_clients_map[inviter_client_id];
+  ServerClientConnection *inviter_client = m_server->find_client_by_id(inviter_client_id);
   if (!inviter_client) {
     spdlog::debug("Inviter client with ID [{}] not found, skipping.", inviter_client_id);
     return;
@@ -92,27 +92,16 @@ void ServerMessageHandler::emit_event_new_game_invite_received(client_id_t clien
   send_message(client_id, &msg);
 }
 
-void ServerMessageHandler::emit_event_new_game_joined(client_id_t client_id, game_id_t game_id, client_id_t opp_client_id, client_id_t player1_id,
-                                                      client_id_t player2_id) {
-  spdlog::debug("Emitting event [new_game_joined] to client with ID [{}].", client_id);
-  if (!m_server->m_clients_map[opp_client_id]) {
-    spdlog::debug("Opponent client with ID [{}] not found, skipping.", opp_client_id);
+void ServerMessageHandler::emit_event_game_updated(client_id_t client_id, game_id_t game_id) {
+  spdlog::debug("Emitting event [game_updated] to client with ID [{}]", game_id);
+  Game *game = m_server->find_game_by_id(game_id);
+  if (!game)
     return;
-  }
-  Message msg;
-  EventNewGameJoined *payload = msg.mutable_event_payload()->mutable_event_new_game_joined();
-  payload->set_game_id(game_id);
-  payload->set_player1_id(player1_id);
-  payload->set_player2_id(player2_id);
-  payload->set_opponent_client_id(opp_client_id);
-  payload->set_opponent_username(m_server->m_clients_map[opp_client_id]->m_client_data.m_username);
-  send_message(client_id, &msg);
-}
-
-void ServerMessageHandler::emit_event_game_updated(Game *game) {
   Message msg;
   EventGameUpdated *payload = msg.mutable_event_payload()->mutable_event_game_updated();
   payload->set_game_id(game->m_id);
+  payload->set_player1_id(game->m_player1_id);
+  payload->set_player2_id(game->m_player2_id);
   payload->set_state(game->m_state);
   payload->set_round(game->m_round);
   payload->set_turn(game->m_turn);
@@ -123,15 +112,20 @@ void ServerMessageHandler::emit_event_game_updated(Game *game) {
       payload->add_connect_mask(game->m_connect_mask[i][j]);
     }
   }
-
-  if (game->m_player1_id > 0) {
-    spdlog::debug("Emitting event [game_updated] to client with ID [{}]", game->m_player1_id);
-    send_message(game->m_player1_id, &msg);
+  client_id_t opponent_id;
+  if (client_id == game->m_player1_id) {
+    opponent_id = game->m_player2_id;
+  } else if (client_id == game->m_player2_id) {
+    opponent_id = game->m_player1_id;
+  } else {
+    return;
   }
-  if (game->m_player2_id > 0) {
-    spdlog::debug("Emitting event [game_updated] to client with ID [{}]", game->m_player2_id);
-    send_message(game->m_player2_id, &msg);
-  }
+  ServerClientConnection *opponent = m_server->find_client_by_id(opponent_id);
+  if (!opponent)
+    return;
+  payload->set_opponent_client_id(opponent->m_client_data.m_client_id);
+  payload->set_opponent_username(opponent->m_client_data.m_username);
+  send_message(client_id, &msg);
 }
 
 void ServerMessageHandler::handle_message(client_id_t client_id, Message *msg) {
@@ -167,6 +161,10 @@ void ServerMessageHandler::handle_command(client_id_t client_id, const CommandPa
     break;
   case CommandPayload::kCommandPlayerMakeMove:
     handle_command_player_make_move(client_id, &command_payload->command_player_make_move());
+    break;
+  case CommandPayload::kCommandPlayerQuitGame:
+    handle_command_player_quit_game(client_id, &command_payload->command_player_quit_game());
+    break;
   default:
     break;
   }
@@ -181,13 +179,12 @@ void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, con
       return;
     }
   }
-  ServerClientConnection *client_conn = m_server->m_clients_map[client_id];
+  ServerClientConnection *client_conn = m_server->find_client_by_id(client_id);
   assert(client_conn != NULL);
   assert(payload->username().length() <= USERNAME_MAX_SIZE);
   snprintf(client_conn->m_client_data.m_username, sizeof(client_conn->m_client_data.m_username), "%s", payload->username().c_str());
-  assert(m_server->m_clients_map[client_id] != nullptr);
-  m_server->m_clients_map[client_id]->m_client_data.m_state = CLIENT_STATE_LOBBY;
-  emit_event_lobby_entered(client_id);
+  client_conn->m_client_data.m_state = CLIENT_STATE_LOBBY;
+  emit_event_client_data_updated(client_id);
   emit_event_lobby_updated(client_id);
 }
 
@@ -209,7 +206,7 @@ void ServerMessageHandler::handle_command_player_make_move(client_id_t client_id
     spdlog::warn("Client ID [{}] and player ID [{}] mismatch, skipping.");
     return;
   }
-  Game *game = m_server->m_game_map[payload->game_id()];
+  Game *game = m_server->find_game_by_id(payload->game_id());
   if (game == NULL) {
     spdlog::warn("Game with ID [{}] not found, skipping.", payload->game_id());
     return;
@@ -218,7 +215,44 @@ void ServerMessageHandler::handle_command_player_make_move(client_id_t client_id
     spdlog::warn("Cannot play on column [{}], skipping.", payload->played_column());
     return;
   }
-  emit_event_game_updated(game);
+
+  emit_event_game_updated(game->m_player1_id, game->m_id);
+  emit_event_game_updated(game->m_player2_id, game->m_id);
+}
+
+void ServerMessageHandler::handle_command_player_quit_game(client_id_t client_id, const CommandPlayerQuitGame *payload) {
+  spdlog::info("Handling command [player_quit_game] from client with ID [{}]", client_id);
+  if (client_id != payload->player_id()) {
+    spdlog::warn("Client ID [{}] and player ID [{}] mismatch, skipping.");
+    return;
+  }
+  ServerClientConnection *client = m_server->find_client_by_id(client_id);
+  if (!(client && client->m_client_data.m_client_id == client_id)) {
+    spdlog::warn("Client with ID [{}] not found or mismatch, skipping.", client_id);
+    return;
+  }
+  if (payload->game_id() != client->m_client_data.m_current_game_id) {
+    spdlog::warn("Payload game ID [{}] and client current game ID [{}] mismatch, skipping.", payload->game_id(), client->m_client_data.m_current_game_id);
+    return;
+  }
+  Game *game = m_server->find_game_by_id(payload->game_id());
+  if (game == NULL) {
+    spdlog::warn("Game with ID [{}] not found, skipping.", payload->game_id());
+    return;
+  }
+
+  client->m_client_data.m_current_game_id = 0;
+  client->m_client_data.m_state = CLIENT_STATE_LOBBY;
+  emit_event_client_data_updated(client_id);
+
+  game->player_left(client_id);
+  if (game->m_player1_left && game->m_player2_left) {
+    m_server->delete_game(game->m_id);
+  } else if (game->m_player1_left) {
+    emit_event_game_updated(game->m_player2_id, game->m_id);
+  } else if (game->m_player2_left) {
+    emit_event_game_updated(game->m_player1_id, game->m_id);
+  }
 }
 
 }; // namespace C4

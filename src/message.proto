@@ -7,8 +7,11 @@ enum MessageType {
   Event   = 1;
 }
 
-message EventServerConnected {
-  uint32 client_id = 1;
+message EventClientDataUpdated {
+  uint32      client_id       = 1;
+  ClientState state           = 2;
+  uint32      current_game_id = 3;
+  string      username        = 4;
 }
 
 message EventUsernameCheckFailed {}
@@ -58,29 +61,23 @@ message EventLobbyUpdated {
   repeated GameInfo   games         = 4;
 }
 
-message EventLobbyEntered {}
-
 message EventNewGameInviteReceived {
   uint32 inviter_client_id = 1;
   string inviter_username  = 2;
 }
 
-message EventNewGameJoined {
-  uint32 game_id            = 1;
-  uint32 opponent_client_id = 2;
-  string opponent_username  = 3;
-  uint32 player1_id         = 4;
-  uint32 player2_id         = 5;
-}
-
 message EventGameUpdated {
-  uint32              game_id      = 1;
-  uint32              round        = 2;
-  GameState           state        = 3;
-  GamePlayer          turn         = 4;
-  GameVerdict         verdict      = 5;
-  repeated GamePlayer board        = 6;
-  repeated uint32     connect_mask = 7;
+  uint32              game_id            = 1;
+  uint32              player1_id         = 2;
+  uint32              player2_id         = 3;
+  uint32              opponent_client_id = 4;
+  string              opponent_username  = 5;
+  uint32              round              = 6;
+  GameState           state              = 7;
+  GamePlayer          turn               = 8;
+  GameVerdict         verdict            = 9;
+  repeated GamePlayer board              = 10;
+  repeated uint32     connect_mask       = 11;
 }
 
 message EventGameCreated {
@@ -113,13 +110,11 @@ message EventPlayerLeft {
 
 message EventPayload {
   oneof payload {
-    EventServerConnected       event_server_connected         = 1;
+    EventClientDataUpdated     event_client_data_updated      = 1;
     EventUsernameCheckFailed   event_username_check_failed    = 2;
     EventLobbyUpdated          event_lobby_updated            = 3;
-    EventLobbyEntered          event_lobby_entered            = 4;
-    EventNewGameInviteReceived event_new_game_invite_received = 5;
-    EventNewGameJoined         event_new_game_joined          = 6;
-    EventGameUpdated           event_game_updated             = 7;
+    EventNewGameInviteReceived event_new_game_invite_received = 4;
+    EventGameUpdated           event_game_updated             = 5;
   }
 }
 
@@ -149,7 +144,7 @@ message CommandPlayerMakeMove {
   uint32 played_column = 3;
 }
 
-message CommandPlayerLeave {
+message CommandPlayerQuitGame {
   uint32 game_id   = 1;
   uint32 player_id = 2;
 }
@@ -160,7 +155,7 @@ message CommandPayload {
     CommandNewGameInvite  command_new_game_invite  = 2;
     CommandInviteAccept   command_invite_accept    = 3;
     CommandPlayerMakeMove command_player_make_move = 4;
-    CommandPlayerLeave    command_player_leave     = 5;
+    CommandPlayerQuitGame command_player_quit_game = 5;
   }
 }
 

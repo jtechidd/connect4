@@ -1,5 +1,6 @@
 #include "client.hpp"
 #include "common.hpp"
+#include "message.pb.h"
 #include <uv.h>
 
 namespace C4 {
@@ -23,6 +24,8 @@ Client::Client(int argc, char **argv, const char *host, int port) : m_message_ha
   m_uv_async_stop_loop.data = this;
   uv_async_init(m_uv_loop, &m_uv_async_invite_accept, Client::on_uv_async_invite_accept_awake);
   m_uv_async_invite_accept.data = this;
+  uv_async_init(m_uv_loop, &m_uv_async_quit_game, Client::on_uv_async_quit_game_awake);
+  m_uv_async_quit_game.data = this;
   uv_timer_init(m_uv_loop, &m_uv_timer_try_connect);
   m_uv_timer_try_connect.data = this;
 }
@@ -47,18 +50,25 @@ void Client::run() {
   m_thread_uv_loop.join();
 }
 
+void Client::set_is_connected(bool is_connected) {
+  m_is_connected = is_connected;
+  if (!is_connected) {
+    m_data.m_state = CLIENT_STATE_USERNAME;
+  }
+  m_ui.update_server_connection();
+  m_ui.update_client_data();
+}
+
 void Client::on_uv_tcp_server_connect(uv_connect_t *connect, int status) {
   Client *self = (Client *)connect->data;
   if (status != 0) {
-    self->m_is_connected = false;
-    self->m_ui.update_server_connection(false);
+    self->set_is_connected(false);
     goto cleanup;
   }
 
   spdlog::info("Connected to server.");
   uv_read_start((uv_stream_t *)&self->m_uv_tcp_connection, Client::on_uv_tcp_connection_alloc, Client::on_uv_tcp_connection_read);
-  self->m_is_connected = true;
-  self->m_ui.update_server_connection(true);
+  self->set_is_connected(true);
 cleanup:
   delete connect;
 }
@@ -110,9 +120,7 @@ void Client::on_uv_tcp_connection_write(uv_write_t *write, int status) {
 void Client::on_uv_tcp_connection_close(uv_handle_t *handle) {
   Client *self = (Client *)handle->data;
   spdlog::info("Disconnencted from server.");
-  self->m_is_connected = false;
-  self->m_ui.update_server_connection(false);
-  self->m_data.m_state = CLIENT_STATE_USERNAME;
+  self->set_is_connected(false);
   uv_timer_start(&self->m_uv_timer_try_connect, Client::on_uv_timer_try_connect_timeout, CLIENT_TRY_CONNECT_INTERVAL, CLIENT_TRY_CONNECT_INTERVAL);
 }
 
@@ -136,6 +144,11 @@ void Client::on_uv_async_invite_accept_awake(uv_async_t *handle) {
   self->m_message_handler.send_command_invite_accept();
 }
 
+void Client::on_uv_async_quit_game_awake(uv_async_t *handle) {
+  Client *self = (Client *)handle->data;
+  self->m_message_handler.send_command_quit_game();
+}
+
 void Client::async_stop_uv_loop() { uv_async_send(&m_uv_async_stop_loop); }
 
 void Client::async_enter_lobby() { uv_async_send(&m_uv_async_enter_lobby); }
@@ -143,6 +156,8 @@ void Client::async_enter_lobby() { uv_async_send(&m_uv_async_enter_lobby); }
 void Client::async_new_game_invite() { uv_async_send(&m_uv_async_new_game_invite); }
 
 void Client::async_invite_accept() { uv_async_send(&m_uv_async_invite_accept); }
+
+void Client::async_quit_game() { uv_async_send(&m_uv_async_quit_game); }
 
 void Client::on_uv_timer_try_connect_timeout(uv_timer_t *timer) {
   Client *self = (Client *)timer->data;

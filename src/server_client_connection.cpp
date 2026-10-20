@@ -1,5 +1,6 @@
 #include "server_client_connection.hpp"
 #include "client_data.hpp"
+#include "message.pb.h"
 #include "server.hpp"
 
 namespace C4 {
@@ -16,7 +17,7 @@ ServerClientConnection::~ServerClientConnection() {}
 
 void ServerClientConnection::run() {
   uv_read_start((uv_stream_t *)&m_uv_tcp_connection, on_uv_tcp_connection_alloc, ServerClientConnection::on_uv_tcp_connection_read);
-  m_server->m_message_handler.emit_event_server_connected(m_client_data.m_client_id);
+  m_server->m_message_handler.emit_event_client_data_updated(m_client_data.m_client_id);
 }
 
 void ServerClientConnection::on_uv_tcp_connection_alloc(uv_handle_t *handle, unsigned long size, uv_buf_t *buf) {

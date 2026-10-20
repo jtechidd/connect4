@@ -22,11 +22,8 @@ void ClientMessageHandler::handle_message(Message *message) {
 
 void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
   switch (event_payload->payload_case()) {
-  case EventPayload::kEventServerConnected:
-    handle_event_server_connected(&event_payload->event_server_connected());
-    break;
-  case EventPayload::kEventLobbyEntered:
-    handle_event_lobby_entered(&event_payload->event_lobby_entered());
+  case EventPayload::kEventClientDataUpdated:
+    handle_event_client_data_updated(&event_payload->event_client_data_updated());
     break;
   case EventPayload::kEventUsernameCheckFailed:
     handle_event_username_check_failed(&event_payload->event_username_check_failed());
@@ -37,9 +34,6 @@ void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
   case EventPayload::kEventNewGameInviteReceived:
     handle_event_new_game_invite_received(&event_payload->event_new_game_invite_received());
     break;
-  case EventPayload::kEventNewGameJoined:
-    handle_event_new_game_joined(&event_payload->event_new_game_joined());
-    break;
   case EventPayload::kEventGameUpdated:
     handle_event_game_updated(&event_payload->event_game_updated());
   default:
@@ -47,16 +41,13 @@ void ClientMessageHandler::handle_event(const EventPayload *event_payload) {
   }
 }
 
-void ClientMessageHandler::handle_event_server_connected(const EventServerConnected *payload) {
-  spdlog::info("Handling event [server_connected].");
+void ClientMessageHandler::handle_event_client_data_updated(const EventClientDataUpdated *payload) {
+  spdlog::info("Handling event [client_data_updated].");
   m_client->m_data.m_client_id = payload->client_id();
-  spdlog::debug("Set client ID to [{}].", m_client->m_data.m_client_id);
-}
-
-void ClientMessageHandler::handle_event_lobby_entered(const EventLobbyEntered *payload) {
-  spdlog::info("Handling event [lobby_entered].");
-  m_client->m_data.m_state = CLIENT_STATE_LOBBY;
-  m_client->m_ui.lobby_entered();
+  m_client->m_data.m_state = payload->state();
+  m_client->m_data.m_current_game_id = payload->current_game_id();
+  snprintf(m_client->m_data.m_username, sizeof(m_client->m_data.m_username), "%s", payload->username().c_str());
+  m_client->m_ui.update_client_data();
 }
 
 void ClientMessageHandler::handle_event_username_check_failed(const EventUsernameCheckFailed *payload) {
@@ -87,25 +78,13 @@ void ClientMessageHandler::handle_event_new_game_invite_received(const EventNewG
   spdlog::debug("Queued invite from client ID [{}].", invite.inviter_client_id);
 }
 
-void ClientMessageHandler::handle_event_new_game_joined(const EventNewGameJoined *payload) {
-  spdlog::info("Handling event [new_game_joined]");
+void ClientMessageHandler::handle_event_game_updated(const EventGameUpdated *payload) {
+  spdlog::info("Handling event [game_updated]");
   m_client->m_game.m_id = payload->game_id();
-  m_client->m_data.m_current_game_id = payload->game_id();
   m_client->m_game.m_player1_id = payload->player1_id();
   m_client->m_game.m_player2_id = payload->player2_id();
   m_client->m_game.m_opp_id = payload->opponent_client_id();
   snprintf(m_client->m_game.m_opp_username, sizeof(m_client->m_game.m_opp_username), "%s", payload->opponent_username().c_str());
-  m_client->m_ui.new_game_joined();
-  m_client->m_ui.update_game();
-}
-
-void ClientMessageHandler::handle_event_game_updated(const EventGameUpdated *payload) {
-  spdlog::info("Handling event [game_updated]");
-  if (!(payload->game_id() == m_client->m_game.m_id && payload->game_id() == m_client->m_data.m_current_game_id)) {
-    spdlog::warn("Payload game ID [{}] mismatch from game ID [{}] or player current game ID [{}]", payload->game_id(), m_client->m_game.m_id,
-                 m_client->m_data.m_current_game_id);
-    return;
-  }
   m_client->m_game.m_round = payload->round();
   m_client->m_game.m_state = payload->state();
   m_client->m_game.m_turn = payload->turn();
@@ -129,8 +108,8 @@ void ClientMessageHandler::send_message(Message *msg) {
 void ClientMessageHandler::send_command_enter_lobby() {
   Message msg;
   CommandEnterLobby *payload = msg.mutable_command_payload()->mutable_command_enter_lobby();
-  payload->set_username(m_client->m_data.m_username);
-  spdlog::info("Sending command [enter_lobby] with username [{}].", m_client->m_data.m_username);
+  payload->set_username(m_client->m_username_input);
+  spdlog::info("Sending command [enter_lobby] with username [{}].", m_client->m_username_input);
   send_message(&msg);
 }
 
@@ -163,6 +142,15 @@ void ClientMessageHandler::send_command_player_make_move(int col) {
   payload->set_player_id(m_client->m_data.m_client_id);
   payload->set_played_column(col);
   spdlog::info("Sending command [player_make_move] with played column [{}]", col);
+  send_message(&msg);
+}
+
+void ClientMessageHandler::send_command_quit_game() {
+  Message msg;
+  CommandPlayerQuitGame *payload = msg.mutable_command_payload()->mutable_command_player_quit_game();
+  assert(m_client->m_data.m_current_game_id == m_client->m_game.m_id);
+  payload->set_game_id(m_client->m_data.m_current_game_id);
+  payload->set_player_id(m_client->m_data.m_client_id);
   send_message(&msg);
 }
 

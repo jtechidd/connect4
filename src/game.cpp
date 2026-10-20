@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "message.pb.h"
 
 namespace C4 {
 
@@ -6,6 +7,8 @@ Game::Game() {
   m_id = 0;
   m_player1_id = 0;
   m_player2_id = 0;
+  m_player1_left = false;
+  m_player2_left = false;
   m_opp_id = 0;
   m_round = 0;
   m_state = GAME_STATE_WAITING;
@@ -88,6 +91,23 @@ int Game::is_connect(uint8_t i, uint8_t j) {
       return 1;
     }
     memset(m_connect_mask, 0, sizeof(m_connect_mask));
+  }
+  return 0;
+}
+
+int Game::player_left(client_id_t player_id) {
+  if (m_state == GAME_STATE_IN_GAME) {
+    m_state = GAME_STATE_VERDICT;
+    if (player_id == m_player1_id) {
+      m_verdict = GAME_VERDICT_PLAYER2_WIN;
+    } else if (player_id == m_player2_id) {
+      m_verdict = GAME_VERDICT_PLAYER1_WIN;
+    }
+  }
+  if (player_id == m_player1_id) {
+    m_player1_left = true;
+  } else if (player_id == m_player2_id) {
+    m_player2_left = true;
   }
   return 0;
 }
