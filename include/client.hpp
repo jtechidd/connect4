@@ -42,7 +42,7 @@ public:
   std::list<ClientInfo> m_online_client_infos;
   std::deque<NewGameInvite> m_new_game_invite_queue;
 
-  // Shared
+  // Server shared
   ClientData m_data;
   Game m_game;
 

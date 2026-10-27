@@ -181,8 +181,7 @@ void ServerMessageHandler::handle_command_enter_lobby(client_id_t client_id, con
   ServerClientConnection *client_conn = m_server->find_client_by_id(client_id);
   assert(client_conn != NULL);
   assert(payload->username().length() <= USERNAME_MAX_SIZE);
-  snprintf(client_conn->m_client_data.m_username, sizeof(client_conn->m_client_data.m_username), "%s", payload->username().c_str());
-  client_conn->m_client_data.m_state = CLIENT_STATE_LOBBY;
+  client_conn->m_client_data.enter_lobby(payload);
   emit_event_client_data_updated(client_id);
   emit_event_lobby_updated(client_id);
 }
@@ -240,8 +239,7 @@ void ServerMessageHandler::handle_command_player_quit_game(client_id_t client_id
     return;
   }
 
-  client->m_client_data.m_current_game_id = 0;
-  client->m_client_data.m_state = CLIENT_STATE_LOBBY;
+  client->m_client_data.quit_game();
   emit_event_client_data_updated(client_id);
 
   game->player_left(client_id);
