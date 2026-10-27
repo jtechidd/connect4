@@ -49,7 +49,6 @@ void ServerMessageHandler::init_event_lobby_updated(Message *msg) {
     game_info->set_state(game->m_state);
   }
   for (auto [id, conn] : m_server->m_clients_map) {
-    spdlog::debug("Iterating id {}, conn ptr {}", id, fmt::ptr(conn));
     ClientInfo *client_info = payload->add_clients();
     client_info->set_id(conn->m_client_data.m_client_id);
     client_info->set_state(conn->m_client_data.m_state);
