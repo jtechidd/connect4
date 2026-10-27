@@ -15,7 +15,11 @@ public:
   ClientData(client_id_t client_id);
   ~ClientData();
 
+  // Server only
   bool is_ready_for_new_game();
+  void enter_lobby(const CommandEnterLobby *payload);
+  void join_game(Game *game);
+  void quit_game();
 };
 } // namespace C4
 

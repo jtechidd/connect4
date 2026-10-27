@@ -9,19 +9,19 @@ Game::Game() {
   m_player2_id = 0;
   m_player1_left = false;
   m_player2_left = false;
-  m_opp_id = 0;
+  m_opponent_id = 0;
   m_round = 0;
   m_state = GAME_STATE_WAITING;
   m_turn = GAME_PLAYER_1;
   m_verdict = GAME_VERDICT_UNDECIDED;
-  memset(m_opp_username, 0, sizeof(m_opp_username));
+  memset(m_opponent_username, 0, sizeof(m_opponent_username));
   memset(m_connect_mask, 0, sizeof(m_connect_mask));
   memset(m_board, 0, sizeof(m_board));
 };
-Game::Game(game_id_t id, client_id_t p1_id, client_id_t p2_id) : Game() {
+Game::Game(game_id_t id, client_id_t player1_id, client_id_t player2_id) : Game() {
   m_id = id;
-  m_player1_id = p1_id;
-  m_player2_id = p2_id;
+  m_player1_id = player1_id;
+  m_player2_id = player2_id;
 }
 Game::~Game() {};
 

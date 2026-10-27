@@ -84,8 +84,8 @@ void Server::create_new_game(client_id_t client1_id, client_id_t client2_id) {
   Game *game = new Game(++m_game_cid, client1_id, client2_id);
   m_game_map[game->m_id] = game;
 
-  client1->m_client_data.m_current_game_id = game->m_id;
-  client2->m_client_data.m_current_game_id = game->m_id;
+  client1->m_client_data.join_game(game);
+  client2->m_client_data.join_game(game);
   m_message_handler.emit_event_client_data_updated(client1_id);
   m_message_handler.emit_event_client_data_updated(client2_id);
 
