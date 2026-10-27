@@ -14,8 +14,8 @@ public:
   bool m_player2_left;
 
   // Client
-  client_id_t m_opp_id;
-  char m_opp_username[USERNAME_MAX_SIZE + 1];
+  client_id_t m_opponent_id;
+  char m_opponent_username[USERNAME_MAX_SIZE + 1];
 
   uint8_t m_round;
   GameState m_state;

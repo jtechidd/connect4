@@ -8,7 +8,6 @@
 #include "game.hpp"
 #include "message.pb.h"
 #include "ring_buffer.hpp"
-#include <QtWidgets>
 
 namespace C4 {
 
@@ -38,8 +37,9 @@ public:
 
   char m_username_input[USERNAME_MAX_SIZE + 1];
   bool m_is_connected;
-  client_id_t m_selected_client_id;
+  QListWidgetItem *m_selected_client;
   uint64_t m_total_clients;
+  std::list<ClientInfo> m_online_client_infos;
   std::deque<NewGameInvite> m_new_game_invite_queue;
 
   // Shared
@@ -47,7 +47,7 @@ public:
   Game m_game;
 
   QApplication m_qapp;
-  ClientUI m_ui;
+  QClientUI m_ui;
 
   // UV async handles
   uv_async_t m_uv_async_keep_alive;
@@ -65,6 +65,8 @@ public:
   int run_qt_ui();
   void run_uv_loop();
   void set_is_connected(bool is_connected);
+  bool current_game_turn_is_player();
+  bool current_game_turn_is_opponent();
   void async_stop_uv_loop();
   void async_enter_lobby();
   void async_new_game_invite();

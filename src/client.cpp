@@ -10,6 +10,7 @@ Client::Client(int argc, char **argv, const char *host, int port) : m_message_ha
   m_host = (char *)host;
   m_port = port;
   m_total_clients = 0;
+  m_selected_client = nullptr;
   m_is_connected = false;
 
   uv_tcp_init(m_uv_loop, &m_uv_tcp_connection);
@@ -58,6 +59,10 @@ void Client::set_is_connected(bool is_connected) {
   m_ui.update_server_connection();
   m_ui.update_client_data();
 }
+
+bool Client::current_game_turn_is_player() { return m_game.get_current_turn_player_id() == m_data.m_client_id; }
+
+bool Client::current_game_turn_is_opponent() { return m_game.get_current_turn_player_id() == m_game.m_opponent_id; }
 
 void Client::on_uv_tcp_server_connect(uv_connect_t *connect, int status) {
   Client *self = (Client *)connect->data;

@@ -58,7 +58,11 @@ void ClientMessageHandler::handle_event_username_check_failed(const EventUsernam
 void ClientMessageHandler::handle_event_lobby_updated(const EventLobbyUpdated *payload) {
   spdlog::info("Handling event [lobby_updated].");
   m_client->m_total_clients = payload->total_clients();
-  m_client->m_ui.lobby_updated(payload);
+  m_client->m_online_client_infos.clear();
+  for (auto ci : payload->clients()) {
+    m_client->m_online_client_infos.push_back(ci);
+  }
+  m_client->m_ui.update_online_client_infos();
   spdlog::debug("Set total clients to [{}].", m_client->m_total_clients);
 }
 
@@ -83,8 +87,8 @@ void ClientMessageHandler::handle_event_game_updated(const EventGameUpdated *pay
   m_client->m_game.m_id = payload->game_id();
   m_client->m_game.m_player1_id = payload->player1_id();
   m_client->m_game.m_player2_id = payload->player2_id();
-  m_client->m_game.m_opp_id = payload->opponent_client_id();
-  snprintf(m_client->m_game.m_opp_username, sizeof(m_client->m_game.m_opp_username), "%s", payload->opponent_username().c_str());
+  m_client->m_game.m_opponent_id = payload->opponent_client_id();
+  snprintf(m_client->m_game.m_opponent_username, sizeof(m_client->m_game.m_opponent_username), "%s", payload->opponent_username().c_str());
   m_client->m_game.m_round = payload->round();
   m_client->m_game.m_state = payload->state();
   m_client->m_game.m_turn = payload->turn();
@@ -114,12 +118,13 @@ void ClientMessageHandler::send_command_enter_lobby() {
 }
 
 void ClientMessageHandler::send_command_new_game_invite() {
-  if (!m_client->m_selected_client_id)
+  if (!m_client->m_selected_client)
     return;
   Message msg;
   CommandNewGameInvite *payload = msg.mutable_command_payload()->mutable_command_new_game_invite();
-  payload->set_client_id(m_client->m_selected_client_id);
-  spdlog::info("Sending command [new_game_invite] with selected client ID [{}].", m_client->m_selected_client_id);
+  client_id_t selected_client_id = m_client->m_selected_client->data(Qt::UserRole).toUInt();
+  payload->set_client_id(selected_client_id);
+  spdlog::info("Sending command [new_game_invite] with selected client ID [{}].", selected_client_id);
   send_message(&msg);
 }
 
