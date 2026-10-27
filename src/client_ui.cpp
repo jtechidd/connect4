@@ -1,15 +1,11 @@
 #include "client_ui.hpp"
 #include "client.hpp"
-#include "qboxlayout.h"
-#include "qobjectdefs.h"
-#include "qpushbutton.h"
 
 namespace C4 {
 
 QClientWidget::QClientWidget(Client *client, QWidget *parent) : QWidget(parent) { m_client = client; }
 
-QPageUsername::QPageUsername(Client *client, QWidget *parent)
-    : QClientWidget(client, parent), m_le_username(this), m_lb_server_status("Server disconnected", this), m_btn_enter_lobby("Enter lobby", this) {
+QPageUsername::QPageUsername(Client *client, QWidget *parent) : QClientWidget(client, parent) {
   QVBoxLayout *vbl_username = new QVBoxLayout;
   vbl_username->setContentsMargins(0, 0, 0, 0);
   QFormLayout *fl_username = new QFormLayout;
@@ -18,9 +14,11 @@ QPageUsername::QPageUsername(Client *client, QWidget *parent)
   connect(&m_le_username, &QLineEdit::textChanged, this, &QPageUsername::on_le_username_text_changed);
   fl_username->addRow(new QLabel("Username"), &m_le_username);
   vbl_username->addLayout(fl_username);
+  m_lb_server_status.setText("Server disconnected");
   vbl_username->addWidget(&m_lb_server_status);
   QHBoxLayout *hbl_btn = new QHBoxLayout;
   hbl_btn->setContentsMargins(0, 0, 0, 0);
+  m_btn_enter_lobby.setText("Enter Lobby");
   m_btn_enter_lobby.setEnabled(false);
   hbl_btn->addWidget(&m_btn_enter_lobby);
   hbl_btn->addStretch(1);
@@ -47,7 +45,7 @@ void QPageUsername::update_server_connection() {
   }
 }
 
-QOnlinePlayers::QOnlinePlayers(Client *client, QWidget *parent) : QClientWidget(client, parent), m_lw_online_players(this) {
+QOnlinePlayers::QOnlinePlayers(Client *client, QWidget *parent) : QClientWidget(client, parent) {
   QVBoxLayout *vbl_online_players = new QVBoxLayout;
   vbl_online_players->setContentsMargins(0, 0, 0, 0);
   vbl_online_players->addWidget(new QLabel(tr("Online Players:")));
@@ -76,7 +74,7 @@ void QOnlinePlayers::update_online_client_infos() {
   m_lw_online_players.setUpdatesEnabled(true);
 }
 
-QGameArea::QGameArea(Client *client, QWidget *parent) : QClientWidget(client, parent), m_sw_game(this), m_game_menu(client, this), m_game(client, this) {
+QGameArea::QGameArea(Client *client, QWidget *parent) : QClientWidget(client, parent), m_game_menu(client), m_game(client) {
   QVBoxLayout *vbl_game_area = new QVBoxLayout;
   vbl_game_area->setContentsMargins(0, 0, 0, 0);
   m_sw_game.addWidget(&m_game_menu);
@@ -93,15 +91,16 @@ void QGameArea::update_client_data() {
   }
 }
 
-QInvite::QInvite(Client *client, QWidget *parent)
-    : QClientWidget(client, parent), m_lb_invite_text("You got invited from player", this), m_btn_invite_accept("Accept", this),
-      m_btn_invite_decline("Decline", this) {
+QInvite::QInvite(Client *client, QWidget *parent) : QClientWidget(client, parent) {
   QHBoxLayout *m_hbl_invite = new QHBoxLayout;
   m_hbl_invite->setContentsMargins(0, 0, 0, 0);
-  connect(&m_btn_invite_accept, &QPushButton::clicked, this, &QInvite::on_btn_invite_accept_clicked);
-  connect(&m_btn_invite_decline, &QPushButton::clicked, this, &QInvite::on_btn_invite_decline_clicked);
+  m_lb_invite_text.setText("You got invited from player");
   m_hbl_invite->addWidget(&m_lb_invite_text);
+  m_btn_invite_accept.setText("Accept");
+  connect(&m_btn_invite_accept, &QPushButton::clicked, this, &QInvite::on_btn_invite_accept_clicked);
   m_hbl_invite->addWidget(&m_btn_invite_accept);
+  m_btn_invite_decline.setText("Decline");
+  connect(&m_btn_invite_decline, &QPushButton::clicked, this, &QInvite::on_btn_invite_decline_clicked);
   m_hbl_invite->addWidget(&m_btn_invite_decline);
   setLayout(m_hbl_invite);
   setVisible(false);
@@ -124,14 +123,15 @@ void QInvite::update_invite() {
   m_lb_invite_text.setText(QString("You got invited from %1").arg(req.inviter_username));
 }
 
-QGameMenu::QGameMenu(Client *client, QWidget *parent)
-    : QClientWidget(client, parent), m_btn_new_game("New Game", this), m_btn_new_game_invite("New Game With Player", this), m_invite(client, this) {
+QGameMenu::QGameMenu(Client *client, QWidget *parent) : QClientWidget(client, parent), m_invite(client) {
   QVBoxLayout *vbl_game_menu = new QVBoxLayout;
   vbl_game_menu->setContentsMargins(0, 0, 0, 0);
   vbl_game_menu->addStretch(1);
+  m_btn_new_game.setText("New Game");
   m_btn_new_game.setEnabled(false);
   vbl_game_menu->addWidget(&m_btn_new_game);
   connect(&m_btn_new_game_invite, &QPushButton::clicked, this, &QGameMenu::on_btn_new_game_invite_clicked);
+  m_btn_new_game_invite.setText("New Game With Player");
   m_btn_new_game_invite.setEnabled(false);
   vbl_game_menu->addWidget(&m_btn_new_game_invite);
   vbl_game_menu->addWidget(&m_invite);
@@ -156,19 +156,20 @@ void QGameMenu::update_invite() {
   m_invite.update_invite();
 }
 
-QGame::QGame(Client *client, QWidget *parent)
-    : QClientWidget(client, parent), m_btn_game_quit("Quit Game", this), m_lb_game_opponent("Opponent", this), m_game_board(client, this),
-      m_lb_game_player("You", this) {
+QGame::QGame(Client *client, QWidget *parent) : QClientWidget(client, parent), m_game_board(client) {
   QVBoxLayout *vbl_game = new QVBoxLayout;
   vbl_game->setContentsMargins(0, 0, 0, 0);
   QHBoxLayout *hbl_game_btns = new QHBoxLayout;
+  m_btn_game_quit.setText("Quit Game");
   connect(&m_btn_game_quit, &QPushButton::clicked, this, &QGame::on_btn_game_quit_clicked);
   hbl_game_btns->addStretch(1);
   hbl_game_btns->addWidget(&m_btn_game_quit);
   vbl_game->addLayout(hbl_game_btns);
+  m_lb_game_opponent.setText("Opponent");
   m_lb_game_opponent.setAlignment(Qt::AlignCenter);
   vbl_game->addWidget(&m_lb_game_opponent);
   vbl_game->addWidget(&m_game_board, 1);
+  m_lb_game_player.setText("You");
   m_lb_game_player.setAlignment(Qt::AlignCenter);
   vbl_game->addWidget(&m_lb_game_player);
   setLayout(vbl_game);
@@ -235,7 +236,7 @@ void QOnlinePlayers::on_lw_online_players_item_clicked(QListWidgetItem *item) {
   m_client->m_ui.m_page_lobby.m_game_area.m_game_menu.update_selected_client();
 }
 
-QPageLobby::QPageLobby(Client *client, QWidget *parent) : QClientWidget(client, parent), m_online_players(client, this), m_game_area(client, this) {
+QPageLobby::QPageLobby(Client *client, QWidget *parent) : QClientWidget(client, parent), m_online_players(client), m_game_area(client) {
   QHBoxLayout *hbl_lobby = new QHBoxLayout;
   hbl_lobby->setContentsMargins(0, 0, 0, 0);
   hbl_lobby->addWidget(&m_online_players, 3);
@@ -292,12 +293,12 @@ void QGameBoard::mousePressEvent(QMouseEvent *event) {
   }
 }
 
-QClientUI::QClientUI(Client *client, QWidget *parent)
-    : QClientWidget(client, parent), m_sw_pages(this), m_page_username(client, this), m_page_lobby(client, this) {
+QClientUI::QClientUI(Client *client, QWidget *parent) : QClientWidget(client, parent), m_page_username(client), m_page_lobby(client) {
   m_sw_pages.addWidget(&m_page_username);
   m_sw_pages.addWidget(&m_page_lobby);
-  QVBoxLayout *vbl_main = new QVBoxLayout(this);
+  QVBoxLayout *vbl_main = new QVBoxLayout();
   vbl_main->addWidget(&m_sw_pages);
+  setLayout(vbl_main);
   setWindowTitle(tr("Connect4"));
   resize(640, 480);
 };
