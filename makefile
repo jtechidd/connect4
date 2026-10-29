@@ -32,7 +32,7 @@ $(COMPILED_PROTOS): $(PROTOS)
 	mv $(PROTOS:src/%.proto=%.pb.cc) src
 protos: $(COMPILED_PROTOS)
 
-$(LIB): $(LIB_SRCS) $(LIB_IMGUI)
+$(LIB): $(LIB_SRCS)
 	$(CXX) $(CXXFLAGS) -shared $(LIB_SRCS) -o $(LIB) $(LDFLAGS)
 lib: $(LIB)
 
@@ -48,7 +48,7 @@ client: $(CLIENT)
 run_client: $(CLIENT)
 	$(CLIENT)
 
-all: $(LIB_IMGUI) $(LIB) $(SERVER) $(CLIENT)
+all: $(LIB) $(SERVER) $(CLIENT)
 
 .PHONY: clean
 clean:

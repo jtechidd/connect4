@@ -1,7 +1,6 @@
 #include "client.hpp"
 #include "common.hpp"
 #include "message.pb.h"
-#include <uv.h>
 
 namespace C4 {
 
