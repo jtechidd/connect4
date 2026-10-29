@@ -6,11 +6,58 @@
 
 namespace C4 {
 
+constexpr const char *CLIENT_UI_USERNAME = "Username";
+constexpr const char *CLIENT_UI_SERVER_DISCONNECTED = "Server disconnected";
+constexpr const char *CLIENT_UI_SERVER_CONNECTED = "Server connected";
+constexpr const char *CLIENT_UI_ENTER_LOBBY = "Enter Lobby";
+constexpr const char *CLIENT_UI_ONLINE_PLAYERS = "Online players:";
+constexpr const char *CLIENT_UI_PLAYER = "player";
+constexpr const char *CLIENT_UI_GOT_INVITED = "You got invited from %1";
+constexpr const char *CLIENT_UI_ACCEPT = "Accept";
+constexpr const char *CLIENT_UI_DECLINE = "Decline";
+constexpr const char *CLIENT_UI_NEW_GAME = "New Game";
+constexpr const char *CLIENT_UI_NEW_GAME_WITH = "New Game With %1";
+constexpr const char *CLIENT_UI_QUIT_GAME = "Quit Game";
+constexpr const char *CLIENT_UI_OPPONENT = "Opponent";
+constexpr const char *CLIENT_UI_YOU = "You";
+constexpr const char *CLIENT_UI_QUIT_GAME_MSGBOX_TITLE = "Quit Game?";
+constexpr const char *CLIENT_UI_QUIT_GAME_MSGBOX_TEXT = "Are you sure want to quit the game?";
+constexpr const char *CLIENT_UI_USERNAME_CHECK_FAILED_MSGBOX_TITLE = "Cannot use this username";
+constexpr const char *CLIENT_UI_USERNAME_CHECK_FAILED_MSGBOX_TEXT = "This username is already taken, please try another.";
+constexpr const char *CLIENT_UI_WINNER = "%1 (winner)";
+constexpr const char *CLIENT_UI_WINDOW_TITLE = "Connect4";
+constexpr const char *CLIENT_UI_WINDOW_TITLE_WITH_USERNAME = "Connect4 (%1)";
+constexpr const int CLIENT_UI_WINDOW_MARGIN = 8;
+constexpr const int CLIENT_UI_GAME_TILE_MARGINS = 5;
+constexpr const Qt::GlobalColor CLIENT_UI_GAME_BOARD_COLOR = Qt::gray;
+constexpr const Qt::GlobalColor CLIENT_UI_GAME_SLOT_COLOR_ENABLE = Qt::white;
+constexpr const Qt::GlobalColor CLIENT_UI_GAME_SLOT_COLOR_DISABLE = Qt::lightGray;
+constexpr const Qt::GlobalColor CLIENT_UI_GAME_CONNECT_TOKEN_BORDER_COLOR = Qt::white;
+constexpr const int CLIENT_UI_GAME_CONNECT_TOKEN_BORDER_WIDTH = 4;
+constexpr const Qt::GlobalColor CLIENT_UI_GAME_TOKEN_COLOR_PLAYER = Qt::blue;
+constexpr const Qt::GlobalColor CLIENT_UI_GAME_TOKEN_COLOR_OPPONENT = Qt::red;
+
 class QClientWidget : public QWidget {
 public:
   Client *m_client;
 
   QClientWidget(Client *client, QWidget *parent = nullptr);
+};
+
+class QClientVBoxLayout : public QVBoxLayout {
+public:
+  QClientVBoxLayout(QWidget *parent = nullptr);
+  QClientVBoxLayout(int margin, QWidget *parent = nullptr);
+};
+class QClientHBoxLayout : public QHBoxLayout {
+public:
+  QClientHBoxLayout(QWidget *parent = nullptr);
+  QClientHBoxLayout(int margin, QWidget *parent = nullptr);
+};
+class QClientFormLayout : public QFormLayout {
+public:
+  QClientFormLayout(QWidget *parent = nullptr);
+  QClientFormLayout(int margin, QWidget *parent = nullptr);
 };
 
 class QGameBoard : public QClientWidget {

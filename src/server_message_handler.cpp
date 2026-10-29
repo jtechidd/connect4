@@ -105,8 +105,8 @@ void ServerMessageHandler::emit_event_game_updated(client_id_t client_id, game_i
   payload->set_round(game->m_round);
   payload->set_turn(game->m_turn);
   payload->set_verdict(game->m_verdict);
-  for (int i = 0; i < 6; i++) {
-    for (int j = 0; j < 7; j++) {
+  for (int i = 0; i < GAME_BOARD_HEIGHT; i++) {
+    for (int j = 0; j < GAME_BOARD_WIDTH; j++) {
       payload->add_board(game->m_board[i][j]);
       payload->add_connect_mask(game->m_connect_mask[i][j]);
     }

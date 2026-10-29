@@ -94,10 +94,10 @@ void ClientMessageHandler::handle_event_game_updated(const EventGameUpdated *pay
   m_client->m_game.m_turn = payload->turn();
   m_client->m_game.m_verdict = payload->verdict();
   for (int i = 0; i < payload->board_size(); i++) {
-    m_client->m_game.m_board[i / 7][i % 7] = (GamePlayer)payload->board().at(i);
+    m_client->m_game.m_board[i / GAME_BOARD_WIDTH][i % GAME_BOARD_WIDTH] = (GamePlayer)payload->board().at(i);
   }
   for (int i = 0; i < payload->connect_mask_size(); i++) {
-    m_client->m_game.m_connect_mask[i / 7][i % 7] = payload->connect_mask().at(i);
+    m_client->m_game.m_connect_mask[i / GAME_BOARD_WIDTH][i % GAME_BOARD_WIDTH] = payload->connect_mask().at(i);
   }
   m_client->m_ui.update_game();
 }

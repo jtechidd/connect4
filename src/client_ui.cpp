@@ -1,24 +1,29 @@
 #include "client_ui.hpp"
 #include "client.hpp"
+#include "game.hpp"
 
 namespace C4 {
 
 QClientWidget::QClientWidget(Client *client, QWidget *parent) : QWidget(parent) { m_client = client; }
 
+QClientVBoxLayout::QClientVBoxLayout(int margin, QWidget *parent) : QVBoxLayout(parent) { setContentsMargins(margin, margin, margin, margin); }
+QClientVBoxLayout::QClientVBoxLayout(QWidget *parent) : QClientVBoxLayout(0, parent) {}
+QClientHBoxLayout::QClientHBoxLayout(int margin, QWidget *parent) : QHBoxLayout(parent) { setContentsMargins(margin, margin, margin, margin); }
+QClientHBoxLayout::QClientHBoxLayout(QWidget *parent) : QClientHBoxLayout(0, parent) {}
+QClientFormLayout::QClientFormLayout(int margin, QWidget *parent) : QFormLayout(parent) { setContentsMargins(margin, margin, margin, margin); }
+QClientFormLayout::QClientFormLayout(QWidget *parent) : C4::QClientFormLayout(0, parent) {}
+
 QPageUsername::QPageUsername(Client *client, QWidget *parent) : QClientWidget(client, parent) {
-  QVBoxLayout *vbl_username = new QVBoxLayout;
-  vbl_username->setContentsMargins(0, 0, 0, 0);
-  QFormLayout *fl_username = new QFormLayout;
-  fl_username->setContentsMargins(0, 0, 0, 0);
+  QClientVBoxLayout *vbl_username = new QClientVBoxLayout;
+  QClientFormLayout *fl_username = new QClientFormLayout;
   m_le_username.setMaxLength(USERNAME_MAX_SIZE);
   connect(&m_le_username, &QLineEdit::textChanged, this, &QPageUsername::on_le_username_text_changed);
-  fl_username->addRow(new QLabel("Username"), &m_le_username);
+  fl_username->addRow(new QLabel(CLIENT_UI_USERNAME), &m_le_username);
   vbl_username->addLayout(fl_username);
-  m_lb_server_status.setText("Server disconnected");
+  m_lb_server_status.setText(CLIENT_UI_SERVER_DISCONNECTED);
   vbl_username->addWidget(&m_lb_server_status);
-  QHBoxLayout *hbl_btn = new QHBoxLayout;
-  hbl_btn->setContentsMargins(0, 0, 0, 0);
-  m_btn_enter_lobby.setText("Enter Lobby");
+  QClientHBoxLayout *hbl_btn = new QClientHBoxLayout;
+  m_btn_enter_lobby.setText(CLIENT_UI_ENTER_LOBBY);
   m_btn_enter_lobby.setEnabled(false);
   hbl_btn->addWidget(&m_btn_enter_lobby);
   hbl_btn->addStretch(1);
@@ -37,18 +42,17 @@ void QPageUsername::on_le_username_text_changed(const QString &text) {
 
 void QPageUsername::update_server_connection() {
   if (m_client->m_is_connected) {
-    m_lb_server_status.setText(tr("Server connected"));
+    m_lb_server_status.setText(CLIENT_UI_SERVER_CONNECTED);
     m_btn_enter_lobby.setEnabled(true);
   } else {
-    m_lb_server_status.setText(tr("Server disconnected"));
+    m_lb_server_status.setText(CLIENT_UI_SERVER_DISCONNECTED);
     m_btn_enter_lobby.setEnabled(false);
   }
 }
 
 QOnlinePlayers::QOnlinePlayers(Client *client, QWidget *parent) : QClientWidget(client, parent) {
-  QVBoxLayout *vbl_online_players = new QVBoxLayout;
-  vbl_online_players->setContentsMargins(0, 0, 0, 0);
-  vbl_online_players->addWidget(new QLabel(tr("Online Players:")));
+  QClientVBoxLayout *vbl_online_players = new QClientVBoxLayout;
+  vbl_online_players->addWidget(new QLabel(CLIENT_UI_ONLINE_PLAYERS));
   connect(&m_lw_online_players, &QListWidget::itemClicked, this, &QOnlinePlayers::on_lw_online_players_item_clicked);
   vbl_online_players->addWidget(&m_lw_online_players);
   setLayout(vbl_online_players);
@@ -75,8 +79,7 @@ void QOnlinePlayers::update_online_client_infos() {
 }
 
 QGameArea::QGameArea(Client *client, QWidget *parent) : QClientWidget(client, parent), m_game_menu(client), m_game(client) {
-  QVBoxLayout *vbl_game_area = new QVBoxLayout;
-  vbl_game_area->setContentsMargins(0, 0, 0, 0);
+  QClientVBoxLayout *vbl_game_area = new QClientVBoxLayout;
   m_sw_game.addWidget(&m_game_menu);
   m_sw_game.addWidget(&m_game);
   vbl_game_area->addWidget(&m_sw_game);
@@ -92,14 +95,13 @@ void QGameArea::update_client_data() {
 }
 
 QInvite::QInvite(Client *client, QWidget *parent) : QClientWidget(client, parent) {
-  QHBoxLayout *m_hbl_invite = new QHBoxLayout;
-  m_hbl_invite->setContentsMargins(0, 0, 0, 0);
-  m_lb_invite_text.setText("You got invited from player");
+  QClientHBoxLayout *m_hbl_invite = new QClientHBoxLayout;
+  m_lb_invite_text.setText(QString(CLIENT_UI_GOT_INVITED).arg(CLIENT_UI_PLAYER));
   m_hbl_invite->addWidget(&m_lb_invite_text);
-  m_btn_invite_accept.setText("Accept");
+  m_btn_invite_accept.setText(CLIENT_UI_ACCEPT);
   connect(&m_btn_invite_accept, &QPushButton::clicked, this, &QInvite::on_btn_invite_accept_clicked);
   m_hbl_invite->addWidget(&m_btn_invite_accept);
-  m_btn_invite_decline.setText("Decline");
+  m_btn_invite_decline.setText(CLIENT_UI_DECLINE);
   connect(&m_btn_invite_decline, &QPushButton::clicked, this, &QInvite::on_btn_invite_decline_clicked);
   m_hbl_invite->addWidget(&m_btn_invite_decline);
   setLayout(m_hbl_invite);
@@ -120,18 +122,17 @@ void QInvite::update_invite() {
     return;
   }
   NewGameInvite req = m_client->m_new_game_invite_queue.front();
-  m_lb_invite_text.setText(QString("You got invited from %1").arg(req.inviter_username));
+  m_lb_invite_text.setText(QString(CLIENT_UI_GOT_INVITED).arg(req.inviter_username));
 }
 
 QGameMenu::QGameMenu(Client *client, QWidget *parent) : QClientWidget(client, parent), m_invite(client) {
-  QVBoxLayout *vbl_game_menu = new QVBoxLayout;
-  vbl_game_menu->setContentsMargins(0, 0, 0, 0);
+  QClientVBoxLayout *vbl_game_menu = new QClientVBoxLayout;
   vbl_game_menu->addStretch(1);
-  m_btn_new_game.setText("New Game");
+  m_btn_new_game.setText(CLIENT_UI_NEW_GAME);
   m_btn_new_game.setEnabled(false);
   vbl_game_menu->addWidget(&m_btn_new_game);
   connect(&m_btn_new_game_invite, &QPushButton::clicked, this, &QGameMenu::on_btn_new_game_invite_clicked);
-  m_btn_new_game_invite.setText("New Game With Player");
+  m_btn_new_game_invite.setText(QString(CLIENT_UI_NEW_GAME_WITH).arg(CLIENT_UI_PLAYER));
   m_btn_new_game_invite.setEnabled(false);
   vbl_game_menu->addWidget(&m_btn_new_game_invite);
   vbl_game_menu->addWidget(&m_invite);
@@ -144,10 +145,10 @@ void QGameMenu::on_btn_new_game_invite_clicked() { m_client->async_new_game_invi
 void QGameMenu::update_selected_client() {
   if (m_client->m_selected_client == NULL) {
     m_btn_new_game_invite.setEnabled(false);
-    m_btn_new_game_invite.setText("New Game With Player");
+    m_btn_new_game_invite.setText(QString(CLIENT_UI_NEW_GAME_WITH).arg(CLIENT_UI_PLAYER));
   } else {
     m_btn_new_game_invite.setEnabled(true);
-    m_btn_new_game_invite.setText(QString("New Game With %1").arg(m_client->m_selected_client->text()));
+    m_btn_new_game_invite.setText(QString(CLIENT_UI_NEW_GAME_WITH).arg(m_client->m_selected_client->text()));
   }
 }
 
@@ -157,19 +158,18 @@ void QGameMenu::update_invite() {
 }
 
 QGame::QGame(Client *client, QWidget *parent) : QClientWidget(client, parent), m_game_board(client) {
-  QVBoxLayout *vbl_game = new QVBoxLayout;
-  vbl_game->setContentsMargins(0, 0, 0, 0);
-  QHBoxLayout *hbl_game_btns = new QHBoxLayout;
-  m_btn_game_quit.setText("Quit Game");
+  QClientVBoxLayout *vbl_game = new QClientVBoxLayout;
+  QClientHBoxLayout *hbl_game_btns = new QClientHBoxLayout;
+  m_btn_game_quit.setText(CLIENT_UI_QUIT_GAME);
   connect(&m_btn_game_quit, &QPushButton::clicked, this, &QGame::on_btn_game_quit_clicked);
   hbl_game_btns->addStretch(1);
   hbl_game_btns->addWidget(&m_btn_game_quit);
   vbl_game->addLayout(hbl_game_btns);
-  m_lb_game_opponent.setText("Opponent");
+  m_lb_game_opponent.setText(CLIENT_UI_OPPONENT);
   m_lb_game_opponent.setAlignment(Qt::AlignCenter);
   vbl_game->addWidget(&m_lb_game_opponent);
   vbl_game->addWidget(&m_game_board, 1);
-  m_lb_game_player.setText("You");
+  m_lb_game_player.setText(CLIENT_UI_YOU);
   m_lb_game_player.setAlignment(Qt::AlignCenter);
   vbl_game->addWidget(&m_lb_game_player);
   setLayout(vbl_game);
@@ -177,7 +177,7 @@ QGame::QGame(Client *client, QWidget *parent) : QClientWidget(client, parent), m
 
 void QGame::on_btn_game_quit_clicked() {
   QMessageBox::StandardButton reply;
-  reply = QMessageBox::question(this, "Quit Game?", "Are you sure want to quit the game?", QMessageBox::Yes | QMessageBox::No);
+  reply = QMessageBox::question(this, CLIENT_UI_QUIT_GAME_MSGBOX_TITLE, CLIENT_UI_QUIT_GAME_MSGBOX_TEXT, QMessageBox::Yes | QMessageBox::No);
   if (reply == QMessageBox::Yes) {
     m_client->async_quit_game();
   }
@@ -185,7 +185,7 @@ void QGame::on_btn_game_quit_clicked() {
 
 void QGame::update_game() {
   m_lb_game_opponent.setText(m_client->m_game.m_opponent_username);
-  m_lb_game_player.setText("You");
+  m_lb_game_player.setText(CLIENT_UI_YOU);
   if (m_client->m_game.m_state == GAME_STATE_IN_GAME) {
     if (m_client->current_game_turn_is_player()) {
       QFont font = m_lb_game_player.font();
@@ -218,9 +218,9 @@ void QGame::update_game() {
     if (winner != GAME_PLAYER_EMPTY) {
       client_id_t winner_id = m_client->m_game.get_player_id_from_turn(winner);
       if (winner_id == m_client->m_data.m_client_id) {
-        m_lb_game_player.setText("You (winner)");
+        m_lb_game_player.setText(QString(CLIENT_UI_WINNER).arg(CLIENT_UI_YOU));
       } else if (winner_id == m_client->m_game.m_opponent_id) {
-        m_lb_game_opponent.setText(QString("%1 (winner)").arg(m_client->m_game.m_opponent_username));
+        m_lb_game_opponent.setText(QString(CLIENT_UI_WINNER).arg(m_client->m_game.m_opponent_username));
       }
     }
   }
@@ -237,8 +237,7 @@ void QOnlinePlayers::on_lw_online_players_item_clicked(QListWidgetItem *item) {
 }
 
 QPageLobby::QPageLobby(Client *client, QWidget *parent) : QClientWidget(client, parent), m_online_players(client), m_game_area(client) {
-  QHBoxLayout *hbl_lobby = new QHBoxLayout;
-  hbl_lobby->setContentsMargins(0, 0, 0, 0);
+  QClientHBoxLayout *hbl_lobby = new QClientHBoxLayout;
   hbl_lobby->addWidget(&m_online_players, 3);
   hbl_lobby->addWidget(&m_game_area, 9);
   setLayout(hbl_lobby);
@@ -251,30 +250,30 @@ void QGameBoard::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(Qt::gray);
+  painter.setBrush(CLIENT_UI_GAME_BOARD_COLOR);
   painter.drawRect(rect());
-  int tile_width = rect().width() / 7;
-  int tile_height = rect().height() / 6;
-  for (uint8_t y = 0; y < 6; y++) {
-    for (uint8_t x = 0; x < 7; x++) {
-      int radius = std::min(tile_width, tile_height) / 2 - 5;
+  int tile_width = rect().width() / GAME_BOARD_WIDTH;
+  int tile_height = rect().height() / GAME_BOARD_HEIGHT;
+  for (uint8_t y = 0; y < GAME_BOARD_HEIGHT; y++) {
+    for (uint8_t x = 0; x < GAME_BOARD_WIDTH; x++) {
+      int radius = std::min(tile_width, tile_height) / 2 - CLIENT_UI_GAME_TILE_MARGINS;
       QPoint center(x * tile_width + tile_width / 2, y * tile_height + tile_height / 2);
       if (m_client->m_game.m_state == GAME_STATE_IN_GAME && m_client->current_game_turn_is_player()) {
-        painter.setBrush(Qt::white);
+        painter.setBrush(CLIENT_UI_GAME_SLOT_COLOR_ENABLE);
       } else {
-        painter.setBrush(Qt::lightGray);
+        painter.setBrush(CLIENT_UI_GAME_SLOT_COLOR_DISABLE);
       }
       GamePlayer cell = m_client->m_game.m_board[y][x];
       client_id_t cell_id = m_client->m_game.get_player_id_from_turn(cell);
       if (m_client->m_game.m_state == GAME_STATE_VERDICT && m_client->m_game.m_connect_mask[y][x]) {
-        painter.setPen(QPen(Qt::white, 2));
+        painter.setPen(QPen(CLIENT_UI_GAME_CONNECT_TOKEN_BORDER_COLOR, CLIENT_UI_GAME_CONNECT_TOKEN_BORDER_WIDTH));
       } else {
         painter.setPen(Qt::NoPen);
       }
       if (cell_id == m_client->m_data.m_client_id) {
-        painter.setBrush(Qt::blue);
+        painter.setBrush(CLIENT_UI_GAME_TOKEN_COLOR_PLAYER);
       } else if (cell_id == m_client->m_game.m_opponent_id) {
-        painter.setBrush(Qt::red);
+        painter.setBrush(CLIENT_UI_GAME_TOKEN_COLOR_OPPONENT);
       }
       painter.drawEllipse(center, radius, radius);
     }
@@ -282,10 +281,10 @@ void QGameBoard::paintEvent(QPaintEvent *event) {
 }
 void QGameBoard::mousePressEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
-    int tile_width = rect().width() / 7;
+    int tile_width = rect().width() / GAME_BOARD_WIDTH;
     QPoint pos = event->pos();
     int col = pos.x() / tile_width;
-    col = std::clamp(col, 0, 6);
+    col = std::clamp(col, 0, GAME_BOARD_WIDTH - 1);
     spdlog::debug("Player attempt to click on column [{}]", col);
     if (m_client->m_game.m_state == GAME_STATE_IN_GAME && m_client->current_game_turn_is_player()) {
       m_client->m_message_handler.send_command_player_make_move(col);
@@ -296,16 +295,16 @@ void QGameBoard::mousePressEvent(QMouseEvent *event) {
 QClientUI::QClientUI(Client *client, QWidget *parent) : QClientWidget(client, parent), m_page_username(client), m_page_lobby(client) {
   m_sw_pages.addWidget(&m_page_username);
   m_sw_pages.addWidget(&m_page_lobby);
-  QVBoxLayout *vbl_main = new QVBoxLayout();
+  QClientVBoxLayout *vbl_main = new QClientVBoxLayout(CLIENT_UI_WINDOW_MARGIN);
   vbl_main->addWidget(&m_sw_pages);
   setLayout(vbl_main);
-  setWindowTitle(tr("Connect4"));
+  setWindowTitle(CLIENT_UI_WINDOW_TITLE);
   resize(640, 480);
 };
 
 void QClientUI::username_check_failed() {
-  QMetaObject::invokeMethod(this,
-                            [this]() { QMessageBox::information(this, "Cannot use this username", "This username is already taken, please try another."); });
+  QMetaObject::invokeMethod(
+      this, [this]() { QMessageBox::information(this, CLIENT_UI_USERNAME_CHECK_FAILED_MSGBOX_TITLE, CLIENT_UI_USERNAME_CHECK_FAILED_MSGBOX_TEXT); });
 }
 
 void QClientUI::update_server_connection() {
@@ -316,10 +315,10 @@ void QClientUI::update_client_data() {
   QMetaObject::invokeMethod(this, [this]() {
     if (m_client->m_data.m_state == CLIENT_STATE_USERNAME) {
       m_sw_pages.setCurrentIndex(0);
-      setWindowTitle("Connect4");
+      setWindowTitle(CLIENT_UI_WINDOW_TITLE);
     } else if (m_client->m_data.m_state == CLIENT_STATE_LOBBY) {
       m_sw_pages.setCurrentIndex(1);
-      setWindowTitle(QString("Connect4 (%1)").arg(m_client->m_data.m_username));
+      setWindowTitle(QString(CLIENT_UI_WINDOW_TITLE_WITH_USERNAME).arg(m_client->m_data.m_username));
     }
     m_page_lobby.m_game_area.update_client_data();
   });

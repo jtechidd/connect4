@@ -38,10 +38,10 @@ int Game::start() {
 int Game::place(uint8_t j) {
   if (m_state != GAME_STATE_IN_GAME)
     return -1;
-  if (j >= 7)
+  if (j >= GAME_BOARD_WIDTH)
     return -1;
   int i = -1;
-  for (i = 0; i < 6; i++) {
+  for (i = 0; i < GAME_BOARD_HEIGHT; i++) {
     if (m_board[i][j]) {
       break;
     }
@@ -58,7 +58,7 @@ int Game::place(uint8_t j) {
       m_verdict = GAME_VERDICT_PLAYER1_WIN;
     else if (m_turn == GAME_PLAYER_2)
       m_verdict = GAME_VERDICT_PLAYER2_WIN;
-  } else if (m_round == 42) {
+  } else if (m_round == GAME_BOARD_WIDTH * GAME_BOARD_HEIGHT) {
     m_state = GAME_STATE_VERDICT;
     m_verdict = GAME_VERDICT_TIE;
   }
@@ -71,23 +71,22 @@ int Game::place(uint8_t j) {
 
 int Game::is_connect(uint8_t i, uint8_t j) {
   int8_t k, di, dj, s, ti, tj, c;
-  int8_t dir[8][2] = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
-  for (k = 0; k < 8; k++) {
-    di = dir[k][0];
-    dj = dir[k][1];
+  for (k = 0; k < GAME_CONNECT_DIRECTIONS_SIZE; k++) {
+    di = GAME_CONNECT_DIRECTIONS[k][0];
+    dj = GAME_CONNECT_DIRECTIONS[k][1];
     m_connect_mask[i][j] = 1;
     c = 1;
-    for (s = 1; s <= 3; s++) {
+    for (s = 1; s <= GAME_CONNECT_COUNT - 1; s++) {
       ti = i + s * di;
       tj = j + s * dj;
-      if (ti < 0 || ti >= 6 || tj < 0 || tj >= 7)
+      if (ti < 0 || ti >= GAME_BOARD_HEIGHT || tj < 0 || tj >= GAME_BOARD_WIDTH)
         break;
       if (m_board[ti][tj] != m_turn)
         break;
       m_connect_mask[ti][tj] = 1;
       c++;
     }
-    if (c >= 4) {
+    if (c >= GAME_CONNECT_COUNT) {
       return 1;
     }
     memset(m_connect_mask, 0, sizeof(m_connect_mask));
