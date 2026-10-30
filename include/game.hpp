@@ -8,8 +8,9 @@ namespace C4 {
 constexpr uint8_t GAME_BOARD_WIDTH = 7;
 constexpr uint8_t GAME_BOARD_HEIGHT = 6;
 constexpr uint8_t GAME_CONNECT_COUNT = 4;
-constexpr uint8_t GAME_CONNECT_DIRECTIONS_SIZE = 8;
-constexpr int8_t GAME_CONNECT_DIRECTIONS[GAME_CONNECT_DIRECTIONS_SIZE][2] = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
+constexpr uint8_t GAME_CONNECT_AXES_SIZE = 4;
+constexpr int8_t GAME_CONNECT_AXES[GAME_CONNECT_AXES_SIZE][2] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}};
+constexpr int8_t GAME_CONNECT_AXIS_SIGNS[2] = {1, -1};
 
 class Game {
 public:

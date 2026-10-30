@@ -71,25 +71,27 @@ int Game::place(uint8_t j) {
 
 int Game::is_connect(uint8_t i, uint8_t j) {
   int8_t k, di, dj, s, ti, tj, c;
-  for (k = 0; k < GAME_CONNECT_DIRECTIONS_SIZE; k++) {
-    di = GAME_CONNECT_DIRECTIONS[k][0];
-    dj = GAME_CONNECT_DIRECTIONS[k][1];
+  for (k = 0; k < GAME_CONNECT_AXES_SIZE; k++) {
+    memset(m_connect_mask, 0, sizeof(m_connect_mask));
     m_connect_mask[i][j] = 1;
     c = 1;
-    for (s = 1; s <= GAME_CONNECT_COUNT - 1; s++) {
-      ti = i + s * di;
-      tj = j + s * dj;
-      if (ti < 0 || ti >= GAME_BOARD_HEIGHT || tj < 0 || tj >= GAME_BOARD_WIDTH)
-        break;
-      if (m_board[ti][tj] != m_turn)
-        break;
-      m_connect_mask[ti][tj] = 1;
-      c++;
+    for (int8_t sign : GAME_CONNECT_AXIS_SIGNS) {
+      di = sign * GAME_CONNECT_AXES[k][0];
+      dj = sign * GAME_CONNECT_AXES[k][1];
+      for (s = 1; s <= GAME_CONNECT_COUNT - 1; s++) {
+        ti = i + s * di;
+        tj = j + s * dj;
+        if (ti < 0 || ti >= GAME_BOARD_HEIGHT || tj < 0 || tj >= GAME_BOARD_WIDTH)
+          break;
+        if (m_board[ti][tj] != m_turn)
+          break;
+        m_connect_mask[ti][tj] = 1;
+        c++;
+      }
     }
     if (c >= GAME_CONNECT_COUNT) {
       return 1;
     }
-    memset(m_connect_mask, 0, sizeof(m_connect_mask));
   }
   return 0;
 }
