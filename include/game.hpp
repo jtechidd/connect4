@@ -36,7 +36,7 @@ public:
 
   // Server only
   int start();
-  int place(uint8_t j);
+  int place(client_id_t player_id, uint8_t j);
   int is_connect(uint8_t i, uint8_t j);
   int player_left(client_id_t client_id);
 

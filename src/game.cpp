@@ -35,9 +35,12 @@ int Game::start() {
   return 0;
 }
 
-int Game::place(uint8_t j) {
+int Game::place(client_id_t player_id, uint8_t j) {
   if (m_state != GAME_STATE_IN_GAME)
     return -1;
+  if (get_current_turn_player_id() != player_id) {
+    return -1;
+  }
   if (j >= GAME_BOARD_WIDTH)
     return -1;
   int i = -1;

@@ -209,7 +209,7 @@ void ServerMessageHandler::handle_command_player_make_move(client_id_t client_id
     spdlog::warn("Game with ID [{}] not found, skipping.", payload->game_id());
     return;
   }
-  if (game->place(payload->played_column()) < 0) {
+  if (game->place(payload->player_id(), payload->played_column()) < 0) {
     spdlog::warn("Cannot play on column [{}], skipping.", payload->played_column());
     return;
   }
